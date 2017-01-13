@@ -1,3 +1,6 @@
+"""
+Class for collections of granules
+"""
 
 from requests import get
 
