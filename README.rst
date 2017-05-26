@@ -9,39 +9,60 @@ Python CMR is an easy to use wrapper to the NASA EOSDIS
 querying the API intuitive and less error-prone by providing methods that will preemptively check
 for invalid input and handle the URL encoding the CMR API expects.
 
-Getting access to NASA's earth science data is as simple as this:
+Getting access to NASA's earth science metadata is as simple as this:
 
-.. code-block:: python
+::
 
-    >>> from cmr import GranuleQuery
+    >>> from cmr import CollectionQuery, GranuleQuery
+    
+    >>> api = CollectionQuery()
+    >>> collections = api.archive_center("LP DAAC").keyword("AST_L1*").get(5)
+
+    >>> for collection in collections:
+    >>>   print(collection["short_name"])
+    AST_L1A
+    AST_L1AE
+    AST_L1T
 
     >>> api = GranuleQuery()
-
-    >>> granules = api.short_name("AST_L1T").point(42.5, -112.73).query()
+    >>> granules = api.short_name("AST_L1T").point(-112.73, 42.5).get(3)
 
     >>> for granule in granules:
-    >>>   print(granule["entry_title"])
+    >>>   print(granule["title"])
     SC:AST_L1T.003:2149105822
     SC:AST_L1T.003:2149105820
     SC:AST_L1T.003:2149155037
-    SC:AST_L1T.003:2149469555
-    SC:AST_L1T.003:2149469571
-    SC:AST_L1T.003:2149789318
-    SC:AST_L1T.003:2149962675
-    SC:AST_L1T.003:2150165250
-    SC:AST_L1T.003:2150261715
-    SC:AST_L1T.003:2150315169
+
+
+Installation
+============
+
+To install from pypi:
+
+::
+
+    $ pip install python-cmr
+
+
+To install from github, perhaps to try out the dev branch:
+
+::
+
+    $ git clone https://github.com/jddeal/python-cmr
+    $ cd python-cmr
+    $ pip install .
 
 
 Examples
 ========
 
-The CMR API provides many parameters, but not all of them are covered by this version of
-the wrapper. The following shows the possible parameters supported by the wrapper:
+This library is broken into two classes, `CollectionQuery` and `GranuleQuery`. Each of these
+classes provide a large set of methods used to build a query for CMR. Not all parameters provided
+by the CMR API are covered by this version of python-cmr.
 
-.. code-block:: python
+The following methods are available to both collecton and granule queries:
 
-    >>> from cmr import GranuleQuery
+::
 
     # search for granules matching a specific product/short_name
     >>> api.short_name("AST_L1T")
@@ -66,15 +87,19 @@ the wrapper. The following shows the possible parameters supported by the wrappe
     >>> api.temporal("2016-10-10T01:02:00Z", None)
     >>> api.temporal(datetime("2016-10-10T01:02:00Z"), datetime.now())
 
-    # search for a granule by its unique ID
-    >>> api.granule_ur("SC:AST_L1T.003:2150315169")
-
     # only include granules available for download
     >>> api.downloadable()
 
     # only include granules that are unavailable for download
     >>> api.online_only()
 
+
+Granule searches support these methods (in addition to the shared methods above):
+
+::
+
+    # search for a granule by its unique ID
+    >>> api.granule_ur("SC:AST_L1T.003:2150315169")
     # search for granules from a specific orbit
     >>> api.orbit_number(5000)
 
@@ -87,16 +112,31 @@ the wrapper. The following shows the possible parameters supported by the wrappe
     # filter by specific instrument or platform
     >>> api.instrument("MODIS")
     >>> api.platform("Terra")
+    
+
+Collection searches support these methods (in addition to the shared methods above):
+
+::
+
+    # search for collections from a specific archive center
+    >>> api.archive_center("LP DAAC")
+
+    # case insensitive, wildcard enabled text search through most collection fields
+    >>> api.keyword("M*D09")
 
 
-Installation
-============
+To inspect and retreive results from the API, the following methods are available:
 
-Simply clone and install via pip.
+::
 
-.. code-block:: bash
+    # inspect the number of results the query will return without downloading the results
+    >>> print(api.hits())
 
-    $ git clone https://github.com/jddeal/python-cmr
-    $ cd python-cmr
-    $ pip install .
+    # retrieve 100 granules
+    >>> granules = api.get(100)
 
+    # retrieve 25,000 granules
+    >>> granules = api.get(25000)
+
+    # retrieve all the granules possible for the query
+    >>> granules = api.get_all()  # this is a shortcut for api.get(api.hits())
