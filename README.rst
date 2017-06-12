@@ -125,6 +125,22 @@ Collection searches support these methods (in addition to the shared methods abo
     >>> api.keyword("M*D09")
 
 
+As an alternative to chaining methods together to set the parameters of your query, a
+method exists to allow you to pass your parameters as keyword arguments:
+
+::
+
+    # search for AST_L1T version 003 granules at latitude 42, longitude -100
+    >>> api.parameters(
+        short_name="AST_L1T",
+        version="003",
+        point=(-100, 42)
+    )
+
+Note: the kwarg key should match the name of a method from the above examples, and the value
+should be a tuple if it's a parameter that requires multiple values.
+
+
 To inspect and retreive results from the API, the following methods are available:
 
 ::
@@ -140,3 +156,31 @@ To inspect and retreive results from the API, the following methods are availabl
 
     # retrieve all the granules possible for the query
     >>> granules = api.get_all()  # this is a shortcut for api.get(api.hits())
+
+
+By default the responses will return as json and be accessible as a list of python dictionaries.
+Other formats can be specified before making the request:
+
+::
+
+    >>> granules = api.format("echo10").get(100)
+
+The following formats are supported for both granule and collection queries:
+
+* json (default)
+* xml
+* echo10
+* iso
+* iso19115
+* csv
+* atom
+* kml
+* native
+
+Collection queries also support the following formats:
+
+* dif
+* dif10
+* opendata
+* umm_json
+* umm_json_vX_Y (ex: umm_json_v1_9)
