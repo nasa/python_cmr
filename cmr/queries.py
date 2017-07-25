@@ -60,12 +60,12 @@ class Query(object):
             if self._format == "json":
                 latest = response.json()['feed']['entry']
             else:
-                latest = response.text
+                latest = [response.text]
 
             if len(latest) == 0:
                 break
 
-            results.append(latest)
+            results.extend(latest)
             page += 1
 
         return results
