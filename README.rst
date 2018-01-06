@@ -76,8 +76,9 @@ The following methods are available to both collecton and granule queries:
     # search for granules in an area bound by a box (lower left lon/lat, upper right lon/lat)
     >>> api.bounding_box(-112.70, 42.5, -110, 44.5)
 
-    # search for granules in a polygon
-    >>> api.polygon([(-100, 40), (-90, 40), (-95, 38), (-100, 40)])
+    # search for granules in a polygon (these need to be in counter clockwise order and the
+    # last coordinate must match the first in order to close the polygon)
+    >>> api.polygon([(-100, 40), (-110, 40), (-105, 38), (-100, 40)])
 
     # search for granules in a line
     >>> api.line([(-100, 40), (-90, 40), (-95, 38)])
