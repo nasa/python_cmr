@@ -77,15 +77,15 @@ The following methods are available to both collecton and granule queries:
     >>> api.bounding_box(-112.70, 42.5, -110, 44.5)
 
     # search for granules in a polygon
-    >>> api.polygon((-100, 40), (-90, 40), (-95, 38), (-100, 40))
+    >>> api.polygon([(-100, 40), (-90, 40), (-95, 38), (-100, 40)])
 
     # search for granules in a line
-    >>> api.line((-100, 40), (-90, 40), (-95, 38))
+    >>> api.line([(-100, 40), (-90, 40), (-95, 38)])
 
     # search for granules in an open or closed date range
     >>> api.temporal("2016-10-10T01:02:00Z", "2016-10-12T00:00:30Z")
     >>> api.temporal("2016-10-10T01:02:00Z", None)
-    >>> api.temporal(datetime("2016-10-10T01:02:00Z"), datetime.now())
+    >>> api.temporal(datetime(2016, 10, 10, 1, 2, 0), datetime.now())
 
     # only include granules available for download
     >>> api.downloadable()
