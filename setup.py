@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name="python-cmr",
-    version="0.4",
+    version="0.4.1",
     license="MIT",
     url="https://github.com/jddeal/python-cmr",
     description="Python wrapper to the NASA Common Metadata Repository (CMR) API.",

@@ -449,13 +449,14 @@ class Query(object):
                 ))
 
         options_as_string = "&".join(formatted_options)
-
-        return "{}.{}?{}&{}".format(
+        res = "{}.{}?{}&{}".format(
             self._base_url,
             self._format,
             params_as_string,
             options_as_string
         )
+        res = res.rstrip('&')
+        return res
 
     def _valid_state(self):
         """
