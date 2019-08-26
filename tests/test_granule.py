@@ -419,3 +419,13 @@ class TestGranuleClass(unittest.TestCase):
         url = query._build_url()
         self.assertNotIn("True", url)
         self.assertNotIn("False", url)
+    
+    def test_valid_concept_id(self):
+        query = GranuleQuery()
+
+        query.concept_id("C1299783579-LPDAAC_ECS")
+        self.assertEqual(query.params["concept_id"], ["C1299783579-LPDAAC_ECS"])
+        
+        query.concept_id(["C1299783579-LPDAAC_ECS", "G1441380236-PODAAC"])
+        self.assertEqual(query.params["concept_id"], ["C1299783579-LPDAAC_ECS", "G1441380236-PODAAC"])
+

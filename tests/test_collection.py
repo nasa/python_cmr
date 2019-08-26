@@ -36,3 +36,22 @@ class TestCollectionClass(unittest.TestCase):
             query.format("invalid")
             query.format("jsonn")
             query.format("iso19116")
+    
+    def test_valid_concept_id(self):
+        query = CollectionQuery()
+
+        query.concept_id("C1299783579-LPDAAC_ECS")
+        self.assertEqual(query.params["concept_id"], ["C1299783579-LPDAAC_ECS"])
+        
+        query.concept_id(["C1299783579-LPDAAC_ECS", "C1441380236-PODAAC"])
+        self.assertEqual(query.params["concept_id"], ["C1299783579-LPDAAC_ECS", "C1441380236-PODAAC"])
+    
+    def test_invalid_concept_id(self):
+        query = CollectionQuery()
+
+        with self.assertRaises(ValueError):
+            query.concept_id("G1327299284-LPDAAC_ECS")
+        
+        with self.assertRaises(ValueError):
+            query.concept_id(["C1299783579-LPDAAC_ECS", "G1327299284-LPDAAC_ECS"])
+

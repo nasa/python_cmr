@@ -94,6 +94,14 @@ The following methods are available to both collecton and granule queries:
     # only include granules that are unavailable for download
     >>> api.online_only()
 
+    # search for collections/granules associated with or identified by concept IDs
+    # note: often the ECHO collection ID can be used here as well
+    # note: when using CollectionQuery, only collection concept IDs can be passed
+    # note: when uses GranuleQuery, passing a collection's concept ID will filter by granules associated
+    #       with that particular collection.
+    >>> api.concept_id("C1299783579-LPDAAC_ECS")
+    >>> api.concept_id(["G1327299284-LPDAAC_ECS", "G1326330014-LPDAAC_ECS"])
+
 
 Granule searches support these methods (in addition to the shared methods above):
 

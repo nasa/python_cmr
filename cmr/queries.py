@@ -592,6 +592,25 @@ class GranuleQuery(Query):
         self.params['granule_ur'] = granule_ur
         return self
 
+    def concept_id(self, IDs):
+        """
+        Filter by concept ID (ex: C1299783579-LPDAAC_ECS or G1327299284-LPDAAC_ECS)
+
+        Collections and granules are uniquely identified with this ID. If providing a collection's concept ID
+        here, it will filter by granules associated with that collection. If providing a granule's concept ID
+        here, it will uniquely identify those granules.
+
+        :param IDs: concept ID(s) to search by. Can be provided as a string or list of strings.
+        :returns: Query instance
+        """
+
+        if isinstance(IDs, str):
+            IDs = [IDs]
+        
+        self.params["concept_id"] = IDs
+
+        return self
+
     def _valid_state(self):
 
         # spatial params must be paired with a collection limiting parameter
@@ -643,6 +662,28 @@ class CollectionQuery(Query):
 
         if text:
             self.params['keyword'] = text
+
+        return self
+
+    def concept_id(self, IDs):
+        """
+        Filter by concept ID (ex: C1299783579-LPDAAC_ECS)
+
+        Collections are uniquely identified with this ID.
+
+        :param IDs: concept ID(s) to search by. Can be provided as a string or list of strings.
+        :returns: Query instance
+        """
+
+        if isinstance(IDs, str):
+            IDs = [IDs]
+        
+        # verify we weren't provided any granule concept IDs
+        for ID in IDs:
+            if ID.strip()[0] != "C":
+                raise ValueError("Only collection concept ID's can be provided (begin with 'C'): {}".format(ID))
+        
+        self.params["concept_id"] = IDs
 
         return self
 
