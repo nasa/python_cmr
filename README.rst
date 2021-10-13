@@ -1,8 +1,9 @@
+This repository is a copy of [jddeal/python_cmr](https://github.com/jddeal/python-cmr/tree/ef0f9e7d67ce99d342a568bd6a098c3462df16d2) which is no longer maintained. It has been copied here with the permission of the original author for the purpose of continuing to develop a python library that can be used for CMR access.
+
 Python CMR
 ==========
 
-.. image:: https://travis-ci.org/jddeal/python-cmr.svg?branch=master
-    :target: https://travis-ci.org/jddeal/python-cmr
+[![CodeQL](https://github.com/nasa/python_cmr/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/nasa/python_cmr/actions/workflows/codeql-analysis.yml)
 
 Python CMR is an easy to use wrapper to the NASA EOSDIS
 `Common Metadata Repository API <https://cmr.earthdata.nasa.gov/search/>`_. This package aims to make
