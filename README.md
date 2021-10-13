@@ -1,21 +1,18 @@
 This repository is a copy of [jddeal/python_cmr](https://github.com/jddeal/python-cmr/tree/ef0f9e7d67ce99d342a568bd6a098c3462df16d2) which is no longer maintained. It has been copied here with the permission of the original author for the purpose of continuing to develop a python library that can be used for CMR access.
 
+----
+
 Python CMR
 ==========
 
 [![CodeQL](https://github.com/nasa/python_cmr/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/nasa/python_cmr/actions/workflows/codeql-analysis.yml)
 
-Python CMR is an easy to use wrapper to the NASA EOSDIS
-`Common Metadata Repository API <https://cmr.earthdata.nasa.gov/search/>`_. This package aims to make
-querying the API intuitive and less error-prone by providing methods that will preemptively check
-for invalid input and handle the URL encoding the CMR API expects.
+Python CMR is an easy to use wrapper to the NASA EOSDIS [Common Metadata Repository API](https://cmr.earthdata.nasa.gov/search/). This package aims to make querying the API intuitive and less error-prone by providing methods that will preemptively check for invalid input and handle the URL encoding the CMR API expects.
 
 Getting access to NASA's earth science metadata is as simple as this:
 
-::
-
     >>> from cmr import CollectionQuery, GranuleQuery
-    
+
     >>> api = CollectionQuery()
     >>> collections = api.archive_center("LP DAAC").keyword("AST_L1*").get(5)
 
@@ -34,36 +31,25 @@ Getting access to NASA's earth science metadata is as simple as this:
     SC:AST_L1T.003:2149105820
     SC:AST_L1T.003:2149155037
 
-
 Installation
 ============
 
 To install from pypi:
 
-::
-
     $ pip install python-cmr
 
-
 To install from github, perhaps to try out the dev branch:
-
-::
 
     $ git clone https://github.com/jddeal/python-cmr
     $ cd python-cmr
     $ pip install .
 
-
 Examples
 ========
 
-This library is broken into two classes, `CollectionQuery` and `GranuleQuery`. Each of these
-classes provide a large set of methods used to build a query for CMR. Not all parameters provided
-by the CMR API are covered by this version of python-cmr.
+This library is broken into two classes, CollectionQuery and GranuleQuery. Each of these classes provide a large set of methods used to build a query for CMR. Not all parameters provided by the CMR API are covered by this version of python-cmr.
 
 The following methods are available to both collecton and granule queries:
-
-::
 
     # search for granules matching a specific product/short_name
     >>> api.short_name("AST_L1T")
@@ -103,10 +89,7 @@ The following methods are available to both collecton and granule queries:
     >>> api.concept_id("C1299783579-LPDAAC_ECS")
     >>> api.concept_id(["G1327299284-LPDAAC_ECS", "G1326330014-LPDAAC_ECS"])
 
-
 Granule searches support these methods (in addition to the shared methods above):
-
-::
 
     # search for a granule by its unique ID
     >>> api.granule_ur("SC:AST_L1T.003:2150315169")
@@ -122,11 +105,8 @@ Granule searches support these methods (in addition to the shared methods above)
     # filter by specific instrument or platform
     >>> api.instrument("MODIS")
     >>> api.platform("Terra")
-    
 
 Collection searches support these methods (in addition to the shared methods above):
-
-::
 
     # search for collections from a specific archive center
     >>> api.archive_center("LP DAAC")
@@ -134,11 +114,7 @@ Collection searches support these methods (in addition to the shared methods abo
     # case insensitive, wildcard enabled text search through most collection fields
     >>> api.keyword("M*D09")
 
-
-As an alternative to chaining methods together to set the parameters of your query, a
-method exists to allow you to pass your parameters as keyword arguments:
-
-::
+As an alternative to chaining methods together to set the parameters of your query, a method exists to allow you to pass your parameters as keyword arguments:
 
     # search for AST_L1T version 003 granules at latitude 42, longitude -100
     >>> api.parameters(
@@ -147,13 +123,9 @@ method exists to allow you to pass your parameters as keyword arguments:
         point=(-100, 42)
     )
 
-Note: the kwarg key should match the name of a method from the above examples, and the value
-should be a tuple if it's a parameter that requires multiple values.
-
+Note: the kwarg key should match the name of a method from the above examples, and the value should be a tuple if it's a parameter that requires multiple values.
 
 To inspect and retreive results from the API, the following methods are available:
-
-::
 
     # inspect the number of results the query will return without downloading the results
     >>> print(api.hits())
@@ -167,30 +139,27 @@ To inspect and retreive results from the API, the following methods are availabl
     # retrieve all the granules possible for the query
     >>> granules = api.get_all()  # this is a shortcut for api.get(api.hits())
 
-
-By default the responses will return as json and be accessible as a list of python dictionaries.
-Other formats can be specified before making the request:
-
-::
+By default the responses will return as json and be accessible as a list of python dictionaries. Other formats can be specified before making the request:
 
     >>> granules = api.format("echo10").get(100)
 
 The following formats are supported for both granule and collection queries:
 
-* json (default)
-* xml
-* echo10
-* iso
-* iso19115
-* csv
-* atom
-* kml
-* native
+-   json (default)
+-   xml
+-   echo10
+-   iso
+-   iso19115
+-   csv
+-   atom
+-   kml
+-   native
 
 Collection queries also support the following formats:
 
-* dif
-* dif10
-* opendata
-* umm_json
-* umm_json_vX_Y (ex: umm_json_v1_9)
+-   dif
+-   dif10
+-   opendata
+-   umm\_json
+-   umm\_json\_vX\_Y (ex: umm\_json\_v1\_9)
+
