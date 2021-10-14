@@ -89,6 +89,9 @@ The following methods are available to both collecton and granule queries:
     >>> api.concept_id("C1299783579-LPDAAC_ECS")
     >>> api.concept_id(["G1327299284-LPDAAC_ECS", "G1326330014-LPDAAC_ECS"])
 
+    # search by provider
+    >>> api.provider('POCLOUD')
+
 Granule searches support these methods (in addition to the shared methods above):
 
     # search for a granule by its unique ID
@@ -113,6 +116,39 @@ Collection searches support these methods (in addition to the shared methods abo
 
     # case insensitive, wildcard enabled text search through most collection fields
     >>> api.keyword("M*D09")
+
+    # search by native_id
+    >>> api.native_id('native_id')
+
+    # filter by tool concept id
+    >>> api.tool_concept_id('TL2092786348-POCLOUD')
+
+    # filter by service concept id
+    >>> api.service_concept_id('S1962070864-POCLOUD')
+
+Service searches support the following methods
+
+    # Search via provider
+    >>> api = ServiceQuery()
+    >>> api.provider('POCLOUD')
+    
+    # Search via native_id
+    >>> api.native_id('POCLOUD_podaac_l2_cloud_subsetter')
+
+    # Search via name
+    >>> api.name('PODAAC L2 Cloud Subsetter')
+
+Tool searches support the following methods
+
+    # Search via provider
+    >>> api = ToolQuery()
+    >>> api.provider('POCLOUD')
+
+    # Search via native_id
+    >>> api.native_id('POCLOUD_hitide')
+
+    # Search via name
+    >>> api.name('hitide')
 
 As an alternative to chaining methods together to set the parameters of your query, a method exists to allow you to pass your parameters as keyword arguments:
 
@@ -162,4 +198,3 @@ Collection queries also support the following formats:
 -   opendata
 -   umm\_json
 -   umm\_json\_vX\_Y (ex: umm\_json\_v1\_9)
-
