@@ -4,11 +4,10 @@ setup(
     name="python-cmr",
     version="0.4.1",
     license="MIT",
-    url="https://github.com/jddeal/python-cmr",
+    url="https://github.com/nasa/python_cmr",
     description="Python wrapper to the NASA Common Metadata Repository (CMR) API.",
     long_description=open("README.md").read(),
-    author="Justin Deal, Matt Isnor",
-    author_email="deal.justin@gmail.com, isnor.matt@gmail.com",
+    author="https://github.com/orgs/nasa/teams/python-cmr",
     packages=["cmr"],
     install_requires=[
         "requests",
