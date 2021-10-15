@@ -34,6 +34,7 @@ class Query(object):
         self.options = {}
         self._route = route
         self.mode(mode)
+        self.concept_id_chars = []
 
     def get(self, limit=2000):
         """
@@ -148,6 +149,127 @@ class Query(object):
 
         # if we got here, we didn't find a matching format
         raise ValueError("Unsupported format '{}'".format(output_format))
+
+    def _build_url(self):
+        """
+        Builds the URL that will be used to query CMR.
+
+        :returns: the url as a string
+        """
+
+        # last chance validation for parameters
+        if not self._valid_state():
+            raise RuntimeError(("Spatial parameters must be accompanied by a collection "
+                                "filter (ex: short_name or entry_title)."))
+
+        # encode params
+        formatted_params = []
+        for key, val in self.params.items():
+
+            # list params require slightly different formatting
+            if isinstance(val, list):
+                for list_val in val:
+                    formatted_params.append("{}[]={}".format(key, list_val))
+            elif isinstance(val, bool):
+                formatted_params.append("{}={}".format(key, str(val).lower()))
+            else:
+                formatted_params.append("{}={}".format(key, val))
+
+        params_as_string = "&".join(formatted_params)
+
+        # encode options
+        formatted_options = []
+        for param_key in self.options:
+            for option_key, val in self.options[param_key].items():
+
+                # all CMR options must be booleans
+                if not isinstance(val, bool):
+                    raise ValueError("parameter '{}' with option '{}' must be a boolean".format(
+                        param_key,
+                        option_key
+                    ))
+
+                formatted_options.append("options[{}][{}]={}".format(
+                    param_key,
+                    option_key,
+                    val
+                ))
+
+        options_as_string = "&".join(formatted_options)
+        res = "{}.{}?{}&{}".format(
+            self._base_url,
+            self._format,
+            params_as_string,
+            options_as_string
+        )
+        res = res.rstrip('&')
+        return res
+
+    def concept_id(self, IDs):
+        """
+        Filter by concept ID (ex: C1299783579-LPDAAC_ECS or G1327299284-LPDAAC_ECS, T12345678-LPDAAC_ECS, S12345678-LPDAAC_ECS)
+
+        Collections, granules, tools, services are uniquely identified with this ID. 
+        If providing a collection's concept ID here, it will filter by granules associated with that collection. 
+        If providing a granule's concept ID here, it will uniquely identify those granules.
+        If providing a tool's concept ID here, it will uniquely identify those tools.
+        If providing a service's concept ID here, it will uniquely identify those services.
+
+        :param IDs: concept ID(s) to search by. Can be provided as a string or list of strings.
+        :returns: Query instance
+        """
+
+        if isinstance(IDs, str):
+            IDs = [IDs]
+        
+        # verify we weren't provided any granule concept IDs
+        for ID in IDs:
+            if ID.strip()[0] not in self.concept_id_chars:
+                raise ValueError("Only concept ids that begin with '{}' can be provided: {}".format(self.concept_id_chars, ID))
+
+        self.params["concept_id"] = IDs
+
+    def provider(self, provider):
+        """
+        Filter by provider.
+
+        :param provider: provider of tool.
+        :returns: Query instance
+        """
+
+        if not provider:
+            return self
+
+        self.params['provider'] = provider
+        return self
+
+    def _valid_state(self):
+        """
+        Determines if the Query is in a valid state based on the parameters and options
+        that have been set. This should be implemented by the subclasses.
+
+        :returns: True if the state is valid, otherwise False
+        """
+
+        raise NotImplementedError()
+
+    def mode(self, mode=CMR_OPS):
+        """
+        Sets the mode of the api target to the given URL
+        CMR_OPS, CMR_UAT, CMR_SIT are provided as class variables
+
+        :param mode: Mode to set the query to target
+        :throws: Will throw if provided None
+        """
+        if mode is None:
+            raise ValueError("Please provide a valid mode (CMR_OPS, CMR_UAT, CMR_SIT)")
+
+        self._base_url = str(mode) + self._route
+
+class GranuleCollectionBaseQuery(Query):
+    """
+    Base class for Granule and Collection CMR queries.
+    """
 
     def online_only(self, online_only=True):
         """
@@ -380,7 +502,7 @@ class Query(object):
 
         if not isinstance(downloadable, bool):
             raise TypeError("Downloadable must be of type bool")
-        
+
         # remove the inverse flag so CMR doesn't crash
         if "online_only" in self.params:
             del self.params["online_only"]
@@ -403,91 +525,15 @@ class Query(object):
 
         return self
 
-    def _build_url(self):
-        """
-        Builds the URL that will be used to query CMR.
 
-        :returns: the url as a string
-        """
-
-        # last chance validation for parameters
-        if not self._valid_state():
-            raise RuntimeError(("Spatial parameters must be accompanied by a collection "
-                                "filter (ex: short_name or entry_title)."))
-
-        # encode params
-        formatted_params = []
-        for key, val in self.params.items():
-
-            # list params require slightly different formatting
-            if isinstance(val, list):
-                for list_val in val:
-                    formatted_params.append("{}[]={}".format(key, list_val))
-            elif isinstance(val, bool):
-                formatted_params.append("{}={}".format(key, str(val).lower()))
-            else:
-                formatted_params.append("{}={}".format(key, val))
-
-        params_as_string = "&".join(formatted_params)
-
-        # encode options
-        formatted_options = []
-        for param_key in self.options:
-            for option_key, val in self.options[param_key].items():
-
-                # all CMR options must be booleans
-                if not isinstance(val, bool):
-                    raise ValueError("parameter '{}' with option '{}' must be a boolean".format(
-                        param_key,
-                        option_key
-                    ))
-
-                formatted_options.append("options[{}][{}]={}".format(
-                    param_key,
-                    option_key,
-                    val
-                ))
-
-        options_as_string = "&".join(formatted_options)
-        res = "{}.{}?{}&{}".format(
-            self._base_url,
-            self._format,
-            params_as_string,
-            options_as_string
-        )
-        res = res.rstrip('&')
-        return res
-
-    def _valid_state(self):
-        """
-        Determines if the Query is in a valid state based on the parameters and options
-        that have been set. This should be implemented by the subclasses.
-
-        :returns: True if the state is valid, otherwise False
-        """
-
-        raise NotImplementedError()
-
-    def mode(self, mode=CMR_OPS):
-        """
-        Sets the mode of the api target to the given URL
-        CMR_OPS, CMR_UAT, CMR_SIT are provided as class variables
-
-        :param mode: Mode to set the query to target
-        :throws: Will throw if provided None
-        """
-        if mode is None:
-            raise ValueError("Please provide a valid mode (CMR_OPS, CMR_UAT, CMR_SIT)")
-
-        self._base_url = str(mode) + self._route
-
-class GranuleQuery(Query):
+class GranuleQuery(GranuleCollectionBaseQuery):
     """
     Class for querying granules from the CMR.
     """
 
     def __init__(self, mode=CMR_OPS):
         Query.__init__(self, "granules", mode)
+        self.concept_id_chars = ['G', 'C']
 
     def orbit_number(self, orbit1, orbit2=None):
         """"
@@ -593,25 +639,6 @@ class GranuleQuery(Query):
         self.params['granule_ur'] = granule_ur
         return self
 
-    def concept_id(self, IDs):
-        """
-        Filter by concept ID (ex: C1299783579-LPDAAC_ECS or G1327299284-LPDAAC_ECS)
-
-        Collections and granules are uniquely identified with this ID. If providing a collection's concept ID
-        here, it will filter by granules associated with that collection. If providing a granule's concept ID
-        here, it will uniquely identify those granules.
-
-        :param IDs: concept ID(s) to search by. Can be provided as a string or list of strings.
-        :returns: Query instance
-        """
-
-        if isinstance(IDs, str):
-            IDs = [IDs]
-        
-        self.params["concept_id"] = IDs
-
-        return self
-
     def _valid_state(self):
 
         # spatial params must be paired with a collection limiting parameter
@@ -626,14 +653,14 @@ class GranuleQuery(Query):
         return True
 
 
-class CollectionQuery(Query):
+class CollectionQuery(GranuleCollectionBaseQuery):
     """
     Class for querying collections from the CMR.
     """
 
     def __init__(self, mode=CMR_OPS):
         Query.__init__(self, "collections", mode)
-
+        self.concept_id_chars = ['C']
         self._valid_formats_regex.extend([
             "dif", "dif10", "opendata", "umm_json", "umm_json_v[0-9]_[0-9]"
         ])
@@ -666,27 +693,164 @@ class CollectionQuery(Query):
 
         return self
 
-    def concept_id(self, IDs):
+    def native_id(self, native_ids):
         """
-        Filter by concept ID (ex: C1299783579-LPDAAC_ECS)
+        Filter by native id.
 
-        Collections are uniquely identified with this ID.
+        :param native_id: native id for collection
+        :returns: Query instance
+        """
 
-        :param IDs: concept ID(s) to search by. Can be provided as a string or list of strings.
+        if isinstance(native_ids, str):
+            native_ids = [native_ids]
+        
+        self.params["native_id"] = native_ids
+
+        return self
+
+    def tool_concept_id(self, IDs):
+        """
+        Filter collections associated with tool concept ID (ex: TL2092786348-POCLOUD)
+
+        Collections are associated with this tool ID.
+
+        :param IDs: tool concept ID(s) to search by. Can be provided as a string or list of strings.
+        :returns: Query instance
+        """
+
+        if isinstance(IDs, str):
+            IDs = [IDs]
+
+        # verify we provided with tool concept IDs
+        for ID in IDs:
+            if ID.strip()[0] != "T":
+                raise ValueError("Only tool concept ID's can be provided (begin with 'T'): {}".format(ID))
+        
+        self.params["tool_concept_id"] = IDs
+
+        return self
+
+    def service_concept_id(self, IDs):
+        """
+        Filter collections associated with service ID (ex: S1962070864-POCLOUD)
+
+        Collections are associated with this service ID.
+
+        :param IDs: service concept ID(s) to search by. Can be provided as a string or list of strings.
         :returns: Query instance
         """
 
         if isinstance(IDs, str):
             IDs = [IDs]
         
-        # verify we weren't provided any granule concept IDs
+        # verify we provided with service concept IDs
         for ID in IDs:
-            if ID.strip()[0] != "C":
-                raise ValueError("Only collection concept ID's can be provided (begin with 'C'): {}".format(ID))
+            if ID.strip()[0] != "S":
+                raise ValueError("Only service concept ID's can be provided (begin with 'S'): {}".format(ID))
         
-        self.params["concept_id"] = IDs
+        self.params["service_concept_id"] = IDs
 
         return self
+
+    def _valid_state(self):
+        return True
+
+class ToolServiceBaseQuery(Query):
+    """
+    Base class for Tool and Service CMR queries.
+    """
+
+    def get(self, limit=2000):
+        """
+        Get all results up to some limit, even if spanning multiple pages.
+
+        :limit: The number of results to return
+        :returns: query results as a list
+        """
+
+        page_size = min(limit, 2000)
+        url = self._build_url()
+
+        results = []
+        page = 1
+        while len(results) < limit:
+
+            response = get(url, params={'page_size': page_size, 'page_num': page})
+
+            try:
+                response.raise_for_status()
+            except exceptions.HTTPError as ex:
+                raise RuntimeError(ex.response.text)
+
+            if self._format == "json":
+                latest = response.json()['items']
+            else:
+                latest = [response.text]
+
+            if len(latest) == 0:
+                break
+
+            results.extend(latest)
+            page += 1
+
+        return results
+
+    def native_id(self, native_ids):
+        """
+        Filter by native id.
+
+        :param native_id: native id for tool or service
+        :returns: Query instance
+        """
+
+        if isinstance(native_ids, str):
+            native_ids = [native_ids]
+        
+        self.params["native_id"] = native_ids
+
+        return self
+
+    def name(self, name):
+        """
+        Filter by name.
+
+        :param name: name of service or tool.
+        :returns: Query instance
+        """
+
+        if not name:
+            return self
+
+        self.params['name'] = name
+        return self
+
+class ToolQuery(ToolServiceBaseQuery):
+    """
+    Class for querying tools from the CMR.
+    """
+
+    def __init__(self, mode=CMR_OPS):
+        Query.__init__(self, "tools", mode)
+        self.concept_id_chars = ['T']
+        self._valid_formats_regex.extend([
+            "dif", "dif10", "opendata", "umm_json", "umm_json_v[0-9]_[0-9]"
+        ])
+
+    def _valid_state(self):
+        return True
+
+
+class ServiceQuery(ToolServiceBaseQuery):
+    """
+    Class for querying services from the CMR.
+    """
+
+    def __init__(self, mode=CMR_OPS):
+        Query.__init__(self, "services", mode)
+        self.concept_id_chars = ['S']
+        self._valid_formats_regex.extend([
+            "dif", "dif10", "opendata", "umm_json", "umm_json_v[0-9]_[0-9]"
+        ])
 
     def _valid_state(self):
         return True

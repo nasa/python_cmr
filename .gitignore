@@ -2,3 +2,6 @@ venv/
 .idea
 *.pyc
 tags
+.venv
+*.egg-info
+dist

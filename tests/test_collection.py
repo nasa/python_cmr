@@ -37,6 +37,33 @@ class TestCollectionClass(unittest.TestCase):
             query.format("jsonn")
             query.format("iso19116")
     
+    def test_tool_concept_id(self):
+        query = CollectionQuery()
+        query.tool_concept_id("T1299783579-LPDAAC_ECS")
+
+        self.assertIn("tool_concept_id", query.params)
+        self.assertEqual(query.params["tool_concept_id"], ["T1299783579-LPDAAC_ECS"])
+
+    def test_invalid_tool_concept_id(self):
+        query = CollectionQuery()
+
+        with self.assertRaises(ValueError):
+            query.tool_concept_id("G1327299284-LPDAAC_ECS")
+
+    def test_service_concept_id(self):
+        query = CollectionQuery()
+ 
+        query.service_concept_id("S1299783579-LPDAAC_ECS")
+
+        self.assertIn("service_concept_id", query.params)
+        self.assertEqual(query.params["service_concept_id"], ["S1299783579-LPDAAC_ECS"])
+
+    def test_invalid_service_concept_id(self):
+        query = CollectionQuery()
+
+        with self.assertRaises(ValueError):
+            query.service_concept_id("G1327299284-LPDAAC_ECS")    
+
     def test_valid_concept_id(self):
         query = CollectionQuery()
 
@@ -54,4 +81,3 @@ class TestCollectionClass(unittest.TestCase):
         
         with self.assertRaises(ValueError):
             query.concept_id(["C1299783579-LPDAAC_ECS", "G1327299284-LPDAAC_ECS"])
-
