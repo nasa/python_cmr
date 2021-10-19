@@ -40,7 +40,7 @@ To install from pypi:
 
 To install from github, perhaps to try out the dev branch:
 
-    $ git clone https://github.com/jddeal/python-cmr
+    $ git clone https://github.com/nasa/python_cmr
     $ cd python-cmr
     $ pip install .
 

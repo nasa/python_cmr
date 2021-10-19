@@ -229,6 +229,8 @@ class Query(object):
 
         self.params["concept_id"] = IDs
 
+        return self
+
     def provider(self, provider):
         """
         Filter by provider.
@@ -848,6 +850,18 @@ class ServiceQuery(ToolServiceBaseQuery):
     def __init__(self, mode=CMR_OPS):
         Query.__init__(self, "services", mode)
         self.concept_id_chars = ['S']
+        self._valid_formats_regex.extend([
+            "dif", "dif10", "opendata", "umm_json", "umm_json_v[0-9]_[0-9]"
+        ])
+
+    def _valid_state(self):
+        return True
+
+
+class VariableQuery(ToolServiceBaseQuery):
+    def __init__(self, mode=CMR_OPS):
+        Query.__init__(self, "variables", mode)
+        self.concept_id_chars = ['V']
         self._valid_formats_regex.extend([
             "dif", "dif10", "opendata", "umm_json", "umm_json_v[0-9]_[0-9]"
         ])
