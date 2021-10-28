@@ -11,7 +11,7 @@ Python CMR is an easy to use wrapper to the NASA EOSDIS [Common Metadata Reposit
 
 Getting access to NASA's earth science metadata is as simple as this:
 
-    >>> from cmr import CollectionQuery, GranuleQuery
+    >>> from cmr import CollectionQuery, GranuleQuery, ToolQuery, ServiceQuery, VariableQuery
 
     >>> api = CollectionQuery()
     >>> collections = api.archive_center("LP DAAC").keyword("AST_L1*").get(5)
@@ -40,7 +40,7 @@ To install from pypi:
 
 To install from github, perhaps to try out the dev branch:
 
-    $ git clone https://github.com/jddeal/python-cmr
+    $ git clone https://github.com/nasa/python_cmr
     $ cd python-cmr
     $ pip install .
 
@@ -138,6 +138,9 @@ Service searches support the following methods
     # Search via name
     >>> api.name('PODAAC L2 Cloud Subsetter')
 
+    # Search via concept_id
+    >>> api.concept_id('S1962070864-POCLOUD')
+
 Tool searches support the following methods
 
     # Search via provider
@@ -149,6 +152,24 @@ Tool searches support the following methods
 
     # Search via name
     >>> api.name('hitide')
+
+    # Search via concept_id
+    >>> api.concept_id('TL2092786348-POCLOUD')
+
+Variable searches support the following methods
+
+    # Search via provider
+    >>> api = VariableQuery()
+    >>> api.provider('POCLOUD')
+
+    # Search via native_id
+    >>> api.native_id('JASON_CS_S6A_L2_AMR_RAD_STATIC_CALIBRATION-AMR_Side_1-acc_lat')
+
+    # Search via name
+    >>> api.name('/AMR_Side_1/acc_lat')
+
+    # Search via concept_id
+    >>> api.concept_id('V2112019824-POCLOUD')
 
 As an alternative to chaining methods together to set the parameters of your query, a method exists to allow you to pass your parameters as keyword arguments:
 
