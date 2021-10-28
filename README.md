@@ -1,4 +1,7 @@
-This repository is a copy of [jddeal/python_cmr](https://github.com/jddeal/python-cmr/tree/ef0f9e7d67ce99d342a568bd6a098c3462df16d2) which is no longer maintained. It has been copied here with the permission of the original author for the purpose of continuing to develop a python library that can be used for CMR access.
+This repository is a copy
+of [jddeal/python_cmr](https://github.com/jddeal/python-cmr/tree/ef0f9e7d67ce99d342a568bd6a098c3462df16d2) which is no
+longer maintained. It has been copied here with the permission of the original author for the purpose of continuing to
+develop a python library that can be used for CMR access.
 
 ----
 
@@ -7,7 +10,10 @@ Python CMR
 
 [![CodeQL](https://github.com/nasa/python_cmr/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/nasa/python_cmr/actions/workflows/codeql-analysis.yml)
 
-Python CMR is an easy to use wrapper to the NASA EOSDIS [Common Metadata Repository API](https://cmr.earthdata.nasa.gov/search/). This package aims to make querying the API intuitive and less error-prone by providing methods that will preemptively check for invalid input and handle the URL encoding the CMR API expects.
+Python CMR is an easy to use wrapper to the NASA
+EOSDIS [Common Metadata Repository API](https://cmr.earthdata.nasa.gov/search/). This package aims to make querying the
+API intuitive and less error-prone by providing methods that will preemptively check for invalid input and handle the
+URL encoding the CMR API expects.
 
 Getting access to NASA's earth science metadata is as simple as this:
 
@@ -47,7 +53,9 @@ To install from github, perhaps to try out the dev branch:
 Examples
 ========
 
-This library is broken into two classes, CollectionQuery and GranuleQuery. Each of these classes provide a large set of methods used to build a query for CMR. Not all parameters provided by the CMR API are covered by this version of python-cmr.
+This library is broken into two classes, CollectionQuery and GranuleQuery. Each of these classes provide a large set of
+methods used to build a query for CMR. Not all parameters provided by the CMR API are covered by this version of
+python-cmr.
 
 The following methods are available to both collecton and granule queries:
 
@@ -171,7 +179,8 @@ Variable searches support the following methods
     # Search via concept_id
     >>> api.concept_id('V2112019824-POCLOUD')
 
-As an alternative to chaining methods together to set the parameters of your query, a method exists to allow you to pass your parameters as keyword arguments:
+As an alternative to chaining methods together to set the parameters of your query, a method exists to allow you to pass
+your parameters as keyword arguments:
 
     # search for AST_L1T version 003 granules at latitude 42, longitude -100
     >>> api.parameters(
@@ -180,7 +189,8 @@ As an alternative to chaining methods together to set the parameters of your que
         point=(-100, 42)
     )
 
-Note: the kwarg key should match the name of a method from the above examples, and the value should be a tuple if it's a parameter that requires multiple values.
+Note: the kwarg key should match the name of a method from the above examples, and the value should be a tuple if it's a
+parameter that requires multiple values.
 
 To inspect and retreive results from the API, the following methods are available:
 
@@ -196,26 +206,78 @@ To inspect and retreive results from the API, the following methods are availabl
     # retrieve all the granules possible for the query
     >>> granules = api.get_all()  # this is a shortcut for api.get(api.hits())
 
-By default the responses will return as json and be accessible as a list of python dictionaries. Other formats can be specified before making the request:
+By default the responses will return as json and be accessible as a list of python dictionaries. Other formats can be
+specified before making the request:
 
     >>> granules = api.format("echo10").get(100)
 
 The following formats are supported for both granule and collection queries:
 
--   json (default)
--   xml
--   echo10
--   iso
--   iso19115
--   csv
--   atom
--   kml
--   native
+- json (default)
+- xml
+- echo10
+- iso
+- iso19115
+- csv
+- atom
+- kml
+- native
 
 Collection queries also support the following formats:
 
--   dif
--   dif10
--   opendata
--   umm\_json
--   umm\_json\_vX\_Y (ex: umm\_json\_v1\_9)
+- dif
+- dif10
+- opendata
+- umm\_json
+- umm\_json\_vX\_Y (ex: umm\_json\_v1\_9)
+
+# Developing
+
+python-cmr uses the [poetry](https://python-poetry.org/) build system. Download and install poetry before starting
+development
+
+## Install Dependencies
+
+```shell
+poetry install
+```
+
+With dev dependencies:
+
+```shell
+poetry install --dev
+```
+
+## Update Dependencies
+
+```shell
+poetry update
+```
+
+## Add new Dependency
+
+```shell
+poetry add requests
+```
+Development-only dependency:
+```shell
+poetry add --dev pytest
+```
+
+## Build project
+
+```shell
+poetry build
+```
+
+## Lint project
+
+```shell
+poetry run flake8
+```
+
+## Run Tests
+
+```shell
+poetry run pytest
+```
