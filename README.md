@@ -238,14 +238,14 @@ development
 
 ## Install Dependencies
 
+With dev dependencies:
 ```shell
 poetry install
 ```
 
-With dev dependencies:
-
+Without dev dependencies:
 ```shell
-poetry install --dev
+poetry install --no-dev
 ```
 
 ## Update Dependencies
