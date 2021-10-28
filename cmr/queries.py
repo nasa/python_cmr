@@ -757,7 +757,7 @@ class CollectionQuery(GranuleCollectionBaseQuery):
     def _valid_state(self):
         return True
 
-class ToolServiceBaseQuery(Query):
+class ToolServiceVariableBaseQuery(Query):
     """
     Base class for Tool and Service CMR queries.
     """
@@ -826,7 +826,7 @@ class ToolServiceBaseQuery(Query):
         self.params['name'] = name
         return self
 
-class ToolQuery(ToolServiceBaseQuery):
+class ToolQuery(ToolServiceVariableBaseQuery):
     """
     Class for querying tools from the CMR.
     """
@@ -842,7 +842,7 @@ class ToolQuery(ToolServiceBaseQuery):
         return True
 
 
-class ServiceQuery(ToolServiceBaseQuery):
+class ServiceQuery(ToolServiceVariableBaseQuery):
     """
     Class for querying services from the CMR.
     """
@@ -858,7 +858,7 @@ class ServiceQuery(ToolServiceBaseQuery):
         return True
 
 
-class VariableQuery(ToolServiceBaseQuery):
+class VariableQuery(ToolServiceVariableBaseQuery):
     def __init__(self, mode=CMR_OPS):
         Query.__init__(self, "variables", mode)
         self.concept_id_chars = ['V']
