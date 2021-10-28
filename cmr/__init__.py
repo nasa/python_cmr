@@ -1,3 +1,3 @@
-from .queries import GranuleQuery, CollectionQuery
+from .queries import GranuleQuery, CollectionQuery, ToolQuery, ServiceQuery, VariableQuery
 
-__all__ = ["GranuleQuery", "CollectionQuery"]
+__all__ = ["GranuleQuery", "CollectionQuery", "ToolQuery", "ServiceQuery", "VariableQuery"]

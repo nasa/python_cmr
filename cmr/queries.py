@@ -229,6 +229,8 @@ class Query(object):
 
         self.params["concept_id"] = IDs
 
+        return self
+
     def provider(self, provider):
         """
         Filter by provider.
@@ -755,7 +757,7 @@ class CollectionQuery(GranuleCollectionBaseQuery):
     def _valid_state(self):
         return True
 
-class ToolServiceBaseQuery(Query):
+class ToolServiceVariableBaseQuery(Query):
     """
     Base class for Tool and Service CMR queries.
     """
@@ -824,7 +826,7 @@ class ToolServiceBaseQuery(Query):
         self.params['name'] = name
         return self
 
-class ToolQuery(ToolServiceBaseQuery):
+class ToolQuery(ToolServiceVariableBaseQuery):
     """
     Class for querying tools from the CMR.
     """
@@ -840,7 +842,7 @@ class ToolQuery(ToolServiceBaseQuery):
         return True
 
 
-class ServiceQuery(ToolServiceBaseQuery):
+class ServiceQuery(ToolServiceVariableBaseQuery):
     """
     Class for querying services from the CMR.
     """
@@ -848,6 +850,18 @@ class ServiceQuery(ToolServiceBaseQuery):
     def __init__(self, mode=CMR_OPS):
         Query.__init__(self, "services", mode)
         self.concept_id_chars = ['S']
+        self._valid_formats_regex.extend([
+            "dif", "dif10", "opendata", "umm_json", "umm_json_v[0-9]_[0-9]"
+        ])
+
+    def _valid_state(self):
+        return True
+
+
+class VariableQuery(ToolServiceVariableBaseQuery):
+    def __init__(self, mode=CMR_OPS):
+        Query.__init__(self, "variables", mode)
+        self.concept_id_chars = ['V']
         self._valid_formats_regex.extend([
             "dif", "dif10", "opendata", "umm_json", "umm_json_v[0-9]_[0-9]"
         ])
