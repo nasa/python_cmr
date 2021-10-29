@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "python-cmr"
+version = "0.7.0"
+description = "Python wrapper to the NASA Common Metadata Repository (CMR) API."
+authors = ["python_cmr <nasa/python_cmr@github.com>"]
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/nasa/python_cmr"
+classifiers = [
+    "Topic :: Software Development :: Libraries :: Python Modules"
+]
+packages = [{ include = "cmr" }]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+requests = "^2.26.0"
+
+[tool.poetry.dev-dependencies]
+flake8 = "^4.0.1"
+pytest = "^6.2.5"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
