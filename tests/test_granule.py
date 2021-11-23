@@ -428,3 +428,11 @@ class TestGranuleClass(unittest.TestCase):
 
         query.concept_id(["C1299783579-LPDAAC_ECS", "G1441380236-PODAAC"])
         self.assertEqual(query.params["concept_id"], ["C1299783579-LPDAAC_ECS", "G1441380236-PODAAC"])
+
+    def test_token(self):
+        query = GranuleQuery()
+
+        query.token("123TOKEN")
+
+        self.assertIn("token", query.params)
+        self.assertEqual(query.params["token"], "123TOKEN")
