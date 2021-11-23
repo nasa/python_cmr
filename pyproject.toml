@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "python-cmr"
-version = "0.7.0"
+version = "0.8.0-alpha.0"
 description = "Python wrapper to the NASA Common Metadata Repository (CMR) API."
 authors = ["python_cmr <nasa/python_cmr@github.com>"]
 license = "MIT"
