@@ -69,3 +69,11 @@ class TestToolClass(unittest.TestCase):
 
         with self.assertRaises(ValueError):
             query.concept_id(["C1299783579-LPDAAC_ECS", "G1327299284-LPDAAC_ECS"])
+
+    def test_token(self):
+        query = ToolQuery()
+
+        query.token("123TOKEN")
+
+        self.assertIn("token", query.params)
+        self.assertEqual(query.params["token"], "123TOKEN")
