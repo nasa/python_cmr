@@ -271,6 +271,19 @@ class Query(object):
 
         self._base_url = str(mode) + self._route
 
+    def token(self, token):
+        """
+        Add token into url request.
+
+        :param token: Token from EDL.
+        :returns: Query instance
+        """
+
+        if not token:
+            return self
+
+        self.params['token'] = token
+        return self
 
 class GranuleCollectionBaseQuery(Query):
     """
