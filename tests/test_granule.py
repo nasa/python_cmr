@@ -1,10 +1,10 @@
 import unittest
-
 from datetime import datetime
-from cmr.queries import GranuleQuery, CMR_OPS
+
+from cmr.queries import GranuleQuery
+
 
 class TestGranuleClass(unittest.TestCase):
-
     short_name_val = "MOD09GA"
     short_name = "short_name"
 
@@ -144,7 +144,7 @@ class TestGranuleClass(unittest.TestCase):
         with self.assertRaises(TypeError):
             query.downloadable("Invalid Type")
         self.assertNotIn(self.downloadable, query.params)
-    
+
     def test_flags_invalidate_the_other(self):
         query = GranuleQuery()
 
@@ -360,7 +360,7 @@ class TestGranuleClass(unittest.TestCase):
         results = query.get(limit=10)
 
         self.assertEqual(len(results), 10)
-    
+
     def _test_hits(self):
         """ integration test for hits() """
 
@@ -379,7 +379,7 @@ class TestGranuleClass(unittest.TestCase):
     def test_invalid_mode_constructor(self):
         with self.assertRaises(ValueError):
             query = GranuleQuery(None)
-    
+
     def test_valid_parameters(self):
         query = GranuleQuery()
 
@@ -388,7 +388,7 @@ class TestGranuleClass(unittest.TestCase):
         self.assertEqual(query.params["short_name"], "AST_L1T")
         self.assertEqual(query.params["version"], "003")
         self.assertEqual(query.params["point"], "-100.0,42.0")
-    
+
     def test_invalid_parameters(self):
         query = GranuleQuery()
 
@@ -403,7 +403,7 @@ class TestGranuleClass(unittest.TestCase):
         for _format in formats:
             query.format(_format)
             self.assertEqual(query._format, _format)
-    
+
     def test_invalid_format(self):
         query = GranuleQuery()
 
@@ -419,13 +419,20 @@ class TestGranuleClass(unittest.TestCase):
         url = query._build_url()
         self.assertNotIn("True", url)
         self.assertNotIn("False", url)
-    
+
     def test_valid_concept_id(self):
         query = GranuleQuery()
 
         query.concept_id("C1299783579-LPDAAC_ECS")
         self.assertEqual(query.params["concept_id"], ["C1299783579-LPDAAC_ECS"])
-        
+
         query.concept_id(["C1299783579-LPDAAC_ECS", "G1441380236-PODAAC"])
         self.assertEqual(query.params["concept_id"], ["C1299783579-LPDAAC_ECS", "G1441380236-PODAAC"])
 
+    def test_token(self):
+        query = GranuleQuery()
+
+        query.token("123TOKEN")
+
+        self.assertIn("token", query.params)
+        self.assertEqual(query.params["token"], "123TOKEN")

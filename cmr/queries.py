@@ -10,11 +10,13 @@ except ImportError:
 from datetime import datetime
 from inspect import getmembers, ismethod
 from re import search
+
 from requests import get, exceptions
 
 CMR_OPS = "https://cmr.earthdata.nasa.gov/search/"
 CMR_UAT = "https://cmr.uat.earthdata.nasa.gov/search/"
 CMR_SIT = "https://cmr.sit.earthdata.nasa.gov/search/"
+
 
 class Query(object):
     """
@@ -209,8 +211,8 @@ class Query(object):
         """
         Filter by concept ID (ex: C1299783579-LPDAAC_ECS or G1327299284-LPDAAC_ECS, T12345678-LPDAAC_ECS, S12345678-LPDAAC_ECS)
 
-        Collections, granules, tools, services are uniquely identified with this ID. 
-        If providing a collection's concept ID here, it will filter by granules associated with that collection. 
+        Collections, granules, tools, services are uniquely identified with this ID.
+        If providing a collection's concept ID here, it will filter by granules associated with that collection.
         If providing a granule's concept ID here, it will uniquely identify those granules.
         If providing a tool's concept ID here, it will uniquely identify those tools.
         If providing a service's concept ID here, it will uniquely identify those services.
@@ -221,11 +223,12 @@ class Query(object):
 
         if isinstance(IDs, str):
             IDs = [IDs]
-        
+
         # verify we weren't provided any granule concept IDs
         for ID in IDs:
             if ID.strip()[0] not in self.concept_id_chars:
-                raise ValueError("Only concept ids that begin with '{}' can be provided: {}".format(self.concept_id_chars, ID))
+                raise ValueError(
+                    "Only concept ids that begin with '{}' can be provided: {}".format(self.concept_id_chars, ID))
 
         self.params["concept_id"] = IDs
 
@@ -267,6 +270,20 @@ class Query(object):
             raise ValueError("Please provide a valid mode (CMR_OPS, CMR_UAT, CMR_SIT)")
 
         self._base_url = str(mode) + self._route
+
+    def token(self, token):
+        """
+        Add token into url request.
+
+        :param token: Token from EDL.
+        :returns: Query instance
+        """
+
+        if not token:
+            return self
+
+        self.params['token'] = token
+        return self
 
 class GranuleCollectionBaseQuery(Query):
     """
@@ -411,7 +428,7 @@ class GranuleCollectionBaseQuery(Query):
 
         if not coordinates:
             return self
-    
+
         # make sure we were passed something iterable
         try:
             iter(coordinates)
@@ -470,7 +487,7 @@ class GranuleCollectionBaseQuery(Query):
 
         if not coordinates:
             return self
-        
+
         # make sure we were passed something iterable
         try:
             iter(coordinates)
@@ -508,7 +525,7 @@ class GranuleCollectionBaseQuery(Query):
         # remove the inverse flag so CMR doesn't crash
         if "online_only" in self.params:
             del self.params["online_only"]
-        
+
         self.params['downloadable'] = downloadable
 
         return self
@@ -705,7 +722,7 @@ class CollectionQuery(GranuleCollectionBaseQuery):
 
         if isinstance(native_ids, str):
             native_ids = [native_ids]
-        
+
         self.params["native_id"] = native_ids
 
         return self
@@ -727,7 +744,7 @@ class CollectionQuery(GranuleCollectionBaseQuery):
         for ID in IDs:
             if ID.strip()[0] != "T":
                 raise ValueError("Only tool concept ID's can be provided (begin with 'T'): {}".format(ID))
-        
+
         self.params["tool_concept_id"] = IDs
 
         return self
@@ -744,18 +761,19 @@ class CollectionQuery(GranuleCollectionBaseQuery):
 
         if isinstance(IDs, str):
             IDs = [IDs]
-        
+
         # verify we provided with service concept IDs
         for ID in IDs:
             if ID.strip()[0] != "S":
                 raise ValueError("Only service concept ID's can be provided (begin with 'S'): {}".format(ID))
-        
+
         self.params["service_concept_id"] = IDs
 
         return self
 
     def _valid_state(self):
         return True
+
 
 class ToolServiceVariableBaseQuery(Query):
     """
@@ -807,7 +825,7 @@ class ToolServiceVariableBaseQuery(Query):
 
         if isinstance(native_ids, str):
             native_ids = [native_ids]
-        
+
         self.params["native_id"] = native_ids
 
         return self
@@ -825,6 +843,7 @@ class ToolServiceVariableBaseQuery(Query):
 
         self.params['name'] = name
         return self
+
 
 class ToolQuery(ToolServiceVariableBaseQuery):
     """
