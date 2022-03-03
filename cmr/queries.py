@@ -37,6 +37,7 @@ class Query(object):
         self._route = route
         self.mode(mode)
         self.concept_id_chars = []
+        self.headers = None
 
     def get(self, limit=2000):
         """
@@ -53,7 +54,7 @@ class Query(object):
         page = 1
         while len(results) < limit:
 
-            response = get(url, params={'page_size': page_size, 'page_num': page})
+            response = get(url, headers=self.headers, params={'page_size': page_size, 'page_num': page})
 
             try:
                 response.raise_for_status()
@@ -83,7 +84,7 @@ class Query(object):
 
         url = self._build_url()
 
-        response = get(url, params={'page_size': 0})
+        response = get(url, headers=self.headers, params={'page_size': 0})
 
         try:
             response.raise_for_status()
@@ -273,16 +274,17 @@ class Query(object):
 
     def token(self, token):
         """
-        Add token into url request.
+        Add token into authorization headers.
 
-        :param token: Token from EDL.
+        :param token: Token from EDL or NASA Launchpad token.
         :returns: Query instance
         """
 
         if not token:
             return self
 
-        self.params['token'] = token
+        self.headers = {'Authorization': token}
+
         return self
 
 class GranuleCollectionBaseQuery(Query):

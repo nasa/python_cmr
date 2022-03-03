@@ -88,5 +88,5 @@ class TestCollectionClass(unittest.TestCase):
 
         query.token("123TOKEN")
 
-        self.assertIn("token", query.params)
-        self.assertEqual(query.params["token"], "123TOKEN")
+        self.assertIn("Authorization", query.headers)
+        self.assertEqual(query.headers["Authorization"], "123TOKEN")
