@@ -443,3 +443,4 @@ class TestGranuleClass(unittest.TestCase):
 
         self.assertIn("Authorization", query.headers)
         self.assertEqual(query.headers["Authorization"], "Bearer 123TOKEN")
+
