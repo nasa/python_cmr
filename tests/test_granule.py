@@ -435,3 +435,11 @@ class TestGranuleClass(unittest.TestCase):
         query.token("123TOKEN")
         self.assertIn("Authorization", query.headers)
         self.assertEqual(query.headers["Authorization"], "123TOKEN")
+
+    def bearer_test_token(self):
+        query = GranuleQuery()
+
+        query.bearer_token("123TOKEN")
+
+        self.assertIn("Authorization", query.headers)
+        self.assertEqual(query.headers["Authorization"], "Bearer 123TOKEN")

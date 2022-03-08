@@ -77,3 +77,11 @@ class TestToolClass(unittest.TestCase):
 
         self.assertIn("Authorization", query.headers)
         self.assertEqual(query.headers["Authorization"], "123TOKEN")
+
+    def bearer_test_token(self):
+        query = ToolQuery()
+
+        query.bearer_token("123TOKEN")
+
+        self.assertIn("Authorization", query.headers)
+        self.assertEqual(query.headers["Authorization"], "Bearer 123TOKEN")

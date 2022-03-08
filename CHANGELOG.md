@@ -8,6 +8,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [Unreleased]
 ### Changed
 - Changed token url to being tokens in authorization headers.
+- Add in bearer token function for use of EDL bearer token in authorization headers.
 
 ## [0.7.0]
 ### Added
