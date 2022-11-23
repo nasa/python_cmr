@@ -99,6 +99,10 @@ The following methods are available to both collecton and granule queries:
 
     # search by provider
     >>> api.provider('POCLOUD')
+    
+    # search non-ops CMR environment
+    >>> from cmr import CMR_UAT
+    >>> api.mode(CMR_UAT)
 
 Granule searches support these methods (in addition to the shared methods above):
 
