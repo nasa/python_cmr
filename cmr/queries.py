@@ -276,7 +276,7 @@ class Query(object):
         """
         Add token into authorization headers.
 
-        :param token: Token from EDL or NASA Launchpad token.
+        :param token: Token from EDL Echo-Token or NASA Launchpad token.
         :returns: Query instance
         """
 
@@ -286,6 +286,22 @@ class Query(object):
         self.headers = {'Authorization': token}
 
         return self
+
+    def bearer_token(self, bearer_token):
+        """
+        Add token into authorization headers.
+
+        :param token: Token from EDL token.
+        :returns: Query instance
+        """
+
+        if not bearer_token:
+            return self
+
+        self.headers = {'Authorization': 'Bearer ' + bearer_token}
+
+        return self
+
 
 class GranuleCollectionBaseQuery(Query):
     """
