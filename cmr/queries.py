@@ -417,6 +417,18 @@ class GranuleCollectionBaseQuery(Query):
 
         return self
 
+    def circle(self, lon: float, lat: float, dist: int):
+        """Filter by granules within the circle around lat/lon
+
+        :param lon: longitude of geographic point
+        :param lat: latitude of geographic point
+        :param dist: distance in meters around waypoint (lat,lon)
+        :returns: Query instance
+        """
+        self.params['circle'] = f"{lon},{lat},{dist}"
+
+        return self
+
     def polygon(self, coordinates):
         """
         Filter by granules that overlap a polygonal area. Must be used in combination with a
