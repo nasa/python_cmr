@@ -12,6 +12,7 @@ class TestGranuleClass(unittest.TestCase):
     version = "version"
 
     point = "point"
+    circle = "circle"
     online_only = "online_only"
     downloadable = "downloadable"
     entry_id = "entry_title"
@@ -50,6 +51,14 @@ class TestGranuleClass(unittest.TestCase):
         with self.assertRaises(ValueError):
             query.point("invalid", 15.1)
             query.point(10, None)
+
+    def test_circle_set(self):
+        query = GranuleQuery()
+
+        query.circle(10.0, 15.1, 1000)
+
+        self.assertIn(self.circle, query.params)
+        self.assertEqual(query.params[self.circle], "10.0,15.1,1000")
 
     def test_temporal_invalid_strings(self):
         query = GranuleQuery()
@@ -334,6 +343,9 @@ class TestGranuleClass(unittest.TestCase):
         query = GranuleQuery()
 
         query.point(1, 2)
+        self.assertFalse(query._valid_state())
+
+        query.circle(1, 2, 3)
         self.assertFalse(query._valid_state())
 
         query.polygon([(1, 1), (2, 1), (2, 2), (1, 1)])
