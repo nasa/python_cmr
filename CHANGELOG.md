@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [0.8.0]
 ### Added
 - [pull/15](https://github.com/nasa/python_cmr/pull/15): New feature added to filter by granules within the circle around lat/lon
 - [pull/12](https://github.com/nasa/python_cmr/pull/12): Added environments to module level to simplify imports to `from cmr import CMR_UAT`
@@ -36,7 +38,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [Older]
 - Prior releases of this software originated from https://github.com/jddeal/python-cmr/releases
 
-[Unreleased]: https://github.com/nasa/python_cmr/compare/v0.7.0...HEAD
+[Unreleased]: https://github.com/nasa/python_cmr/compare/v0.8.0...HEAD
+[0.8.0]: https://github.com/nasa/python_cmr/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/nasa/python_cmr/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/nasa/python_cmr/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/nasa/python_cmr/compare/ef0f9e7d67ce99d342a568bd6a098c3462df16d2...v0.5.0
