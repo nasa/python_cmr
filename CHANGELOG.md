@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- [pull/15](https://github.com/nasa/python_cmr/pull/15): New feature added to filter by granules within the circle around lat/lon
+- [pull/12](https://github.com/nasa/python_cmr/pull/12): Added environments to module level to simplify imports to `from cmr import CMR_UAT`
 ### Changed
 - Changed token url to being tokens in authorization headers.
 - Add in bearer token function for use of EDL bearer token in authorization headers.
