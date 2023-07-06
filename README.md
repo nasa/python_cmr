@@ -99,6 +99,10 @@ The following methods are available to both collecton and granule queries:
 
     # search by provider
     >>> api.provider('POCLOUD')
+    
+    # search non-ops CMR environment
+    >>> from cmr import CMR_UAT
+    >>> api.mode(CMR_UAT)
 
 Granule searches support these methods (in addition to the shared methods above):
 
@@ -210,6 +214,14 @@ By default the responses will return as json and be accessible as a list of pyth
 specified before making the request:
 
     >>> granules = api.format("echo10").get(100)
+
+We can add token to the api calls by setting headers using the following functions:
+
+    # Use token function for EDL echo-token or launchpad token
+    >>> api.token(token)
+
+    # Use bearer token function for EDL bearer tokens
+    >>> api.bearer_token(token)
 
 The following formats are supported for both granule and collection queries:
 
