@@ -57,7 +57,7 @@ This library is broken into two classes, CollectionQuery and GranuleQuery. Each 
 methods used to build a query for CMR. Not all parameters provided by the CMR API are covered by this version of
 python-cmr.
 
-The following methods are available to both collecton and granule queries:
+The following methods are available to both collection and granule queries:
 
     # search for granules matching a specific product/short_name
     >>> api.short_name("AST_L1T")
@@ -196,7 +196,7 @@ your parameters as keyword arguments:
 Note: the kwarg key should match the name of a method from the above examples, and the value should be a tuple if it's a
 parameter that requires multiple values.
 
-To inspect and retreive results from the API, the following methods are available:
+To inspect and retrieve results from the API, the following methods are available:
 
     # inspect the number of results the query will return without downloading the results
     >>> print(api.hits())
