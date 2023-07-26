@@ -673,6 +673,52 @@ class GranuleQuery(GranuleCollectionBaseQuery):
         self.params['platform'] = platform
         return self
 
+
+    def sort_key(self, sort_key=""):
+        """
+        See
+        https://cmr.earthdata.nasa.gov/search/site/docs/search/api.html#sorting-granule-results
+        for valid granule sort_keys
+
+        Filter some defined sort_key; 
+        use negative (-) for start_date and end_date to sort by ascending
+
+        :param sort_key: name of the sort key
+        :returns: Query instance
+        """
+
+        valid_sort_keys = [
+        'campaign',
+        'entry_title',
+        'dataset_id',
+        'data_size',
+        'end_date',
+        '-end_date'
+        'granule_ur',
+        'producer_granule_id'
+        'project',
+        'provider',
+        'readable_granule_name',
+        'short_name',
+        '-start_date',
+        'start_date',
+        'version',
+        'platform',
+        'instrument',
+        'sensor',
+        'day_night_flag',
+        'online_only',
+        'browsable',
+        'browse_only',
+        'cloud_cover',
+        'revision_date']
+        # also covers if empty string
+        if sort_key not in valid_sort_keys:
+            raise ValueError("Please provide a valid sort_key for granules query see https://cmr.earthdata.nasa.gov/search/site/docs/search/api.html#sorting-granule-results for valid sort_keys")
+
+        self.params['sort_key'] = sort_key
+        return self
+
     def granule_ur(self, granule_ur=""):
         """
         Filter by the granules unique ID. Note this will result in at most one granule

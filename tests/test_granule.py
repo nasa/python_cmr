@@ -23,6 +23,8 @@ class TestGranuleClass(unittest.TestCase):
     platform = "platform"
     granule_ur = "granule_ur"
 
+    sort_key="sort_key"
+
     def test_short_name(self):
         query = GranuleQuery()
         query.short_name(self.short_name_val)
@@ -272,6 +274,20 @@ class TestGranuleClass(unittest.TestCase):
 
         self.assertIn(self.platform, query.params)
         self.assertEqual(query.params[self.platform], "1B")
+
+    def test_sort_key(self):
+        query = GranuleQuery()
+        # Various sort keys using this as an example
+        query.sort_key("-start_time")
+
+        self.assertIn(self.sort_key, query.params)
+        self.assertEqual(query.params[self.sort_key], "-start_time")
+       
+    def test_sort_key(self):
+        query = GranuleQuery()
+        with self.assertRaises(ValueError):
+            query.sort_key(None)
+
 
     def test_empty_platform(self):
         query = GranuleQuery()
