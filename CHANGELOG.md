@@ -7,8 +7,12 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.9.0]
 ### Added
-    - [pull/17](https://github.com/nasa/python_cmr/pull/17) New feature that allows sort_keys to be passed into this Api up to the CMR. Used the valid sort_keys as of July 2023
+- [pull/17](https://github.com/nasa/python_cmr/pull/17) New feature that allows sort_keys to be passed into this Api up to the CMR. Used the valid sort_keys as of July 2023
+
+### Changed
+- Updated dependency versions  
 
 ## [0.8.0]
 ### Added
