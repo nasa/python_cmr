@@ -57,7 +57,7 @@ This library is broken into two classes, CollectionQuery and GranuleQuery. Each 
 methods used to build a query for CMR. Not all parameters provided by the CMR API are covered by this version of
 python-cmr.
 
-The following methods are available to both collecton and granule queries:
+The following methods are available to both collection and granule queries:
 
     # search for granules matching a specific product/short_name
     >>> api.short_name("AST_L1T")
@@ -120,6 +120,10 @@ Granule searches support these methods (in addition to the shared methods above)
     # filter by specific instrument or platform
     >>> api.instrument("MODIS")
     >>> api.platform("Terra")
+
+    # filter by a sort_key note: sort_keys are require some other fields to find some existing granules before they can be sorted
+
+    >>> api.parameters(short_name="OMNO2", version="003", provider='GES_DISC', sort_key='-start_date')
 
 Collection searches support these methods (in addition to the shared methods above):
 
@@ -196,7 +200,7 @@ your parameters as keyword arguments:
 Note: the kwarg key should match the name of a method from the above examples, and the value should be a tuple if it's a
 parameter that requires multiple values.
 
-To inspect and retreive results from the API, the following methods are available:
+To inspect and retrieve results from the API, the following methods are available:
 
     # inspect the number of results the query will return without downloading the results
     >>> print(api.hits())
