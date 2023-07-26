@@ -121,6 +121,10 @@ Granule searches support these methods (in addition to the shared methods above)
     >>> api.instrument("MODIS")
     >>> api.platform("Terra")
 
+    # filter by a sort_key note: sort_keys are require some other fields to find some existing granules before they can be sorted
+
+    >>> api.parameters(short_name="OMNO2", version="003", provider='GES_DISC', sort_key='-start_date')
+
 Collection searches support these methods (in addition to the shared methods above):
 
     # search for collections from a specific archive center

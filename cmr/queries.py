@@ -680,7 +680,8 @@ class GranuleQuery(GranuleCollectionBaseQuery):
         https://cmr.earthdata.nasa.gov/search/site/docs/search/api.html#sorting-granule-results
         for valid granule sort_keys
 
-        Filter some defined sort_key; use negative (-) for start_date and end_date to sort by ascending
+        Filter some defined sort_key; 
+        use negative (-) for start_date and end_date to sort by ascending
 
         :param sort_key: name of the sort key
         :returns: Query instance
