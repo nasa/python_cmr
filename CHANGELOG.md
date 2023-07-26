@@ -7,7 +7,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
-# Adding sort keys by Ed olivares
+### Added
     feature that allows sort_keys to be passed into this Api up to the CMR. Used the valid sort_keys as of July 2023
 
 ## [0.8.0]
