@@ -16,6 +16,11 @@ my_vcr = vcr.VCR(
 )
 
 def assert_unique_granules_from_results(granules):
+    """
+    When we invoke a search request multiple times we want to ensure that we don't
+    get the same results back. This is a one shot test as the results are preserved
+    by VCR but still useful.
+    """
     granule_ids = []
     for granule in granules:
         granule_ids.append(granule['title'])
