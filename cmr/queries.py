@@ -51,10 +51,15 @@ class Query(object):
         url = self._build_url()
 
         results = []
-        page = 1
-        while len(results) < limit:
+        more_results = True
+        while more_results == True:
 
-            response = get(url, headers=self.headers, params={'page_size': page_size, 'page_num': page})
+            # Only get what we need
+            page_size = min(limit - len(results), page_size)
+            response = get(url, headers=self.headers, params={'page_size': page_size})
+            if self.headers == None:
+                self.headers = {}
+            self.headers['cmr-search-after'] = response.headers['cmr-search-after']
 
             try:
                 response.raise_for_status()
@@ -65,12 +70,11 @@ class Query(object):
                 latest = response.json()['feed']['entry']
             else:
                 latest = [response.text]
-
-            if len(latest) == 0:
-                break
-
+                
             results.extend(latest)
-            page += 1
+            
+            if page_size > len(response.json()['feed']['entry']) or len(results) >= limit:
+                more_results = False
 
         return results
 

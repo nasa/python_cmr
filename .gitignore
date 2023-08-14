@@ -5,3 +5,4 @@ tags
 .venv
 *.egg-info
 dist
+.vscode/*

@@ -19,6 +19,10 @@ requests = "^2.26.0"
 flake8 = "^4.0.1"
 pytest = "^6.2.5"
 
+[tool.poetry.group.dev.dependencies]
+requests-mock = "^1.11.0"
+vcrpy = "^5.1.0"
+
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
