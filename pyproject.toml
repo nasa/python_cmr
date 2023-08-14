@@ -18,9 +18,6 @@ requests = "^2.26.0"
 [tool.poetry.dev-dependencies]
 flake8 = "^4.0.1"
 pytest = "^6.2.5"
-
-[tool.poetry.group.dev.dependencies]
-requests-mock = "^1.11.0"
 vcrpy = "^5.1.0"
 
 [build-system]
