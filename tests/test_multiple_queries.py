@@ -36,7 +36,7 @@ class TestMultipleQueries(unittest.TestCase):
         then we expect multiple invocations of a cmr granule search and
         to not fetch back more results than we ask for
         """
-        with my_vcr.use_cassette('fixtures/vcr_cassettes/MOD02QKM.yaml') as cass:
+        with my_vcr.use_cassette('tests/fixtures/vcr_cassettes/MOD02QKM.yaml') as cass:
             api = GranuleQuery()
 
             granules = api.short_name("MOD02QKM").get(3000)
@@ -52,7 +52,7 @@ class TestMultipleQueries(unittest.TestCase):
         to get the maximum no. of granules from a single CMR call (2000)
         in a single request
         """
-        with my_vcr.use_cassette('fixtures/vcr_cassettes/MOD02QKM_2000.yaml') as cass:
+        with my_vcr.use_cassette('tests/fixtures/vcr_cassettes/MOD02QKM_2000.yaml') as cass:
             api = GranuleQuery()
             granules = api.short_name("MOD02QKM").get()
             self.assertEqual(len(granules), 2000)
@@ -67,7 +67,7 @@ class TestMultipleQueries(unittest.TestCase):
         invocations of a cmr granule search and
         to not fetch back more results than we ask for
         """
-        with my_vcr.use_cassette('fixtures/vcr_cassettes/TELLUS_GRAC.yaml') as cass:
+        with my_vcr.use_cassette('tests/fixtures/vcr_cassettes/TELLUS_GRAC.yaml') as cass:
             api = GranuleQuery()
             granules = api.short_name("TELLUS_GRAC_L3_JPL_RL06_LND_v04").get_all()
             self.assertEqual(len(granules), 163)
@@ -82,7 +82,7 @@ class TestMultipleQueries(unittest.TestCase):
         invocations of a cmr granule search and
         to not fetch back more results than we ask for
         """
-        with my_vcr.use_cassette('fixtures/vcr_cassettes/CYGNSS.yaml') as cass:
+        with my_vcr.use_cassette('tests/fixtures/vcr_cassettes/CYGNSS.yaml') as cass:
             api = GranuleQuery()
             granules = api.short_name("CYGNSS_NOAA_L2_SWSP_25KM_V1.2").get_all()
             self.assertEqual(len(granules), 2285)
