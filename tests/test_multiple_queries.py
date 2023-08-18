@@ -45,6 +45,7 @@ class TestMultipleQueries(unittest.TestCase):
             assert_unique_granules_from_results(granules)
             # Assert that we performed two search results queries
             self.assertEqual(len(cass), 2)
+            self.assertIsNone(api.headers.get('cmr-search-after'))
     
     def test_get(self):
         """
@@ -60,6 +61,7 @@ class TestMultipleQueries(unittest.TestCase):
             assert_unique_granules_from_results(granules)
             # Assert that we performed one search results query
             self.assertEqual(len(cass), 1)
+            self.assertIsNone(api.headers.get('cmr-search-after'))
             
     def test_get_all_less_than_2k(self):
         """
@@ -75,6 +77,7 @@ class TestMultipleQueries(unittest.TestCase):
             assert_unique_granules_from_results(granules)
             # Assert that we performed a hits query and one search results query
             self.assertEqual(len(cass), 2)
+            self.assertIsNone(api.headers.get('cmr-search-after'))
 
     def test_get_all_more_than_2k(self):
         """
@@ -90,3 +93,4 @@ class TestMultipleQueries(unittest.TestCase):
             assert_unique_granules_from_results(granules)
             # Assert that we performed a hits query and two search results queries
             self.assertEqual(len(cass), 3)
+            self.assertIsNone(api.headers.get('cmr-search-after'))

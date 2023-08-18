@@ -75,7 +75,11 @@ class Query(object):
             
             if page_size > len(response.json()['feed']['entry']) or len(results) >= limit:
                 more_results = False
-
+                
+        # This header is transient. We need to get rid of it before we do another different query
+        if self.headers['cmr-search-after']:
+            del self.headers['cmr-search-after']
+            
         return results
 
     def hits(self):
