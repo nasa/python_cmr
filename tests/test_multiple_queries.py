@@ -1,5 +1,4 @@
 import unittest
-import requests_mock
 import json
 
 import vcr
