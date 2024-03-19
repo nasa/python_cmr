@@ -59,7 +59,7 @@ class Query(object):
             response = get(url, headers=self.headers, params={'page_size': page_size})
             if self.headers == None:
                 self.headers = {}
-            self.headers['cmr-search-after'] = response.headers['cmr-search-after']
+            self.headers['cmr-search-after'] = response.headers.get('cmr-search-after')
 
             try:
                 response.raise_for_status()

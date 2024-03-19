@@ -1,5 +1,6 @@
 import unittest
 import json
+from datetime import datetime
 
 import vcr
 import urllib.request
@@ -92,4 +93,21 @@ class TestMultipleQueries(unittest.TestCase):
             assert_unique_granules_from_results(granules)
             # Assert that we performed a hits query and two search results queries
             self.assertEqual(len(cass), 3)
+            self.assertIsNone(api.headers.get('cmr-search-after'))
+    
+    def test_zero_hits_query(self):
+        """
+        If we execute a get that has zero
+        hits, cmr-search-after is not sent in
+        the response headers
+        """
+        with my_vcr.use_cassette('tests/fixtures/vcr_cassettes/MOD09GA061_nohits.yaml') as cass:
+            api = GranuleQuery()
+            granules = (
+                api.short_name("MOD09GA")
+                .version("061")
+                .temporal(datetime(1990,1,1),datetime(1990,1,2))
+                .get()
+            )
+            self.assertEqual(len(granules), 0)
             self.assertIsNone(api.headers.get('cmr-search-after'))
