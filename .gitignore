@@ -6,3 +6,4 @@ tags
 *.egg-info
 dist
 .vscode/*
+.DS_Store
