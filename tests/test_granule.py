@@ -1,5 +1,5 @@
 import unittest
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 
 from cmr.queries import GranuleQuery
 
@@ -22,6 +22,7 @@ class TestGranuleClass(unittest.TestCase):
     instrument = "instrument"
     platform = "platform"
     granule_ur = "granule_ur"
+    readable_granule_name = "readable_granule_name"
 
     sort_key="sort_key"
 
@@ -66,21 +67,50 @@ class TestGranuleClass(unittest.TestCase):
         query = GranuleQuery()
 
         with self.assertRaises(ValueError):
-            query.temporal("2016", "2016-10-20T01:02:03Z")
-            query.temporal("2016-10-20T01:02:03Z", "2016")
+            query.temporal("abc", "2016-10-20T01:02:03Z")
+
+        with self.assertRaises(ValueError):
+            query.temporal("2016-10-20T01:02:03Z", "abc")
 
     def test_temporal_invalid_types(self):
         query = GranuleQuery()
 
-        with self.assertRaises(ValueError):
-            query.temporal(1, 2)
-            query.temporal(None, None)
+        with self.assertRaises(TypeError):
+            query.temporal(1, None)
 
     def test_temporal_invalid_date_order(self):
         query = GranuleQuery()
 
         with self.assertRaises(ValueError):
             query.temporal(datetime(2016, 10, 12, 10, 55, 7), datetime(2016, 10, 12, 9))
+
+    def test_temporal_rounding(self):
+        query = GranuleQuery()
+
+        # one whole year
+        query.temporal("2016", "2016")
+        self.assertIn("temporal", query.params)
+        self.assertEqual(query.params["temporal"][0], "2016-01-01T00:00:00Z,2016-12-31T23:59:59Z")
+
+        # one whole month
+        query.temporal("2016-10", "2016-10")
+        self.assertEqual(query.params["temporal"][1], "2016-10-01T00:00:00Z,2016-10-31T23:59:59Z")
+
+        # one whole day, wrong way
+        query.temporal("2016-10-10", datetime(2016, 10, 10))
+        self.assertNotEqual(query.params["temporal"][2], "2016-10-10T00:00:00Z,2016-10-10T23:59:59Z")
+
+        # one whole day, right way
+        query.temporal("2016-10-10", datetime(2016, 10, 10).date())
+        self.assertEqual(query.params["temporal"][3], "2016-10-10T00:00:00Z,2016-10-10T23:59:59Z")
+
+    def test_temporal_tz_aware(self):
+        query = GranuleQuery()
+
+        tz = timezone(timedelta(hours=-3))
+        query.temporal("2016-10-10T00:02:01-03:00", datetime(2016, 10, 10, 0, 2, 1, tzinfo=tz))
+        self.assertIn("temporal", query.params)
+        self.assertEqual(query.params["temporal"][0], "2016-10-10T03:02:01Z,2016-10-10T03:02:01Z")
 
     def test_temporal_set(self):
         query = GranuleQuery()
@@ -448,6 +478,11 @@ class TestGranuleClass(unittest.TestCase):
         self.assertNotIn("True", url)
         self.assertNotIn("False", url)
 
+        # ensure True is not found with parameters that add to options
+        query.parameters(readable_granule_name="A")
+        url = query._build_url()
+        self.assertNotIn("True", url)
+
     def test_valid_concept_id(self):
         query = GranuleQuery()
 
@@ -472,3 +507,13 @@ class TestGranuleClass(unittest.TestCase):
         self.assertIn("Authorization", query.headers)
         self.assertEqual(query.headers["Authorization"], "Bearer 123TOKEN")
 
+    def test_readable_granule_name(self):
+        query = GranuleQuery()
+
+        query.readable_granule_name("*a*")
+        self.assertEqual(query.params[self.readable_granule_name], ["*a*"])
+        self.assertIn("pattern", query.options["readable_granule_name"])
+        self.assertEqual(query.options["readable_granule_name"]["pattern"], True)
+
+        query.readable_granule_name(["*a*", "*b*"])
+        self.assertEqual(query.params[self.readable_granule_name], ["*a*", "*b*"])

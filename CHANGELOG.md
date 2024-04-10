@@ -7,6 +7,15 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.10.0]
+### Changed
+- [issues/29](https://github.com/nasa/python_cmr/issues/29) - Date parsing has been improved to accept more ISO-8601 string formats as well as timezone-aware datetime objects
+### Added
+- [pull/27](https://github.com/nasa/python_cmr/pull/27) New feature to search by `readable_granlue_name` https://cmr.earthdata.nasa.gov/search/site/docs/search/api.html#g-granule-ur-or-producer-granule-id
+### Fixed
+- [pull/27](https://github.com/nasa/python_cmr/pull/27) Fixed bug with constructing the `options` sent to CMR which was causing filters to not get applied correctly.
+- [pull/28](https://github.com/nasa/python_cmr/pull/28) Fixed bug where `KeyError` was thrown if search result contained 0 hits
+
 ## [0.9.0]
 ### Added
 - [pull/17](https://github.com/nasa/python_cmr/pull/17) New feature that allows sort_keys to be passed into this Api up to the CMR. Used the valid sort_keys as of July 2023
@@ -45,7 +54,9 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [Older]
 - Prior releases of this software originated from https://github.com/jddeal/python-cmr/releases
 
-[Unreleased]: https://github.com/nasa/python_cmr/compare/v0.8.0...HEAD
+[Unreleased]: https://github.com/nasa/python_cmr/compare/v0.10.0...HEAD
+[0.10.0]: https://github.com/nasa/python_cmr/compare/v0.9.0...v0.10.0
+[0.9.0]: https://github.com/nasa/python_cmr/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/nasa/python_cmr/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/nasa/python_cmr/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/nasa/python_cmr/compare/v0.5.0...v0.6.0

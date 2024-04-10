@@ -7,11 +7,12 @@ try:
 except ImportError:
     from urllib import pathname2url as quote
 
-from datetime import datetime
+from datetime import datetime, timezone
 from inspect import getmembers, ismethod
 from re import search
 
 from requests import get, exceptions
+from dateutil.parser import parse as dateutil_parse
 
 CMR_OPS = "https://cmr.earthdata.nasa.gov/search/"
 CMR_UAT = "https://cmr.uat.earthdata.nasa.gov/search/"
@@ -51,10 +52,15 @@ class Query(object):
         url = self._build_url()
 
         results = []
-        page = 1
-        while len(results) < limit:
+        more_results = True
+        while more_results == True:
 
-            response = get(url, headers=self.headers, params={'page_size': page_size, 'page_num': page})
+            # Only get what we need
+            page_size = min(limit - len(results), page_size)
+            response = get(url, headers=self.headers, params={'page_size': page_size})
+            if self.headers == None:
+                self.headers = {}
+            self.headers['cmr-search-after'] = response.headers.get('cmr-search-after')
 
             try:
                 response.raise_for_status()
@@ -65,13 +71,16 @@ class Query(object):
                 latest = response.json()['feed']['entry']
             else:
                 latest = [response.text]
-
-            if len(latest) == 0:
-                break
-
+                
             results.extend(latest)
-            page += 1
-
+            
+            if page_size > len(response.json()['feed']['entry']) or len(results) >= limit:
+                more_results = False
+                
+        # This header is transient. We need to get rid of it before we do another different query
+        if self.headers['cmr-search-after']:
+            del self.headers['cmr-search-after']
+            
         return results
 
     def hits(self):
@@ -195,7 +204,7 @@ class Query(object):
                 formatted_options.append("options[{}][{}]={}".format(
                     param_key,
                     option_key,
-                    val
+                    str(val).lower()
                 ))
 
         options_as_string = "&".join(formatted_options)
@@ -332,7 +341,7 @@ class GranuleCollectionBaseQuery(Query):
         """
         Filter by an open or closed date range.
 
-        Dates can be provided as a datetime objects or ISO 8601 formatted strings. Multiple
+        Dates can be provided as native date objects or ISO 8601 formatted strings. Multiple
         ranges can be provided by successive calls to this method before calling execute().
 
         :param date_from: earliest date of temporal range
@@ -344,7 +353,7 @@ class GranuleCollectionBaseQuery(Query):
         iso_8601 = "%Y-%m-%dT%H:%M:%SZ"
 
         # process each date into a datetime object
-        def convert_to_string(date):
+        def convert_to_string(date, default):
             """
             Returns the argument as an ISO 8601 or empty string.
             """
@@ -352,21 +361,29 @@ class GranuleCollectionBaseQuery(Query):
             if not date:
                 return ""
 
-            try:
-                # see if it's datetime-like
-                return date.strftime(iso_8601)
-            except AttributeError:
+            # handle str, date-like objects without time, and datetime objects
+            if isinstance(date, str):
+                # handle string by parsing with default
+                date = dateutil_parse(date, default=default)
+            elif not isinstance(date, datetime):
+                # handle (naive by definition) date by converting to utc datetime
                 try:
-                    # maybe it already is an ISO 8601 string
-                    datetime.strptime(date, iso_8601)
-                    return date
+                    date = datetime.combine(date, default.time())
                 except TypeError:
-                    raise ValueError(
-                        "Please provide None, datetime objects, or ISO 8601 formatted strings."
-                    )
+                    msg = f"Date must be a date object or ISO 8601 string, not {date.__class__.__name__}."
+                    raise TypeError(msg)
+                date = date.replace(tzinfo=timezone.utc)
+            else:
+                # pass aware datetime and handle naive datetime by assuming utc
+                date = date if date.tzinfo else date.replace(tzinfo=timezone.utc)
+            
+            # convert aware datetime to utc datetime
+            date = date.astimezone(timezone.utc)            
 
-        date_from = convert_to_string(date_from)
-        date_to = convert_to_string(date_to)
+            return date.strftime(iso_8601)
+
+        date_from = convert_to_string(date_from, datetime(1, 1, 1, 0, 0, 0, tzinfo=timezone.utc))
+        date_to = convert_to_string(date_to, datetime(1, 12, 31, 23, 59, 59, tzinfo=timezone.utc))
 
         # if we have both dates, make sure from isn't later than to
         if date_from and date_to:
@@ -732,6 +749,27 @@ class GranuleQuery(GranuleCollectionBaseQuery):
             raise ValueError("Please provide a value for platform")
 
         self.params['granule_ur'] = granule_ur
+        return self
+    
+    def readable_granule_name(self, readable_granule_name=""):
+        """
+        Filter by the readable granule name (producer_granule_id if present, otherwise producer_granule_id).
+
+        Can use wildcards for substring matching:
+
+        asterisk (*) will match any number of characters.
+        question mark (?) will match exactly one character.
+
+        :param readable_granule_name: granule name or substring
+        :returns: Query instance
+        """
+
+        if isinstance(readable_granule_name, str):
+            readable_granule_name = [readable_granule_name]
+        
+        self.params["readable_granule_name"] = readable_granule_name
+        self.options["readable_granule_name"] = {"pattern": True}
+
         return self
 
     def _valid_state(self):

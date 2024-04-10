@@ -5,3 +5,5 @@ tags
 .venv
 *.egg-info
 dist
+.vscode/*
+.DS_Store
