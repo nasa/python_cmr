@@ -22,6 +22,7 @@ class TestGranuleClass(unittest.TestCase):
     instrument = "instrument"
     platform = "platform"
     granule_ur = "granule_ur"
+    readable_granule_name = "readable_granule_name"
 
     sort_key="sort_key"
 
@@ -477,6 +478,11 @@ class TestGranuleClass(unittest.TestCase):
         self.assertNotIn("True", url)
         self.assertNotIn("False", url)
 
+        # ensure True is not found with parameters that add to options
+        query.parameters(readable_granule_name="A")
+        url = query._build_url()
+        self.assertNotIn("True", url)
+
     def test_valid_concept_id(self):
         query = GranuleQuery()
 
@@ -501,3 +507,13 @@ class TestGranuleClass(unittest.TestCase):
         self.assertIn("Authorization", query.headers)
         self.assertEqual(query.headers["Authorization"], "Bearer 123TOKEN")
 
+    def test_readable_granule_name(self):
+        query = GranuleQuery()
+
+        query.readable_granule_name("*a*")
+        self.assertEqual(query.params[self.readable_granule_name], ["*a*"])
+        self.assertIn("pattern", query.options["readable_granule_name"])
+        self.assertEqual(query.options["readable_granule_name"]["pattern"], True)
+
+        query.readable_granule_name(["*a*", "*b*"])
+        self.assertEqual(query.params[self.readable_granule_name], ["*a*", "*b*"])

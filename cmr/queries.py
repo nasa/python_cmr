@@ -60,7 +60,7 @@ class Query(object):
             response = get(url, headers=self.headers, params={'page_size': page_size})
             if self.headers == None:
                 self.headers = {}
-            self.headers['cmr-search-after'] = response.headers['cmr-search-after']
+            self.headers['cmr-search-after'] = response.headers.get('cmr-search-after')
 
             try:
                 response.raise_for_status()
@@ -204,7 +204,7 @@ class Query(object):
                 formatted_options.append("options[{}][{}]={}".format(
                     param_key,
                     option_key,
-                    val
+                    str(val).lower()
                 ))
 
         options_as_string = "&".join(formatted_options)
@@ -749,6 +749,27 @@ class GranuleQuery(GranuleCollectionBaseQuery):
             raise ValueError("Please provide a value for platform")
 
         self.params['granule_ur'] = granule_ur
+        return self
+    
+    def readable_granule_name(self, readable_granule_name=""):
+        """
+        Filter by the readable granule name (producer_granule_id if present, otherwise producer_granule_id).
+
+        Can use wildcards for substring matching:
+
+        asterisk (*) will match any number of characters.
+        question mark (?) will match exactly one character.
+
+        :param readable_granule_name: granule name or substring
+        :returns: Query instance
+        """
+
+        if isinstance(readable_granule_name, str):
+            readable_granule_name = [readable_granule_name]
+        
+        self.params["readable_granule_name"] = readable_granule_name
+        self.options["readable_granule_name"] = {"pattern": True}
+
         return self
 
     def _valid_state(self):
