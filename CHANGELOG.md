@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+- [issues/29](https://github.com/nasa/python_cmr/issues/29) - Date parsing has been improved to accept more ISO-8601 string formats as well as timezone-aware datetime objects
 ### Added
 - [pull/27](https://github.com/nasa/python_cmr/pull/27) New feature to search by `readable_granlue_name` https://cmr.earthdata.nasa.gov/search/site/docs/search/api.html#g-granule-ur-or-producer-granule-id
 ### Fixed
