@@ -15,6 +15,7 @@ my_vcr = vcr.VCR(
     match_on=['method', 'scheme', 'host', 'port', 'path', 'query', 'headers']
 )
 
+
 def assert_unique_granules_from_results(granules):
     """
     When we invoke a search request multiple times we want to ensure that we don't
@@ -24,12 +25,13 @@ def assert_unique_granules_from_results(granules):
     granule_ids = []
     for granule in granules:
         granule_ids.append(granule['title'])
-    
+
     unique_granules = set(granule_ids)
     return len(unique_granules) == len(granule_ids)
 
+
 class TestMultipleQueries(unittest.TestCase):
-    
+
     def test_get_more_than_2000(self):
         """
         If we execute a get with a limit of more than 2000
@@ -40,13 +42,13 @@ class TestMultipleQueries(unittest.TestCase):
             api = GranuleQuery()
 
             granules = api.short_name("MOD02QKM").get(3000)
-            self.assertEqual(len(granules), 3000)
+            self.assertEqual(3000, len(granules))
             # Assert all 3000 qranule results have unique granule ids
             assert_unique_granules_from_results(granules)
             # Assert that we performed two search results queries
-            self.assertEqual(len(cass), 2)
+            self.assertEqual(2, len(cass))
             self.assertIsNone(api.headers.get('cmr-search-after'))
-    
+
     def test_get(self):
         """
         If we execute a get with no arguments then we expect 
@@ -56,13 +58,13 @@ class TestMultipleQueries(unittest.TestCase):
         with my_vcr.use_cassette('tests/fixtures/vcr_cassettes/MOD02QKM_2000.yaml') as cass:
             api = GranuleQuery()
             granules = api.short_name("MOD02QKM").get()
-            self.assertEqual(len(granules), 2000)
+            self.assertEqual(2000, len(granules))
             # Assert all 2000 qranule results have unique granule ids
             assert_unique_granules_from_results(granules)
             # Assert that we performed one search results query
-            self.assertEqual(len(cass), 1)
+            self.assertEqual(1, len(cass))
             self.assertIsNone(api.headers.get('cmr-search-after'))
-            
+
     def test_get_all_less_than_2k(self):
         """
         If we execute a get_all then we expect multiple 
@@ -72,11 +74,11 @@ class TestMultipleQueries(unittest.TestCase):
         with my_vcr.use_cassette('tests/fixtures/vcr_cassettes/TELLUS_GRAC.yaml') as cass:
             api = GranuleQuery()
             granules = api.short_name("TELLUS_GRAC_L3_JPL_RL06_LND_v04").get_all()
-            self.assertEqual(len(granules), 163)
+            self.assertEqual(163, len(granules))
             # Assert all 163 qranule results have unique granule ids
             assert_unique_granules_from_results(granules)
             # Assert that we performed a hits query and one search results query
-            self.assertEqual(len(cass), 2)
+            self.assertEqual(2, len(cass))
             self.assertIsNone(api.headers.get('cmr-search-after'))
 
     def test_get_all_more_than_2k(self):
@@ -88,13 +90,13 @@ class TestMultipleQueries(unittest.TestCase):
         with my_vcr.use_cassette('tests/fixtures/vcr_cassettes/CYGNSS.yaml') as cass:
             api = GranuleQuery()
             granules = api.short_name("CYGNSS_NOAA_L2_SWSP_25KM_V1.2").get_all()
-            self.assertEqual(len(granules), 2285)
+            self.assertEqual(2285, len(granules))
             # Assert all 2285 qranule results have unique granule ids
             assert_unique_granules_from_results(granules)
             # Assert that we performed a hits query and two search results queries
-            self.assertEqual(len(cass), 3)
+            self.assertEqual(3, len(cass))
             self.assertIsNone(api.headers.get('cmr-search-after'))
-    
+
     def test_zero_hits_query(self):
         """
         If we execute a get that has zero
@@ -106,8 +108,8 @@ class TestMultipleQueries(unittest.TestCase):
             granules = (
                 api.short_name("MOD09GA")
                 .version("061")
-                .temporal(datetime(1990,1,1),datetime(1990,1,2))
+                .temporal(datetime(1990, 1, 1), datetime(1990, 1, 2))
                 .get()
             )
-            self.assertEqual(len(granules), 0)
+            self.assertEqual(0, len(granules))
             self.assertIsNone(api.headers.get('cmr-search-after'))
