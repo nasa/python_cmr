@@ -110,6 +110,8 @@ Granule searches support these methods (in addition to the shared methods above)
     >>> api.granule_ur("SC:AST_L1T.003:2150315169")
     # search for granules from a specific orbit
     >>> api.orbit_number(5000)
+    # search for a granule by name
+    >>> api.short_name("MOD09GA").readable_granule_name(["*h32v08*","*h30v13*"])
 
     # filter by the day/night flag
     >>> api.day_night_flag("day")
