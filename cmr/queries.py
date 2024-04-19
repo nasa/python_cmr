@@ -2,14 +2,10 @@
 Contains all CMR query types.
 """
 
-try:
-    from urllib.parse import quote
-except ImportError:
-    from urllib import pathname2url as quote
-
 from datetime import datetime, timezone
 from inspect import getmembers, ismethod
 from re import search
+from urllib.parse import quote
 
 from requests import get, exceptions
 from dateutil.parser import parse as dateutil_parse
@@ -19,7 +15,7 @@ CMR_UAT = "https://cmr.uat.earthdata.nasa.gov/search/"
 CMR_SIT = "https://cmr.sit.earthdata.nasa.gov/search/"
 
 
-class Query(object):
+class Query:
     """
     Base class for all CMR queries.
     """
@@ -53,12 +49,12 @@ class Query(object):
 
         results = []
         more_results = True
-        while more_results == True:
 
+        while more_results:
             # Only get what we need
             page_size = min(limit - len(results), page_size)
             response = get(url, headers=self.headers, params={'page_size': page_size})
-            if self.headers == None:
+            if self.headers is None:
                 self.headers = {}
             self.headers['cmr-search-after'] = response.headers.get('cmr-search-after')
 
@@ -71,16 +67,16 @@ class Query(object):
                 latest = response.json()['feed']['entry']
             else:
                 latest = [response.text]
-                
+
             results.extend(latest)
-            
+
             if page_size > len(response.json()['feed']['entry']) or len(results) >= limit:
                 more_results = False
-                
+
         # This header is transient. We need to get rid of it before we do another different query
         if self.headers['cmr-search-after']:
             del self.headers['cmr-search-after']
-            
+
         return results
 
     def hits(self):
@@ -132,7 +128,7 @@ class Query(object):
 
             # verify the key matches one of our methods
             if key not in methods:
-                raise ValueError("Unknown key {}".format(key))
+                raise ValueError(f"Unknown key {key}")
 
             # call the method
             if isinstance(val, tuple):
@@ -160,7 +156,7 @@ class Query(object):
                 return self
 
         # if we got here, we didn't find a matching format
-        raise ValueError("Unsupported format '{}'".format(output_format))
+        raise ValueError(f"Unsupported format '{output_format}'")
 
     def _build_url(self):
         """
@@ -181,11 +177,11 @@ class Query(object):
             # list params require slightly different formatting
             if isinstance(val, list):
                 for list_val in val:
-                    formatted_params.append("{}[]={}".format(key, list_val))
+                    formatted_params.append(f"{key}[]={list_val}")
             elif isinstance(val, bool):
-                formatted_params.append("{}={}".format(key, str(val).lower()))
+                formatted_params.append(f"{key}={str(val).lower()}")
             else:
-                formatted_params.append("{}={}".format(key, val))
+                formatted_params.append(f"{key}={val}")
 
         params_as_string = "&".join(formatted_params)
 
@@ -196,26 +192,13 @@ class Query(object):
 
                 # all CMR options must be booleans
                 if not isinstance(val, bool):
-                    raise ValueError("parameter '{}' with option '{}' must be a boolean".format(
-                        param_key,
-                        option_key
-                    ))
+                    raise ValueError(f"parameter '{param_key}' with option '{option_key}' must be a boolean")
 
-                formatted_options.append("options[{}][{}]={}".format(
-                    param_key,
-                    option_key,
-                    str(val).lower()
-                ))
+                formatted_options.append(f"options[{param_key}][{option_key}]={str(val).lower()}")
 
         options_as_string = "&".join(formatted_options)
-        res = "{}.{}?{}&{}".format(
-            self._base_url,
-            self._format,
-            params_as_string,
-            options_as_string
-        )
-        res = res.rstrip('&')
-        return res
+        res = f"{self._base_url}.{self._format}?{params_as_string}&{options_as_string}"
+        return res.rstrip('&')
 
     def concept_id(self, IDs):
         """
@@ -238,7 +221,8 @@ class Query(object):
         for ID in IDs:
             if ID.strip()[0] not in self.concept_id_chars:
                 raise ValueError(
-                    "Only concept ids that begin with '{}' can be provided: {}".format(self.concept_id_chars, ID))
+                    f"Only concept ids that begin with '{self.concept_id_chars}' can be provided: {ID}"
+                )
 
         self.params["concept_id"] = IDs
 
@@ -307,7 +291,7 @@ class Query(object):
         if not bearer_token:
             return self
 
-        self.headers = {'Authorization': 'Bearer ' + bearer_token}
+        self.headers = {'Authorization': f'Bearer {bearer_token}'}
 
         return self
 
@@ -370,15 +354,14 @@ class GranuleCollectionBaseQuery(Query):
                 try:
                     date = datetime.combine(date, default.time())
                 except TypeError:
-                    msg = f"Date must be a date object or ISO 8601 string, not {date.__class__.__name__}."
-                    raise TypeError(msg)
+                    raise TypeError(f"Date must be a date object or ISO 8601 string, not {date.__class__.__name__}.")
                 date = date.replace(tzinfo=timezone.utc)
             else:
                 # pass aware datetime and handle naive datetime by assuming utc
                 date = date if date.tzinfo else date.replace(tzinfo=timezone.utc)
-            
+
             # convert aware datetime to utc datetime
-            date = date.astimezone(timezone.utc)            
+            date = date.astimezone(timezone.utc)
 
             return date.strftime(iso_8601)
 
@@ -386,15 +369,14 @@ class GranuleCollectionBaseQuery(Query):
         date_to = convert_to_string(date_to, datetime(1, 12, 31, 23, 59, 59, tzinfo=timezone.utc))
 
         # if we have both dates, make sure from isn't later than to
-        if date_from and date_to:
-            if date_from > date_to:
-                raise ValueError("date_from must be earlier than date_to.")
+        if date_from and date_to and date_from > date_to:
+            raise ValueError("date_from must be earlier than date_to.")
 
         # good to go, make sure we have a param list
         if "temporal" not in self.params:
             self.params["temporal"] = []
 
-        self.params["temporal"].append("{},{}".format(date_from, date_to))
+        self.params["temporal"].append(f"{date_from},{date_to}")
 
         if exclude_boundary:
             self.options["temporal"] = {
@@ -448,7 +430,7 @@ class GranuleCollectionBaseQuery(Query):
         lon = float(lon)
         lat = float(lat)
 
-        self.params['point'] = "{},{}".format(lon, lat)
+        self.params['point'] = f"{lon},{lat}"
 
         return self
 
@@ -514,11 +496,8 @@ class GranuleCollectionBaseQuery(Query):
         :returns: Query instance
         """
 
-        self.params["bounding_box"] = "{},{},{},{}".format(
-            float(lower_left_lon),
-            float(lower_left_lat),
-            float(upper_right_lon),
-            float(upper_right_lat)
+        self.params["bounding_box"] = (
+            f"{float(lower_left_lon)},{float(lower_left_lat)},{float(upper_right_lon)},{float(upper_right_lat)}"
         )
 
         return self
@@ -612,7 +591,7 @@ class GranuleQuery(GranuleCollectionBaseQuery):
         """
 
         if orbit2:
-            self.params['orbit_number'] = quote('{},{}'.format(str(orbit1), str(orbit2)))
+            self.params['orbit_number'] = quote(f'{str(orbit1)},{str(orbit2)}')
         else:
             self.params['orbit_number'] = orbit1
 
@@ -659,7 +638,7 @@ class GranuleQuery(GranuleCollectionBaseQuery):
             except ValueError:
                 raise ValueError("Please ensure min_cover and max_cover are both floats")
 
-        self.params['cloud_cover'] = "{},{}".format(min_cover, max_cover)
+        self.params['cloud_cover'] = f"{min_cover},{max_cover}"
         return self
 
     def instrument(self, instrument=""):
@@ -690,48 +669,51 @@ class GranuleQuery(GranuleCollectionBaseQuery):
         self.params['platform'] = platform
         return self
 
-
     def sort_key(self, sort_key=""):
         """
         See
         https://cmr.earthdata.nasa.gov/search/site/docs/search/api.html#sorting-granule-results
         for valid granule sort_keys
 
-        Filter some defined sort_key; 
+        Filter some defined sort_key;
         use negative (-) for start_date and end_date to sort by ascending
 
         :param sort_key: name of the sort key
         :returns: Query instance
         """
 
-        valid_sort_keys = [
-        'campaign',
-        'entry_title',
-        'dataset_id',
-        'data_size',
-        'end_date',
-        '-end_date'
-        'granule_ur',
-        'producer_granule_id'
-        'project',
-        'provider',
-        'readable_granule_name',
-        'short_name',
-        '-start_date',
-        'start_date',
-        'version',
-        'platform',
-        'instrument',
-        'sensor',
-        'day_night_flag',
-        'online_only',
-        'browsable',
-        'browse_only',
-        'cloud_cover',
-        'revision_date']
-        # also covers if empty string
-        if sort_key not in valid_sort_keys:
-            raise ValueError("Please provide a valid sort_key for granules query see https://cmr.earthdata.nasa.gov/search/site/docs/search/api.html#sorting-granule-results for valid sort_keys")
+        valid_sort_keys = {
+            'campaign',
+            'entry_title',
+            'dataset_id',
+            'data_size',
+            'end_date',
+            'granule_ur',
+            'producer_granule_id',
+            'project',
+            'provider',
+            'readable_granule_name',
+            'short_name',
+            'start_date',
+            'version',
+            'platform',
+            'instrument',
+            'sensor',
+            'day_night_flag',
+            'online_only',
+            'browsable',
+            'browse_only',
+            'cloud_cover',
+            'revision_date',
+        }
+
+        # also covers if empty string and allows for '-' prefix (for descending order)
+        if not isinstance(sort_key, str) or sort_key.lstrip('-') not in valid_sort_keys:
+            raise ValueError(
+                "Please provide a valid sort key for granules query.  See"
+                " https://cmr.earthdata.nasa.gov/search/site/docs/search/api.html#sorting-granule-results"
+                " for valid sort keys."
+            )
 
         self.params['sort_key'] = sort_key
         return self
@@ -750,7 +732,7 @@ class GranuleQuery(GranuleCollectionBaseQuery):
 
         self.params['granule_ur'] = granule_ur
         return self
-    
+
     def readable_granule_name(self, readable_granule_name=""):
         """
         Filter by the readable granule name (producer_granule_id if present, otherwise producer_granule_id).
@@ -766,7 +748,7 @@ class GranuleQuery(GranuleCollectionBaseQuery):
 
         if isinstance(readable_granule_name, str):
             readable_granule_name = [readable_granule_name]
-        
+
         self.params["readable_granule_name"] = readable_granule_name
         self.options["readable_granule_name"] = {"pattern": True}
 
@@ -857,7 +839,7 @@ class CollectionQuery(GranuleCollectionBaseQuery):
         # verify we provided with tool concept IDs
         for ID in IDs:
             if ID.strip()[0] != "T":
-                raise ValueError("Only tool concept ID's can be provided (begin with 'T'): {}".format(ID))
+                raise ValueError(f"Only tool concept ID's can be provided (begin with 'T'): {ID}")
 
         self.params["tool_concept_id"] = IDs
 
@@ -879,7 +861,7 @@ class CollectionQuery(GranuleCollectionBaseQuery):
         # verify we provided with service concept IDs
         for ID in IDs:
             if ID.strip()[0] != "S":
-                raise ValueError("Only service concept ID's can be provided (begin with 'S'): {}".format(ID))
+                raise ValueError(f"Only service concept ID's can be provided (begin with 'S'): {ID}")
 
         self.params["service_concept_id"] = IDs
 
