@@ -33,20 +33,10 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Load cached Poetry installation
-        id: cached-poetry
-        uses: actions/cache@v3
-        with:
-          path: ~/.local  # the path depends on the OS
-          key: poetry-${{ matrix.poetry-version }}-0  # increment to reset cache
       - name: Install Poetry ${{ matrix.poetry-version }}
-        if: steps.cached-poetry.outputs.cache-hit != 'true'
         uses: abatilo/actions-poetry@v3
         with:
           poetry-version: ${{ matrix.poetry-version }}
-      - name: Ensure Poetry can be found on PATH
-        # Ensure /root/.local/bin is on PATH when Poetry install is pulled from cache
-        run: pipx ensurepath
       - name: Setup a local virtual environment
         run: |
           poetry config virtualenvs.create true --local
