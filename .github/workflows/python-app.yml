@@ -1,7 +1,7 @@
-# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# This workflow will install Python dependencies, run tests and lint with all supported Python versions
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
 
-name: Python application
+name: Tests
 
 on:
   push:
@@ -9,21 +9,43 @@ on:
   pull_request:
     branches: [ develop, main ]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+defaults:
+  run:
+    shell: bash -leo pipefail {0}
+
 jobs:
   build:
-
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+        poetry-version: ["1.7.1"]
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
 
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Python 3.10
+      - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
-          python-version: "3.10"
-      - name: Install Poetry
+          python-version: ${{ matrix.python-version }}
+      - name: Install Poetry ${{ matrix.poetry-version }}
         uses: abatilo/actions-poetry@v3
         with:
-          poetry-version: 1.7.1
+          poetry-version: ${{ matrix.poetry-version }}
+      - name: Setup a local virtual environment
+        run: |
+          poetry config virtualenvs.create true --local
+          poetry config virtualenvs.in-project true --local
+      - uses: actions/cache@v3
+        name: Define a cache for the virtual environment based on the dependencies lock file
+        with:
+          path: ./.venv
+          key: venv-${{ hashFiles('poetry.lock') }}
       - name: Install dependencies
         run: |
           poetry run python -m pip install --upgrade pip

@@ -24,7 +24,7 @@ class TestGranuleClass(unittest.TestCase):
     granule_ur = "granule_ur"
     readable_granule_name = "readable_granule_name"
 
-    sort_key="sort_key"
+    sort_key = "sort_key"
 
     def test_short_name(self):
         query = GranuleQuery()
@@ -308,16 +308,15 @@ class TestGranuleClass(unittest.TestCase):
     def test_sort_key(self):
         query = GranuleQuery()
         # Various sort keys using this as an example
-        query.sort_key("-start_time")
+        query.sort_key("-start_date")
 
         self.assertIn(self.sort_key, query.params)
-        self.assertEqual(query.params[self.sort_key], "-start_time")
-       
-    def test_sort_key(self):
+        self.assertEqual(query.params[self.sort_key], "-start_date")
+
+    def test_sort_key_none(self):
         query = GranuleQuery()
         with self.assertRaises(ValueError):
             query.sort_key(None)
-
 
     def test_empty_platform(self):
         query = GranuleQuery()
@@ -436,7 +435,7 @@ class TestGranuleClass(unittest.TestCase):
 
     def test_invalid_mode_constructor(self):
         with self.assertRaises(ValueError):
-            query = GranuleQuery(None)
+            GranuleQuery(None)
 
     def test_valid_parameters(self):
         query = GranuleQuery()

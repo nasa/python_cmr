@@ -8,6 +8,10 @@ develop a python library that can be used for CMR access.
 Python CMR
 ==========
 
+[![PyPI](https://img.shields.io/pypi/v/python_cmr.svg)](https://pypi.python.org/pypi/python_cmr)
+[![Downloads](https://img.shields.io/pypi/dm/python_cmr)](https://pypistats.org/packages/python_cmr)
+[![Python versions](https://img.shields.io/pypi/pyversions/python_cmr.svg)](https://pypi.python.org/pypi/python_cmr)
+[![Build Status](https://github.com/nasa/python_cmr/actions/workflows/python-app.yml/badge.svg)](https://github.com/nasa/python_cmr/actions)
 [![CodeQL](https://github.com/nasa/python_cmr/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/nasa/python_cmr/actions/workflows/codeql-analysis.yml)
 
 Python CMR is an easy to use wrapper to the NASA
