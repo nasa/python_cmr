@@ -1,21 +1,22 @@
 import json
 import unittest
 from datetime import datetime
+from typing_extensions import Any, Sequence
 
 import vcr
 
 from cmr.queries import GranuleQuery
 
 my_vcr = vcr.VCR(
-    record_mode='once',
+    record_mode=vcr.record_mode.RecordMode.ONCE,
     decode_compressed_response=True,
     # Header matching is not set by default, we need that to test the
     # search-after functionality is performing correctly.
-    match_on=['method', 'scheme', 'host', 'port', 'path', 'query', 'headers']
+    match_on=["method", "scheme", "host", "port", "path", "query", "headers"],
 )
 
 
-def assert_unique_granules_from_results(granules):
+def assert_unique_granules_from_results(granules: Sequence[Any]) -> bool:
     """
     When we invoke a search request multiple times we want to ensure that we don't
     get the same results back. This is a one shot test as the results are preserved

@@ -53,7 +53,9 @@ class TestGranuleClass(unittest.TestCase):
 
         with self.assertRaises(ValueError):
             query.point("invalid", 15.1)
-            query.point(10, None)
+
+        with self.assertRaises(TypeError):
+            print(query.point(10, None))  # type: ignore[arg-type]
 
     def test_circle_set(self):
         query = GranuleQuery()
@@ -76,7 +78,7 @@ class TestGranuleClass(unittest.TestCase):
         query = GranuleQuery()
 
         with self.assertRaises(TypeError):
-            query.temporal(1, None)
+            query.temporal(1, None)  # type: ignore[arg-type]
 
     def test_temporal_invalid_date_order(self):
         query = GranuleQuery()
@@ -160,7 +162,7 @@ class TestGranuleClass(unittest.TestCase):
         query = GranuleQuery()
 
         with self.assertRaises(TypeError):
-            query.online_only("Invalid Type")
+            query.online_only("Invalid Type")  # type: ignore[arg-type]
 
         self.assertNotIn(self.online_only, query.params)
 
@@ -183,7 +185,7 @@ class TestGranuleClass(unittest.TestCase):
         query = GranuleQuery()
 
         with self.assertRaises(TypeError):
-            query.downloadable("Invalid Type")
+            query.downloadable("Invalid Type")  # type: ignore[arg-type]
         self.assertNotIn(self.downloadable, query.params)
 
     def test_flags_invalidate_the_other(self):
@@ -245,14 +247,14 @@ class TestGranuleClass(unittest.TestCase):
         query = GranuleQuery()
 
         with self.assertRaises(ValueError):
-            query.day_night_flag('invaliddaynight')
+            query.day_night_flag("invaliddaynight")  # type: ignore[arg-type]
         self.assertNotIn(self.day_night_flag, query.params)
 
     def test_day_night_flag_invalid_type_set(self):
         query = GranuleQuery()
 
         with self.assertRaises(TypeError):
-            query.day_night_flag(True)
+            query.day_night_flag(True)  # type: ignore[arg-type]
         self.assertNotIn(self.day_night_flag, query.params)
 
     def test_cloud_cover_min_only(self):
@@ -295,7 +297,7 @@ class TestGranuleClass(unittest.TestCase):
         query = GranuleQuery()
 
         with self.assertRaises(ValueError):
-            query.instrument(None)
+            query.instrument(None)  # type: ignore[arg-type]
 
     def test_platform(self):
         query = GranuleQuery()
@@ -316,13 +318,13 @@ class TestGranuleClass(unittest.TestCase):
     def test_sort_key_none(self):
         query = GranuleQuery()
         with self.assertRaises(ValueError):
-            query.sort_key(None)
+            query.sort_key(None)  # type: ignore[arg-type]
 
     def test_empty_platform(self):
         query = GranuleQuery()
 
         with self.assertRaises(ValueError):
-            query.platform(None)
+            query.platform(None)  # type: ignore[arg-type]
 
     def test_granule_ur(self):
         query = GranuleQuery()
@@ -336,14 +338,18 @@ class TestGranuleClass(unittest.TestCase):
         query = GranuleQuery()
 
         with self.assertRaises(ValueError):
-            query.granule_ur(None)
+            query.granule_ur(None)  # type: ignore[arg-type]
 
     def test_polygon_invalid_set(self):
         query = GranuleQuery()
 
         with self.assertRaises(ValueError):
-            query.polygon([1, 2, 3])
+            query.polygon([1, 2, 3])  # type: ignore[list-item]
+
+        with self.assertRaises(ValueError):
             query.polygon([("invalid", 1)])
+
+        with self.assertRaises(ValueError):
             query.polygon([(1, 1), (2, 1), (1, 1)])
 
     def test_polygon_set(self):
@@ -371,9 +377,9 @@ class TestGranuleClass(unittest.TestCase):
         query = GranuleQuery()
 
         with self.assertRaises(ValueError):
-            query.line("invalid")
+            query.line("invalid")  # type: ignore[arg-type]
             query.line([(1, 1)])
-            query.line(1)
+            query.line(1)  # type: ignore[arg-type]
 
     def test_line_set(self):
         query = GranuleQuery()
@@ -431,11 +437,11 @@ class TestGranuleClass(unittest.TestCase):
         query = GranuleQuery()
 
         with self.assertRaises(ValueError):
-            query.mode(None)
+            query.mode(None)  # type: ignore[arg-type]
 
     def test_invalid_mode_constructor(self):
         with self.assertRaises(ValueError):
-            GranuleQuery(None)
+            GranuleQuery(None)  # type: ignore[arg-type]
 
     def test_valid_parameters(self):
         query = GranuleQuery()
