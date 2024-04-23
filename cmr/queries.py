@@ -44,38 +44,35 @@ class Query:
         :returns: query results as a list
         """
 
-        page_size = min(limit, 2000)
         url = self._build_url()
 
         results = []
+        headers = self.headers.copy() if self.headers else {}
         more_results = True
+        n_results = 0
 
         while more_results:
-            # Only get what we need
-            page_size = min(limit - len(results), page_size)
-            response = get(url, headers=self.headers, params={'page_size': page_size})
-            if self.headers is None:
-                self.headers = {}
-            self.headers['cmr-search-after'] = response.headers.get('cmr-search-after')
+            # Only get what we need on the last page.
+            page_size = min(limit - n_results, 2000)
+            response = get(url, headers=headers, params={"page_size": page_size})
+            response.raise_for_status()
 
-            try:
-                response.raise_for_status()
-            except exceptions.HTTPError as ex:
-                raise RuntimeError(ex.response.text)
+            # Explicitly track the number of results we have because the length
+            # of the results list will only match the number of entries fetched
+            # when the format is JSON.  Otherwise, the length of the results
+            # list is the number of *pages* fetched, not the number of *items*.
+            n_results += page_size
 
-            if self._format == "json":
-                latest = response.json()['feed']['entry']
-            else:
-                latest = [response.text]
+            results.extend(
+                response.json()["feed"]["entry"]
+                if self._format == "json"
+                else [response.text]
+            )
 
-            results.extend(latest)
+            if cmr_search_after := response.headers.get("cmr-search-after"):
+                headers["cmr-search-after"] = cmr_search_after
 
-            if page_size > len(response.json()['feed']['entry']) or len(results) >= limit:
-                more_results = False
-
-        # This header is transient. We need to get rid of it before we do another different query
-        if self.headers['cmr-search-after']:
-            del self.headers['cmr-search-after']
+            more_results = n_results < limit and cmr_search_after is not None
 
         return results
 
