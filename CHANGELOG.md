@@ -10,9 +10,17 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
-- [issues/35](https://github.com/nasa/python_cmr/issues/35) Eliminated accommodation for
-  Python versions older than 3.8 and updated CI build to test against Python versions
-  3.8 through 3.12.  Also, fixed all flake8 warnings.
+- [issues/35](https://github.com/nasa/python_cmr/issues/35) Eliminated
+  accommodation for Python versions older than 3.8 and updated CI build to test
+  against Python versions 3.8 through 3.12.  Also, fixed all flake8 warnings.
+
+## Fixed
+
+- [issues/42](https://github.com/nasa/python_cmr/issues/42) Fixed bug where a
+  `KeyError` was thrown from `Query.get` when the query format was a supported
+  format other than `"json"`.  Further, in such cases, too many items would be
+  fetched from the CMR due to a bug in how items were counted.  Now, no more
+  than `limit` items are fetched.
 
 ## [0.10.0]
 
