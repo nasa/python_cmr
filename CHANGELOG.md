@@ -14,6 +14,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   accommodation for Python versions older than 3.8 and updated CI build to test
   against Python versions 3.8 through 3.12.  Also, fixed all flake8 warnings.
 
+### Added
+
+- [issues/36](https://github.com/nasa/python_cmr/issues/36) Added type annotations.
+
 ## Fixed
 
 - [issues/42](https://github.com/nasa/python_cmr/issues/42) Fixed bug where a

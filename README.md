@@ -13,6 +13,7 @@ Python CMR
 [![Python versions](https://img.shields.io/pypi/pyversions/python_cmr.svg)](https://pypi.python.org/pypi/python_cmr)
 [![Build Status](https://github.com/nasa/python_cmr/actions/workflows/python-app.yml/badge.svg)](https://github.com/nasa/python_cmr/actions)
 [![CodeQL](https://github.com/nasa/python_cmr/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/nasa/python_cmr/actions/workflows/codeql-analysis.yml)
+[![Checked with mypy](https://www.mypy-lang.org/static/mypy_badge.svg)](https://mypy-lang.org/)
 
 Python CMR is an easy to use wrapper to the NASA
 EOSDIS [Common Metadata Repository API](https://cmr.earthdata.nasa.gov/search/). This package aims to make querying the
@@ -20,6 +21,7 @@ API intuitive and less error-prone by providing methods that will preemptively c
 URL encoding the CMR API expects.
 
 Getting access to NASA's earth science metadata is as simple as this:
+
 ```python
 from cmr import CollectionQuery, GranuleQuery, ToolQuery, ServiceQuery, VariableQuery
 
@@ -53,15 +55,17 @@ Installation
 ============
 
 To install from pypi:
-```
-$ pip install python-cmr
+
+```plain
+pip install python-cmr
 ```
 
-To install from github, perhaps to try out the dev branch:
-```
-$ git clone https://github.com/nasa/python_cmr
-$ cd python-cmr
-$ pip install .
+To install from GitHub, perhaps to try out the dev branch:
+
+```plain
+git clone https://github.com/nasa/python_cmr
+cd python-cmr
+pip install .
 ```
 
 Examples
@@ -72,6 +76,7 @@ methods used to build a query for CMR. Not all parameters provided by the CMR AP
 python-cmr.
 
 The following methods are available to both collection and granule queries:
+
 ```python
 # search for granules matching a specific product/short_name
 api.short_name("AST_L1T")
@@ -120,6 +125,7 @@ api.mode(CMR_UAT)
 ```
 
 Granule searches support these methods (in addition to the shared methods above):
+
 ```python
 # search for a granule by its unique ID
 api.granule_ur("SC:AST_L1T.003:2150315169")
@@ -138,12 +144,13 @@ api.cloud_cover(25, 75)
 api.instrument("MODIS")
 api.platform("Terra")
 
-# filter by a sort_key note: sort_keys are require some other fields to find some existing granules before they can be sorted
-
+# filter by a sort_key note: sort_keys are require some other fields to find
+# some existing granules before they can be sorted
 api.parameters(short_name="OMNO2", version="003", provider='GES_DISC', sort_key='-start_date')
 ```
 
 Collection searches support these methods (in addition to the shared methods above):
+
 ```python
 # search for collections from a specific archive center
 api.archive_center("LP DAAC")
@@ -162,6 +169,7 @@ api.service_concept_id('S1962070864-POCLOUD')
 ```
 
 Service searches support the following methods
+
 ```python
 # Search via provider
 api = ServiceQuery()
@@ -178,6 +186,7 @@ api.concept_id('S1962070864-POCLOUD')
 ```
 
 Tool searches support the following methods
+
 ```python
 # Search via provider
 api = ToolQuery()
@@ -194,6 +203,7 @@ api.concept_id('TL2092786348-POCLOUD')
 ```
 
 Variable searches support the following methods
+
 ```python
 # Search via provider
 api = VariableQuery()
@@ -211,6 +221,7 @@ api.concept_id('V2112019824-POCLOUD')
 
 As an alternative to chaining methods together to set the parameters of your query, a method exists to allow you to pass
 your parameters as keyword arguments:
+
 ```python
 # search for AST_L1T version 003 granules at latitude 42, longitude -100
 api.parameters(
@@ -224,6 +235,7 @@ Note: the kwarg key should match the name of a method from the above examples, a
 parameter that requires multiple values.
 
 To inspect and retrieve results from the API, the following methods are available:
+
 ```python
 # inspect the number of results the query will return without downloading the results
 print(api.hits())
@@ -240,11 +252,13 @@ granules = api.get_all()  # this is a shortcut for api.get(api.hits())
 
 By default the responses will return as json and be accessible as a list of python dictionaries. Other formats can be
 specified before making the request:
+
 ```python
 granules = api.format("echo10").get(100)
 ```
 
 We can add token to the api calls by setting headers using the following functions:
+
 ```python
 # Use token function for EDL echo-token or launchpad token
 api.token(token)
@@ -270,55 +284,66 @@ Collection queries also support the following formats:
 - dif
 - dif10
 - opendata
-- umm\_json
-- umm\_json\_vX\_Y (ex: umm\_json\_v1\_9)
+- umm_json
+- umm_json_vX_Y (ex: umm_json_v1_9)
 
-# Developing
+Developing
+==========
 
 python-cmr uses the [poetry](https://python-poetry.org/) build system. Download and install poetry before starting
 development
 
-## Install Dependencies
+Install Dependencies
+--------------------
 
 With dev dependencies:
+
 ```shell
 poetry install
 ```
 
 Without dev dependencies:
+
 ```shell
 poetry install --no-dev
 ```
 
-## Update Dependencies
+Update Dependencies
+-------------------
 
 ```shell
 poetry update
 ```
 
-## Add new Dependency
+Add new Dependency
+------------------
 
 ```shell
 poetry add requests
 ```
+
 Development-only dependency:
+
 ```shell
 poetry add --dev pytest
 ```
 
-## Build project
+Build project
+-------------
 
 ```shell
 poetry build
 ```
 
-## Lint project
+Lint project
+------------
 
 ```shell
 poetry run flake8
 ```
 
-## Run Tests
+Run Tests
+---------
 
 ```shell
 poetry run pytest

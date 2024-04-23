@@ -23,7 +23,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Topic :: Software Development :: Libraries :: Python Modules",
-    # "Typing :: Typed",
+    "Typing :: Typed",
 ]
 packages = [{ include = "cmr" }]
 
@@ -31,8 +31,31 @@ packages = [{ include = "cmr" }]
 python = "^3.8.1"
 requests = "^2.26.0"
 python-dateutil = "^2.8.2"
+typing-extensions = "^4.11.0"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 flake8 = "^7.0.0"
+mypy = "^1.9.0"
 pytest = "^6.2.5"
-vcrpy = "^5.1.0"
+types-python-dateutil = "^2.9.0.20240316"
+vcrpy = "^6.0.0"
+types-requests = "^2.31"
+
+[tool.mypy]
+mypy_path = ["cmr", "tests"]
+exclude = ".venv/|venv/"
+pretty = true
+strict = true
+
+[[tool.mypy.overrides]]
+module = [
+  "tests.*",
+]
+disallow_untyped_defs = false
+
+[[tool.mypy.overrides]]
+module = [
+  # TODO Remove when this is released: https://github.com/kevin1024/vcrpy/issues/780
+  "vcr.*",
+]
+ignore_missing_imports = true
