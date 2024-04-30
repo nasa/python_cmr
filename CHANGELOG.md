@@ -8,6 +8,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+
+## [0.11.0]
+
 ### Changed
 
 - [issues/35](https://github.com/nasa/python_cmr/issues/35) Eliminated
@@ -18,7 +21,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - [issues/36](https://github.com/nasa/python_cmr/issues/36) Added type annotations.
 
-## Fixed
+### Fixed
 
 - [issues/42](https://github.com/nasa/python_cmr/issues/42) Fixed bug where a
   `KeyError` was thrown from `Query.get` when the query format was a supported
