@@ -8,6 +8,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+- [issues/48](https://github.com/nasa/python_cmr/issues/48) When a query's
+  `Authorization` header is set via the `bearer_token` or `token` method, other
+  existing headers are no longer clobbered.  However, if multiple calls are made
+  to `bearer_token` and/or `token`, later calls overwrite the `Authorization`
+  setting of prior calls (i.e., the last call wins).
 
 ## [0.11.0]
 
@@ -116,7 +123,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Prior releases of this software originated from
   <https://github.com/jddeal/python-cmr/releases>
 
-[Unreleased]: https://github.com/nasa/python_cmr/compare/v0.10.0...HEAD
+[Unreleased]: https://github.com/nasa/python_cmr/compare/v0.11.0...HEAD
+[0.11.0]: https://github.com/nasa/python_cmr/compare/v0.10.0...v0.11.0
 [0.10.0]: https://github.com/nasa/python_cmr/compare/v0.9.0...v0.10.0
 [0.9.0]: https://github.com/nasa/python_cmr/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/nasa/python_cmr/compare/v0.7.0...v0.8.0

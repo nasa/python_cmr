@@ -31,11 +31,10 @@ CMR_UAT = "https://cmr.uat.earthdata.nasa.gov/search/"
 CMR_SIT = "https://cmr.sit.earthdata.nasa.gov/search/"
 
 DateLike: TypeAlias = Union[str, date, datetime]
-DayNightFlag: TypeAlias = Union[
-    Literal["day"], Literal["night"], Literal["unspecified"]
-]
+DayNightFlag: TypeAlias = Literal["day", "night", "unspecified"]
 FloatLike: TypeAlias = Union[str, SupportsFloat]
 PointLike: TypeAlias = Tuple[FloatLike, FloatLike]
+
 
 class Query:
     """
@@ -285,7 +284,7 @@ class Query:
 
     def token(self, token: str) -> Self:
         """
-        Add token into authorization headers.
+        Set the value of this query's `Authorization` header to the given token.
 
         :param token: Token from EDL Echo-Token or NASA Launchpad token.
         :returns: self
@@ -294,13 +293,13 @@ class Query:
         if not token:
             return self
 
-        self.headers = {'Authorization': token}
+        self.headers.update({"Authorization": token})
 
         return self
 
     def bearer_token(self, bearer_token: str) -> Self:
         """
-        Add token into authorization headers.
+        Set the value of this query's `Authorization` header to the given bearer token.
 
         :param token: Token from EDL token.
         :returns: self
@@ -309,7 +308,7 @@ class Query:
         if not bearer_token:
             return self
 
-        self.headers = {'Authorization': f'Bearer {bearer_token}'}
+        self.headers.update({"Authorization": f"Bearer {bearer_token}"})
 
         return self
 
