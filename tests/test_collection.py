@@ -104,10 +104,10 @@ class TestCollectionClass(unittest.TestCase):
         query.cloud_hosted(True)
 
         self.assertIn("cloud_hosted", query.params)
-        self.assertEqual(query.params["cloud_hosted"], [True])
+        self.assertEqual(query.params["cloud_hosted"], True)
 
     def test_invalid_cloud_hosted(self):
         query = CollectionQuery()
 
-        with self.assertRaises(ValueError):
+        with self.assertRaises(TypeError):
             query.cloud_hosted("Test_string_for_cloud_hosted_param")
