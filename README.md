@@ -348,3 +348,10 @@ Run Tests
 ```shell
 poetry run pytest
 ```
+
+Run Type Checks
+---------------
+
+```shell
+poetry run mypy cmr tests
+```
