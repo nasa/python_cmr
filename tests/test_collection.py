@@ -98,3 +98,16 @@ class TestCollectionClass(unittest.TestCase):
 
         self.assertIn("Authorization", query.headers)
         self.assertEqual(query.headers["Authorization"], "Bearer 123TOKEN")
+
+    def test_cloud_hosted(self):
+        query = CollectionQuery()
+        query.cloud_hosted(True)
+
+        self.assertIn("cloud_hosted", query.params)
+        self.assertEqual(query.params["cloud_hosted"], True)
+
+    def test_invalid_cloud_hosted(self):
+        query = CollectionQuery()
+
+        with self.assertRaises(TypeError):
+            query.cloud_hosted("Test_string_for_cloud_hosted_param")  # type: ignore[arg-type]

@@ -920,6 +920,30 @@ class CollectionQuery(GranuleCollectionBaseQuery):
 
         return self
 
+    def cloud_hosted(self, cloud_hosted: bool) -> Self:
+        """
+        Filter collections to only those that are (or are not) hosted in cloud storage.
+        A cloud-hosted collection either has a `DirectDistributionInformation` element 
+        or is tagged with `gov.nasa.earthdatacloud.s3`.
+        
+        When this method is _not_ invoked, the query results may contain a mix of
+        cloud-hosted and non-cloud-hosted (on-premise) collections.
+
+        :param cloud_hosted: `True` to select _only_ cloud-hosted collections; `False` to
+            select only _non_-cloud-hosted (on-premise) collections
+        :returns: self
+
+        ..seealso::
+           `Find collections with data that is hosted in the cloud. <https://cmr.earthdata.nasa.gov/search/site/docs/search/api.html#c-cloud-hosted>`_
+              Documentation for finding cloud-hosted collections with the CMR Search API.
+        """
+        if not isinstance(cloud_hosted, bool):
+            raise TypeError("Cloud hosted must be of type bool")
+        
+        self.params["cloud_hosted"] = cloud_hosted
+
+        return self
+
     @override
     def _valid_state(self) -> bool:
         return True
