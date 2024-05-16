@@ -8,6 +8,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- [issues/54](https://github.com/nasa/python_cmr/issues/54) Added support for searching for cloud-hosted collections.
+
+## [Unreleased]
+
 ### Fixed
 
 - [issues/48](https://github.com/nasa/python_cmr/issues/48) When a query's
