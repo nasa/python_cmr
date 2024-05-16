@@ -919,6 +919,21 @@ class CollectionQuery(GranuleCollectionBaseQuery):
         self.params["service_concept_id"] = IDs
 
         return self
+    def cloud_hosted(self, cloud_hosted: bool) -> Self:
+        """
+        Filter collections to result only the ones that have a DirectDistributionInformation element 
+        or have been tagged with gov.nasa.earthdatacloud.s3
+
+        :param cloud_hosted: True to require the above results
+        :returns: self
+        """
+        if not isinstance(cloud_hosted, bool):
+            raise TypeError("Cloud hosted must be of type bool")
+        
+        self.params["cloud_hosted"] = cloud_hosted
+
+        return self
+
 
     @override
     def _valid_state(self) -> bool:
