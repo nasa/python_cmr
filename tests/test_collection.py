@@ -110,4 +110,4 @@ class TestCollectionClass(unittest.TestCase):
         query = CollectionQuery()
 
         with self.assertRaises(TypeError):
-            query.cloud_hosted("Test_string_for_cloud_hosted_param")
+            query.cloud_hosted("Test_string_for_cloud_hosted_param")  # type: ignore[arg-type]
