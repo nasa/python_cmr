@@ -85,3 +85,10 @@ class TestVariableClass(unittest.TestCase):
 
         self.assertIn("Authorization", query.headers)
         self.assertEqual(query.headers["Authorization"], "Bearer 123TOKEN")
+    
+    def test_archive_center(self):
+        query = VariableQuery()
+        query.instance_format("zarr")
+
+        self.assertIn("instance_format", query.params)
+        self.assertEqual(query.params["instance_format"], "zarr")
