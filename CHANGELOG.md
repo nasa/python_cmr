@@ -10,15 +10,17 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
-- [issues/54](https://github.com/nasa/python_cmr/issues/54) Added support for searching for cloud-hosted collections.
+- Support searching for cloud-hosted collections
+  ([#54](https://github.com/nasa/python_cmr/issues/54))
 
 ### Fixed
 
-- [issues/48](https://github.com/nasa/python_cmr/issues/48) When a query's
-  `Authorization` header is set via the `bearer_token` or `token` method, other
-  existing headers are no longer clobbered.  However, if multiple calls are made
-  to `bearer_token` and/or `token`, later calls overwrite the `Authorization`
-  setting of prior calls (i.e., the last call wins).
+- Do not clobber other headers when a query's `Authorization` header is set via
+  the `bearer_token` or `token` method.  However, if multiple calls are made to
+  the `bearer_token` and/or `token` methods, later calls overwrite the
+  `Authorization` setting of prior calls (i.e., the last call wins).
+  ([#48](https://github.com/nasa/python_cmr/issues/48))
+- Export `DayNightFlag` type alias ([#51](https://github.com/nasa/python_cmr/issues/51))
 
 ## [0.11.0]
 
