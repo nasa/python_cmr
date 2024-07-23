@@ -31,11 +31,10 @@ CMR_UAT = "https://cmr.uat.earthdata.nasa.gov/search/"
 CMR_SIT = "https://cmr.sit.earthdata.nasa.gov/search/"
 
 DateLike: TypeAlias = Union[str, date, datetime]
-DayNightFlag: TypeAlias = Union[
-    Literal["day"], Literal["night"], Literal["unspecified"]
-]
+DayNightFlag: TypeAlias = Literal["day", "night", "unspecified"]
 FloatLike: TypeAlias = Union[str, SupportsFloat]
 PointLike: TypeAlias = Tuple[FloatLike, FloatLike]
+
 
 class Query:
     """
@@ -285,7 +284,7 @@ class Query:
 
     def token(self, token: str) -> Self:
         """
-        Add token into authorization headers.
+        Set the value of this query's `Authorization` header to the given token.
 
         :param token: Token from EDL Echo-Token or NASA Launchpad token.
         :returns: self
@@ -294,13 +293,13 @@ class Query:
         if not token:
             return self
 
-        self.headers = {'Authorization': token}
+        self.headers.update({"Authorization": token})
 
         return self
 
     def bearer_token(self, bearer_token: str) -> Self:
         """
-        Add token into authorization headers.
+        Set the value of this query's `Authorization` header to the given bearer token.
 
         :param token: Token from EDL token.
         :returns: self
@@ -309,7 +308,7 @@ class Query:
         if not bearer_token:
             return self
 
-        self.headers = {'Authorization': f'Bearer {bearer_token}'}
+        self.headers.update({"Authorization": f"Bearer {bearer_token}"})
 
         return self
 
@@ -339,24 +338,19 @@ class GranuleCollectionBaseQuery(Query):
 
         return self
 
-    def temporal(
+    def _format_date(
         self,
         date_from: Optional[DateLike],
-        date_to: Optional[DateLike],
-        exclude_boundary: bool = False,
-    ) -> Self:
+        date_to: Optional[DateLike]
+    ) -> Tuple[str, str]:
         """
-        Filter by an open or closed date range.
-
-        Dates can be provided as native date objects or ISO 8601 formatted strings. Multiple
-        ranges can be provided by successive calls to this method before calling execute().
-
+        Format dates into expected format for date queries.
+        
         :param date_from: earliest date of temporal range
         :param date_to: latest date of temporal range
-        :param exclude_boundary: whether or not to exclude the date_from/to in the matched range
-        :returns: GranueQuery instance
+        :returns: Tuple instance
         """
-
+        
         iso_8601 = "%Y-%m-%dT%H:%M:%SZ"
 
         # process each date into a datetime object
@@ -396,6 +390,61 @@ class GranuleCollectionBaseQuery(Query):
         # if we have both dates, make sure from isn't later than to
         if date_from and date_to and date_from > date_to:
             raise ValueError("date_from must be earlier than date_to.")
+        
+        return date_from, date_to
+
+    def revision_date(
+        self,
+        date_from: Optional[DateLike],
+        date_to: Optional[DateLike],
+        exclude_boundary: bool = False,
+    ) -> Self:
+        """
+        Filter by an open or closed date range for a query that captures updated items.
+
+        Dates can be provided as native date objects or ISO 8601 formatted strings. Multiple
+        ranges can be provided by successive calls to this method before calling execute().
+
+        :param date_from: earliest date of temporal range
+        :param date_to: latest date of temporal range
+        :param exclude_boundary: whether or not to exclude the date_from/to in the matched range
+        :returns: GranueQuery instance
+        """
+        
+        date_from, date_to = self._format_date(date_from, date_to)
+
+        # good to go, make sure we have a param list
+        if "revision_date" not in self.params:
+            self.params["revision_date"] = []
+
+        self.params["revision_date"].append(f"{date_from},{date_to}")
+
+        if exclude_boundary:
+            self.options["revision_date"] = {
+                "exclude_boundary": True
+            }
+
+        return self
+
+    def temporal(
+        self,
+        date_from: Optional[DateLike],
+        date_to: Optional[DateLike],
+        exclude_boundary: bool = False,
+    ) -> Self:
+        """
+        Filter by an open or closed date range for a temporal query.
+
+        Dates can be provided as native date objects or ISO 8601 formatted strings. Multiple
+        ranges can be provided by successive calls to this method before calling execute().
+
+        :param date_from: earliest date of temporal range
+        :param date_to: latest date of temporal range
+        :param exclude_boundary: whether or not to exclude the date_from/to in the matched range
+        :returns: GranueQuery instance
+        """
+        
+        date_from, date_to = self._format_date(date_from, date_to)
 
         # good to go, make sure we have a param list
         if "temporal" not in self.params:
@@ -918,6 +967,30 @@ class CollectionQuery(GranuleCollectionBaseQuery):
                 )
 
         self.params["service_concept_id"] = IDs
+
+        return self
+
+    def cloud_hosted(self, cloud_hosted: bool) -> Self:
+        """
+        Filter collections to only those that are (or are not) hosted in cloud storage.
+        A cloud-hosted collection either has a `DirectDistributionInformation` element
+        or is tagged with `gov.nasa.earthdatacloud.s3`.
+
+        When this method is _not_ invoked, the query results may contain a mix of
+        cloud-hosted and non-cloud-hosted (on-premise) collections.
+
+        :param cloud_hosted: `True` to select _only_ cloud-hosted collections; `False` to
+            select only _non_-cloud-hosted (on-premise) collections
+        :returns: self
+
+        ..seealso::
+           `Find collections with data that is hosted in the cloud. <https://cmr.earthdata.nasa.gov/search/site/docs/search/api.html#c-cloud-hosted>`_
+              Documentation for finding cloud-hosted collections with the CMR Search API.
+        """  # noqa: E501
+        if not isinstance(cloud_hosted, bool):
+            raise TypeError("Cloud hosted must be of type bool")
+
+        self.params["cloud_hosted"] = cloud_hosted
 
         return self
 

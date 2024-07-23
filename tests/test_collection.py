@@ -98,3 +98,21 @@ class TestCollectionClass(unittest.TestCase):
 
         self.assertIn("Authorization", query.headers)
         self.assertEqual(query.headers["Authorization"], "Bearer 123TOKEN")
+
+    def test_cloud_hosted(self):
+        query = CollectionQuery()
+        query.cloud_hosted(True)
+
+        self.assertIn("cloud_hosted", query.params)
+        self.assertEqual(query.params["cloud_hosted"], True)
+
+    def test_invalid_cloud_hosted(self):
+        query = CollectionQuery()
+
+        with self.assertRaises(TypeError):
+            query.cloud_hosted("Test_string_for_cloud_hosted_param")  # type: ignore[arg-type]
+
+    def test_revision_date(self):
+        query = CollectionQuery()
+        collections = query.short_name("SWOT_L2_HR_RiverSP_reach_2.0").revision_date("2022-05-16", "2024-06-30").get_all()
+        self.assertEqual(collections[0]["dataset_id"], "SWOT Level 2 River Single-Pass Vector Reach Data Product, Version 2.0")

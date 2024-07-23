@@ -1,5 +1,6 @@
-import unittest
 from datetime import datetime, timezone, timedelta
+import json
+import unittest
 
 from cmr.queries import GranuleQuery
 
@@ -64,6 +65,20 @@ class TestGranuleClass(unittest.TestCase):
 
         self.assertIn(self.circle, query.params)
         self.assertEqual(query.params[self.circle], "10.0,15.1,1000")
+        
+    def test_revision_date(self):
+        query = GranuleQuery()
+        granules = query.short_name("SWOT_L2_HR_RiverSP_reach_2.0").revision_date("2024-07-05", "2024-07-05").format("umm_json").get_all()
+        granule_dict = {}
+        for granule in granules:
+            granule_json = json.loads(granule)
+            for item in granule_json["items"]:
+                native_id = item["meta"]["native-id"]
+                granule_dict[native_id] = item
+        
+        self.assertIn("SWOT_L2_HR_RiverSP_Reach_017_312_AS_20240630T042656_20240630T042706_PIC0_01_swot", granule_dict.keys())
+        self.assertIn("SWOT_L2_HR_RiverSP_Reach_017_310_SI_20240630T023426_20240630T023433_PIC0_01_swot", granule_dict.keys())
+        self.assertIn( "SWOT_L2_HR_RiverSP_Reach_017_333_EU_20240630T225156_20240630T225203_PIC0_01_swot", granule_dict.keys())
 
     def test_temporal_invalid_strings(self):
         query = GranuleQuery()

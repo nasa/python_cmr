@@ -13,6 +13,7 @@ my_vcr = vcr.VCR(
     # Header matching is not set by default, we need that to test the
     # search-after functionality is performing correctly.
     match_on=["method", "scheme", "host", "port", "path", "query", "headers"],
+    filter_headers=["user-agent"],
 )
 
 

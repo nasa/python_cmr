@@ -102,6 +102,9 @@ api.temporal("2016-10-10T01:02:00Z", "2016-10-12T00:00:30Z")
 api.temporal("2016-10-10T01:02:00Z", None)
 api.temporal(datetime(2016, 10, 10, 1, 2, 0), datetime.now())
 
+# search for granules by revision_date
+api.revision_date("2022-05-16", "2024-06-30")
+
 # only include granules available for download
 api.downloadable()
 
@@ -347,4 +350,11 @@ Run Tests
 
 ```shell
 poetry run pytest
+```
+
+Run Type Checks
+---------------
+
+```shell
+poetry run mypy cmr tests
 ```
