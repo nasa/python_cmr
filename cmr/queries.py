@@ -338,24 +338,19 @@ class GranuleCollectionBaseQuery(Query):
 
         return self
 
-    def temporal(
+    def _format_date(
         self,
         date_from: Optional[DateLike],
-        date_to: Optional[DateLike],
-        exclude_boundary: bool = False,
-    ) -> Self:
+        date_to: Optional[DateLike]
+    ) -> Tuple[str, str]:
         """
-        Filter by an open or closed date range.
-
-        Dates can be provided as native date objects or ISO 8601 formatted strings. Multiple
-        ranges can be provided by successive calls to this method before calling execute().
-
+        Format dates into expected format for date queries.
+        
         :param date_from: earliest date of temporal range
         :param date_to: latest date of temporal range
-        :param exclude_boundary: whether or not to exclude the date_from/to in the matched range
-        :returns: GranueQuery instance
+        :returns: Tuple instance
         """
-
+        
         iso_8601 = "%Y-%m-%dT%H:%M:%SZ"
 
         # process each date into a datetime object
@@ -395,6 +390,61 @@ class GranuleCollectionBaseQuery(Query):
         # if we have both dates, make sure from isn't later than to
         if date_from and date_to and date_from > date_to:
             raise ValueError("date_from must be earlier than date_to.")
+        
+        return date_from, date_to
+
+    def revision_date(
+        self,
+        date_from: Optional[DateLike],
+        date_to: Optional[DateLike],
+        exclude_boundary: bool = False,
+    ) -> Self:
+        """
+        Filter by an open or closed date range for a query that captures updated items.
+
+        Dates can be provided as native date objects or ISO 8601 formatted strings. Multiple
+        ranges can be provided by successive calls to this method before calling execute().
+
+        :param date_from: earliest date of temporal range
+        :param date_to: latest date of temporal range
+        :param exclude_boundary: whether or not to exclude the date_from/to in the matched range
+        :returns: GranueQuery instance
+        """
+        
+        date_from, date_to = self._format_date(date_from, date_to)
+
+        # good to go, make sure we have a param list
+        if "revision_date" not in self.params:
+            self.params["revision_date"] = []
+
+        self.params["revision_date"].append(f"{date_from},{date_to}")
+
+        if exclude_boundary:
+            self.options["revision_date"] = {
+                "exclude_boundary": True
+            }
+
+        return self
+
+    def temporal(
+        self,
+        date_from: Optional[DateLike],
+        date_to: Optional[DateLike],
+        exclude_boundary: bool = False,
+    ) -> Self:
+        """
+        Filter by an open or closed date range for a temporal query.
+
+        Dates can be provided as native date objects or ISO 8601 formatted strings. Multiple
+        ranges can be provided by successive calls to this method before calling execute().
+
+        :param date_from: earliest date of temporal range
+        :param date_to: latest date of temporal range
+        :param exclude_boundary: whether or not to exclude the date_from/to in the matched range
+        :returns: GranueQuery instance
+        """
+        
+        date_from, date_to = self._format_date(date_from, date_to)
 
         # good to go, make sure we have a param list
         if "temporal" not in self.params:

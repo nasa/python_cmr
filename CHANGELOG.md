@@ -12,6 +12,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Support searching for cloud-hosted collections
   ([#54](https://github.com/nasa/python_cmr/issues/54))
+- Option to search for collections and granules by `revision_date` ([#67](https://github.com/nasa/python_cmr/issues/67))
 
 ### Fixed
 
