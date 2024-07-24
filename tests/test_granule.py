@@ -8,7 +8,7 @@ from vcr.unittest import VCRTestCase
 from cmr.queries import GranuleQuery
 
 
-class TestGranuleClass(VCRTestCase):
+class TestGranuleClass(VCRTestCase):  # type: ignore
     short_name_val = "MOD09GA"
     short_name = "short_name"
 

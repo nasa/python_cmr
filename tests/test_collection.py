@@ -5,7 +5,7 @@ from vcr.unittest import VCRTestCase
 from cmr.queries import CollectionQuery
 
 
-class TestCollectionClass(VCRTestCase):
+class TestCollectionClass(VCRTestCase):  # type: ignore
 
     def _get_cassette_library_dir(self):
         testdir = os.path.dirname(inspect.getfile(self.__class__))
