@@ -1,0 +1,161 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: https://cmr.earthdata.nasa.gov/search/collections.json?short_name=SWOT_L2_HR_RiverSP_reach_2.0&revision_date%5B%5D=2022-05-16T00:00:00Z,2024-06-30T23:59:59Z&page_size=0
+  response:
+    body:
+      string: '{"feed":{"updated":"2024-07-24T18:40:48.200Z","id":"https://cmr.earthdata.nasa.gov:443/search/collections.json?short_name=SWOT_L2_HR_RiverSP_reach_2.0&revision_date%5B%5D=2022-05-16T00:00:00Z,2024-06-30T23:59:59Z&page_size=0","title":"ECHO
+        dataset metadata","entry":[]}}'
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - CMR-Hits, CMR-Request-Id, X-Request-Id, CMR-Scroll-Id, CMR-Search-After, CMR-Timed-Out,
+        CMR-Shapefile-Original-Point-Count, CMR-Shapefile-Simplified-Point-Count
+      CMR-Hits:
+      - '1'
+      CMR-Request-Id:
+      - dd918f86-6462-4b20-843b-ef0cf3e0500f
+      CMR-Took:
+      - '7'
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-MD5:
+      - da83afa63c54013df7facc0a68b37c8b
+      Content-SHA1:
+      - 3f0d613a7cfd1095529025c1d7f57441c5fe6afc
+      Content-Type:
+      - application/json;charset=utf-8
+      Date:
+      - Wed, 24 Jul 2024 18:40:48 GMT
+      Server:
+      - ServerTokens ProductOnly
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding, User-Agent
+      Via:
+      - 1.1 be66acbcc5d85e825abf1047b034d722.cloudfront.net (CloudFront)
+      X-Amz-Cf-Id:
+      - h403uqWqDTNzd4_92DL5wG5vroO1lOV9wDdyDt9AHlPNC33w_IcirQ==
+      X-Amz-Cf-Pop:
+      - LAX50-C1
+      X-Cache:
+      - Miss from cloudfront
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Request-Id:
+      - h403uqWqDTNzd4_92DL5wG5vroO1lOV9wDdyDt9AHlPNC33w_IcirQ==
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: https://cmr.earthdata.nasa.gov/search/collections.json?short_name=SWOT_L2_HR_RiverSP_reach_2.0&revision_date%5B%5D=2022-05-16T00:00:00Z,2024-06-30T23:59:59Z&page_size=1
+  response:
+    body:
+      string: '{"feed":{"updated":"2024-07-24T18:40:48.528Z","id":"https://cmr.earthdata.nasa.gov:443/search/collections.json?short_name=SWOT_L2_HR_RiverSP_reach_2.0&revision_date%5B%5D=2022-05-16T00:00:00Z,2024-06-30T23:59:59Z&page_size=1","title":"ECHO
+        dataset metadata","entry":[{"processing_level_id":"2","cloud_hosted":true,"boxes":["-90
+        -180 90 180"],"has_combine":false,"time_start":"2022-12-16T00:00:00.000Z","version_id":"2.0","updated":"2022-07-20T18:09:34.000Z","dataset_id":"SWOT
+        Level 2 River Single-Pass Vector Reach Data Product, Version 2.0","has_spatial_subsetting":false,"has_transforms":false,"associations":{"tools":["TL2108419875-POCLOUD"]},"has_variables":false,"data_center":"POCLOUD","short_name":"SWOT_L2_HR_RiverSP_reach_2.0","organizations":["NASA/JPL/PODAAC","Jet
+        Propulsion Laboratory"],"title":"SWOT Level 2 River Single-Pass Vector Reach
+        Data Product, Version 2.0","coordinate_system":"CARTESIAN","summary":"The
+        SWOT Level 2 River Single-Pass Vector Reach Data Product from the Surface
+        Water Ocean Topography (SWOT) mission provides water surface elevation, slope,
+        width, and discharge derived from the high rate (HR) data stream from the
+        Ka-band Radar Interferometer (KaRIn). SWOT launched on December 16, 2022 from
+        Vandenberg Air Force Base in California into a 1-day repeat orbit for the
+        \"calibration\" or \"fast-sampling\" phase of the mission, which completed
+        in early July 2023. After the calibration phase, SWOT entered a 21-day repeat
+        orbit in August 2023 to start the \"science\" phase of the mission, which
+        is expected to continue through 2025. <br>\r\nWater surface elevation, slope,
+        width, and discharge are provided for river reaches (approximately 10 km long)
+        and nodes (approximately 200 m spacing) identified in the prior river database,
+        and distributed as feature datasets covering the full swath for each continent-pass.
+        These data are generally produced for inland and coastal hydrology surfaces,
+        as controlled by the reloadable KaRIn HR mask. The dataset is distributed
+        in ESRI Shapefile format. <br>\r\nThis collection is a sub-collection of its
+        parent: https://podaac.jpl.nasa.gov/dataset/SWOT_L2_HR_RiverSP_2.0 It contains
+        only river reaches.\r\n","service_features":{"opendap":{"has_formats":false,"has_variables":false,"has_transforms":false,"has_combine":false,"has_spatial_subsetting":false,"has_temporal_subsetting":false},"esi":{"has_formats":false,"has_variables":false,"has_transforms":false,"has_combine":false,"has_spatial_subsetting":false,"has_temporal_subsetting":false},"harmony":{"has_formats":false,"has_variables":false,"has_transforms":false,"has_combine":false,"has_spatial_subsetting":false,"has_temporal_subsetting":false}},"orbit_parameters":{"swath_width":"120.0","period":"102.89","inclination_angle":"77.6","number_of_orbits":"0.5"},"id":"C2799438303-POCLOUD","has_formats":false,"consortiums":["GEOSS","EOSDIS"],"original_format":"UMM_JSON","archive_center":"NASA/JPL/PODAAC","has_temporal_subsetting":false,"browse_flag":true,"platforms":["SWOT"],"association_details":{"tools":[{"concept_id":"TL2108419875-POCLOUD"}]},"online_access_flag":true,"links":[{"rel":"http://esipfed.org/ns/fedsearch/1.1/documentation#","hreflang":"en-US","href":"https://archive.podaac.earthdata.nasa.gov/podaac-ops-cumulus-docs/web-misc/swot_mission_docs/D-109532_SWOT_UserHandbook_20240502.pdf"},{"rel":"http://esipfed.org/ns/fedsearch/1.1/metadata#","hreflang":"en-US","href":"https://swot.jpl.nasa.gov"},{"rel":"http://esipfed.org/ns/fedsearch/1.1/documentation#","hreflang":"en-US","href":"https://www.nasa.gov/swot"},{"rel":"http://esipfed.org/ns/fedsearch/1.1/documentation#","hreflang":"en-US","href":"https://www.jpl.nasa.gov/missions/surface-water-and-ocean-topography-swot"},{"rel":"http://esipfed.org/ns/fedsearch/1.1/documentation#","hreflang":"en-US","href":"https://podaac.jpl.nasa.gov/swot"},{"rel":"http://esipfed.org/ns/fedsearch/1.1/documentation#","hreflang":"en-US","href":"https://www.aviso.altimetry.fr/en/missions/current-missions/swot.html"},{"rel":"http://esipfed.org/ns/fedsearch/1.1/metadata#","hreflang":"en-US","href":"https://github.com/podaac/data-subscriber"},{"rel":"http://esipfed.org/ns/fedsearch/1.1/documentation#","hreflang":"en-US","href":"https://podaac.jpl.nasa.gov/CitingPODAAC"},{"length":"0.0MB","rel":"http://esipfed.org/ns/fedsearch/1.1/data#","hreflang":"en-US","href":"https://cmr.earthdata.nasa.gov/virtual-directory/collections/C2799438303-POCLOUD"},{"length":"0.0MB","rel":"http://esipfed.org/ns/fedsearch/1.1/data#","hreflang":"en-US","href":"https://search.earthdata.nasa.gov/search/granules?p=C2799438303-POCLOUD"},{"rel":"http://esipfed.org/ns/fedsearch/1.1/browse#","hreflang":"en-US","href":"https://podaac.jpl.nasa.gov/Podaac/thumbnails/SWOT_L2_HR_RiverSP_2.0.jpg"},{"rel":"http://esipfed.org/ns/fedsearch/1.1/documentation#","hreflang":"en-US","href":"https://archive.podaac.earthdata.nasa.gov/podaac-ops-cumulus-docs/web-misc/swot_mission_docs/pdd/D-56413_SWOT_Product_Description_L2_HR_RiverSP_20231026_RevBcite.pdf"},{"rel":"http://esipfed.org/ns/fedsearch/1.1/documentation#","hreflang":"en-US","href":"https://archive.podaac.earthdata.nasa.gov/podaac-ops-cumulus-docs/web-misc/swot_mission_docs/atbd/D-105505_SWOT_ATBD_L2_HR_RiverSP_20230713_cite.pdf"},{"rel":"http://esipfed.org/ns/fedsearch/1.1/documentation#","hreflang":"en-US","href":"https://archive.podaac.earthdata.nasa.gov/podaac-ops-cumulus-docs/web-misc/swot_mission_docs/releases/SWOT_VersionC_KaRIn_Products_Release_Note.pdf"},{"rel":"http://esipfed.org/ns/fedsearch/1.1/data#","hreflang":"en-US","href":"https://search.earthdata.nasa.gov/search/granules?p=C2799438303-POCLOUD&pg[0][id]=*PIC0*"},{"rel":"http://esipfed.org/ns/fedsearch/1.1/data#","hreflang":"en-US","href":"https://search.earthdata.nasa.gov/search/granules?p=C2799438303-POCLOUD&pg[0][id]=*PGC0*"}]}]}}'
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - CMR-Hits, CMR-Request-Id, X-Request-Id, CMR-Scroll-Id, CMR-Search-After, CMR-Timed-Out,
+        CMR-Shapefile-Original-Point-Count, CMR-Shapefile-Simplified-Point-Count
+      CMR-Hits:
+      - '1'
+      CMR-Request-Id:
+      - 3dc62b13-d655-4fb2-9501-86d4fe4bac33
+      CMR-Search-After:
+      - '[0.0,0.0,"SWOT_L2_HR_RiverSP_reach_2.0","2.0",2799438303,17]'
+      CMR-Took:
+      - '28'
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-MD5:
+      - 321ef7a8dddbccf4d89752a0dfc87d19
+      Content-SHA1:
+      - d19df2c0e8b731fe90cbefca84ae96c9b571e269
+      Content-Type:
+      - application/json;charset=utf-8
+      Date:
+      - Wed, 24 Jul 2024 18:40:48 GMT
+      Server:
+      - ServerTokens ProductOnly
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding, User-Agent
+      Via:
+      - 1.1 cd236f377f553d8e8fa1282f0470b626.cloudfront.net (CloudFront)
+      X-Amz-Cf-Id:
+      - CM7irEwnXas74pCH0I7RJekIvBuDI_Z5Z4n10b0aa1oc_dOvHGGFIA==
+      X-Amz-Cf-Pop:
+      - LAX50-C1
+      X-Cache:
+      - Miss from cloudfront
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Request-Id:
+      - CM7irEwnXas74pCH0I7RJekIvBuDI_Z5Z4n10b0aa1oc_dOvHGGFIA==
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+version: 1

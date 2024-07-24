@@ -1,9 +1,15 @@
-import unittest
+import inspect
+import os
+from vcr.unittest import VCRTestCase
 
 from cmr.queries import CollectionQuery
 
 
-class TestCollectionClass(unittest.TestCase):
+class TestCollectionClass(VCRTestCase):
+
+    def _get_cassette_library_dir(self):
+        testdir = os.path.dirname(inspect.getfile(self.__class__))
+        return os.path.join(testdir, "fixtures", "vcr_cassettes")
 
     def test_archive_center(self):
         query = CollectionQuery()
