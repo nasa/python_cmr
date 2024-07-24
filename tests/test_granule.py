@@ -1,11 +1,14 @@
+import inspect
+import os
 from datetime import datetime, timezone, timedelta
 import json
-import unittest
+from vcr.unittest import VCRTestCase
+
 
 from cmr.queries import GranuleQuery
 
 
-class TestGranuleClass(unittest.TestCase):
+class TestGranuleClass(VCRTestCase):  # type: ignore
     short_name_val = "MOD09GA"
     short_name = "short_name"
 
@@ -26,6 +29,13 @@ class TestGranuleClass(unittest.TestCase):
     readable_granule_name = "readable_granule_name"
 
     sort_key = "sort_key"
+
+    def _get_vcr_kwargs(self, **kwargs):
+        kwargs['decode_compressed_response'] = True
+        return kwargs
+    def _get_cassette_library_dir(self):
+        testdir = os.path.dirname(inspect.getfile(self.__class__))
+        return os.path.join(testdir, "fixtures", "vcr_cassettes")
 
     def test_short_name(self):
         query = GranuleQuery()
