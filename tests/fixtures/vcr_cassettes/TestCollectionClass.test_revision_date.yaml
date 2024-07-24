@@ -14,7 +14,7 @@ interactions:
     uri: https://cmr.earthdata.nasa.gov/search/collections.json?short_name=SWOT_L2_HR_RiverSP_reach_2.0&revision_date%5B%5D=2022-05-16T00:00:00Z,2024-06-30T23:59:59Z&page_size=0
   response:
     body:
-      string: '{"feed":{"updated":"2024-07-24T18:40:48.200Z","id":"https://cmr.earthdata.nasa.gov:443/search/collections.json?short_name=SWOT_L2_HR_RiverSP_reach_2.0&revision_date%5B%5D=2022-05-16T00:00:00Z,2024-06-30T23:59:59Z&page_size=0","title":"ECHO
+      string: '{"feed":{"updated":"2024-07-24T19:29:01.615Z","id":"https://cmr.earthdata.nasa.gov:443/search/collections.json?short_name=SWOT_L2_HR_RiverSP_reach_2.0&revision_date%5B%5D=2022-05-16T00:00:00Z,2024-06-30T23:59:59Z&page_size=0","title":"ECHO
         dataset metadata","entry":[]}}'
     headers:
       Access-Control-Allow-Origin:
@@ -25,21 +25,19 @@ interactions:
       CMR-Hits:
       - '1'
       CMR-Request-Id:
-      - dd918f86-6462-4b20-843b-ef0cf3e0500f
+      - acc73ef8-d8f2-4e52-82d4-b71f8af630d2
       CMR-Took:
-      - '7'
+      - '10'
       Connection:
       - keep-alive
-      Content-Encoding:
-      - gzip
       Content-MD5:
-      - da83afa63c54013df7facc0a68b37c8b
+      - 4a72e8db8f8d5f7993037d9b48c349bc
       Content-SHA1:
-      - 3f0d613a7cfd1095529025c1d7f57441c5fe6afc
+      - e72bceffec1e47e878bfe22a5e57cb8af2d629e5
       Content-Type:
       - application/json;charset=utf-8
       Date:
-      - Wed, 24 Jul 2024 18:40:48 GMT
+      - Wed, 24 Jul 2024 19:29:01 GMT
       Server:
       - ServerTokens ProductOnly
       Strict-Transport-Security:
@@ -49,9 +47,9 @@ interactions:
       Vary:
       - Accept-Encoding, User-Agent
       Via:
-      - 1.1 be66acbcc5d85e825abf1047b034d722.cloudfront.net (CloudFront)
+      - 1.1 e7bb4715b4022f24c8168e522aecfcd6.cloudfront.net (CloudFront)
       X-Amz-Cf-Id:
-      - h403uqWqDTNzd4_92DL5wG5vroO1lOV9wDdyDt9AHlPNC33w_IcirQ==
+      - Ka74QMokmAzxrF3S3CoDX1vYJotJnvVSESrWYMewYbVoi5K1lL6CMA==
       X-Amz-Cf-Pop:
       - LAX50-C1
       X-Cache:
@@ -61,9 +59,11 @@ interactions:
       X-Frame-Options:
       - SAMEORIGIN
       X-Request-Id:
-      - h403uqWqDTNzd4_92DL5wG5vroO1lOV9wDdyDt9AHlPNC33w_IcirQ==
+      - Ka74QMokmAzxrF3S3CoDX1vYJotJnvVSESrWYMewYbVoi5K1lL6CMA==
       X-XSS-Protection:
       - 1; mode=block
+      content-length:
+      - '270'
     status:
       code: 200
       message: OK
@@ -82,7 +82,7 @@ interactions:
     uri: https://cmr.earthdata.nasa.gov/search/collections.json?short_name=SWOT_L2_HR_RiverSP_reach_2.0&revision_date%5B%5D=2022-05-16T00:00:00Z,2024-06-30T23:59:59Z&page_size=1
   response:
     body:
-      string: '{"feed":{"updated":"2024-07-24T18:40:48.528Z","id":"https://cmr.earthdata.nasa.gov:443/search/collections.json?short_name=SWOT_L2_HR_RiverSP_reach_2.0&revision_date%5B%5D=2022-05-16T00:00:00Z,2024-06-30T23:59:59Z&page_size=1","title":"ECHO
+      string: '{"feed":{"updated":"2024-07-24T19:29:01.805Z","id":"https://cmr.earthdata.nasa.gov:443/search/collections.json?short_name=SWOT_L2_HR_RiverSP_reach_2.0&revision_date%5B%5D=2022-05-16T00:00:00Z,2024-06-30T23:59:59Z&page_size=1","title":"ECHO
         dataset metadata","entry":[{"processing_level_id":"2","cloud_hosted":true,"boxes":["-90
         -180 90 180"],"has_combine":false,"time_start":"2022-12-16T00:00:00.000Z","version_id":"2.0","updated":"2022-07-20T18:09:34.000Z","dataset_id":"SWOT
         Level 2 River Single-Pass Vector Reach Data Product, Version 2.0","has_spatial_subsetting":false,"has_transforms":false,"associations":{"tools":["TL2108419875-POCLOUD"]},"has_variables":false,"data_center":"POCLOUD","short_name":"SWOT_L2_HR_RiverSP_reach_2.0","organizations":["NASA/JPL/PODAAC","Jet
@@ -114,23 +114,21 @@ interactions:
       CMR-Hits:
       - '1'
       CMR-Request-Id:
-      - 3dc62b13-d655-4fb2-9501-86d4fe4bac33
+      - f772da59-8ea2-4798-87d0-48b3c84e8ca8
       CMR-Search-After:
       - '[0.0,0.0,"SWOT_L2_HR_RiverSP_reach_2.0","2.0",2799438303,17]'
       CMR-Took:
-      - '28'
+      - '13'
       Connection:
       - keep-alive
-      Content-Encoding:
-      - gzip
       Content-MD5:
-      - 321ef7a8dddbccf4d89752a0dfc87d19
+      - 2146b3022cb69125f7d887b93389bd22
       Content-SHA1:
-      - d19df2c0e8b731fe90cbefca84ae96c9b571e269
+      - d0e61cb955cd0755e08b316de2326dfc1c5c24f6
       Content-Type:
       - application/json;charset=utf-8
       Date:
-      - Wed, 24 Jul 2024 18:40:48 GMT
+      - Wed, 24 Jul 2024 19:29:01 GMT
       Server:
       - ServerTokens ProductOnly
       Strict-Transport-Security:
@@ -140,9 +138,9 @@ interactions:
       Vary:
       - Accept-Encoding, User-Agent
       Via:
-      - 1.1 cd236f377f553d8e8fa1282f0470b626.cloudfront.net (CloudFront)
+      - 1.1 db4ef757de4ce45a85608dca59f8151c.cloudfront.net (CloudFront)
       X-Amz-Cf-Id:
-      - CM7irEwnXas74pCH0I7RJekIvBuDI_Z5Z4n10b0aa1oc_dOvHGGFIA==
+      - YzYw2nEi21JiyClxOyXZuW7zIjIQbAZ-7EZkBdHARCbgdMXLbPtRwA==
       X-Amz-Cf-Pop:
       - LAX50-C1
       X-Cache:
@@ -152,9 +150,11 @@ interactions:
       X-Frame-Options:
       - SAMEORIGIN
       X-Request-Id:
-      - CM7irEwnXas74pCH0I7RJekIvBuDI_Z5Z4n10b0aa1oc_dOvHGGFIA==
+      - YzYw2nEi21JiyClxOyXZuW7zIjIQbAZ-7EZkBdHARCbgdMXLbPtRwA==
       X-XSS-Protection:
       - 1; mode=block
+      content-length:
+      - '5842'
     status:
       code: 200
       message: OK

@@ -30,6 +30,9 @@ class TestGranuleClass(VCRTestCase):  # type: ignore
 
     sort_key = "sort_key"
 
+    def _get_vcr_kwargs(self, **kwargs):
+        kwargs['decode_compressed_response'] = True
+        return kwargs
     def _get_cassette_library_dir(self):
         testdir = os.path.dirname(inspect.getfile(self.__class__))
         return os.path.join(testdir, "fixtures", "vcr_cassettes")
