@@ -189,9 +189,15 @@ class Query:
             # list params require slightly different formatting
             if isinstance(val, list):
                 for list_val in val:
-                    formatted_params.append(f"{key}[]={list_val}")
+                    if isinstance(list_val, tuple):
+                            lon,lat = list_val
+                            formatted_params.append(f"{key}={lon},{lat}")
+                    else:
+                        formatted_params.append(f"{key}[]={list_val}")
+
             elif isinstance(val, bool):
                 formatted_params.append(f"{key}={str(val).lower()}")
+
             else:
                 formatted_params.append(f"{key}={val}")
 
@@ -495,14 +501,29 @@ class GranuleCollectionBaseQuery(Query):
         :param lon: longitude of geographic point
         :param lat: latitude of geographic point
         :returns: self
-        """
 
+        """
         # coordinates must be a float
         lon = float(lon)
         lat = float(lat)
 
         self.params['point'] = f"{lon},{lat}"
 
+        return self
+    
+    def multipoint(self, points: List[Tuple[float,float]]) -> Self:
+        """
+        Filter by granules that include a set of geographic points.
+
+        :param points: multiple geographic points, where each point is a tuple of (longitude, latitude)
+
+        :returns: self
+        
+        """
+        # coordinates must be a float
+            
+        self.params['point'] = [(lon,lat) for lon,lat in points]
+        
         return self
 
     def circle(self, lon: FloatLike, lat: FloatLike, dist: FloatLike) -> Self:

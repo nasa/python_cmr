@@ -8,6 +8,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+- Support for mutliple-point searches ([#72](https://github.com/nasa/python_cmr/issues/72))
+
 ### Fixed
 - Setup vcrpy for new `revision_date` unit tests ([#70](https://github.com/nasa/python_cmr/issues/70))
 
