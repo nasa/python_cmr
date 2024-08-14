@@ -57,7 +57,15 @@ class TestGranuleClass(VCRTestCase):  # type: ignore
         query.point(10, 15.1)
 
         self.assertIn(self.point, query.params)
-        self.assertEqual(query.params[self.point], "10.0,15.1")
+        self.assertEqual(query.params[self.point], ["10.0,15.1"])
+
+    def test_points_set(self):
+        query = GranuleQuery()
+
+        query.point(10, 15.1).point(20.4, 10.2)
+
+        self.assertIn(self.point, query.params)
+        self.assertEqual(query.params[self.point], ["10.0,15.1", "20.4,10.2"])    
 
     def test_point_invalid_set(self):
         query = GranuleQuery()
