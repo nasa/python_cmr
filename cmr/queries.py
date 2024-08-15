@@ -502,8 +502,8 @@ class GranuleCollectionBaseQuery(Query):
         :param lon: longitude of geographic point
         :param lat: latitude of geographic point
         :returns: self
-
         """
+        
         # coordinates must be a float
         lon = float(lon)
         lat = float(lat)

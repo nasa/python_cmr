@@ -483,7 +483,7 @@ class TestGranuleClass(VCRTestCase):  # type: ignore
 
         self.assertEqual(query.params["short_name"], "AST_L1T")
         self.assertEqual(query.params["version"], "003")
-        self.assertEqual(query.params["point"], "-100.0,42.0")
+        self.assertEqual(query.params["point"], ["-100.0,42.0"])
 
     def test_invalid_parameters(self):
         query = GranuleQuery()
