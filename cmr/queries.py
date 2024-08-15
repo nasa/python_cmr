@@ -656,7 +656,90 @@ class GranuleCollectionBaseQuery(Query):
         self.params['entry_title'] = entry_title
 
         return self
+    
+    def option_ignore_case(self, parameter: str, value: bool = True) -> Self:
+        """
+        Set this Query's ignore_case option for the specified parameter
+        :param parameter: search parameter to specify ignore_case option for
+        :param value: value for ignore_case option
+        :returns: self
+        :raises: Will raise if invalid parameter provided
+        """
 
+        if not parameter:
+            return self
+
+        valid_parameters = dict(getmembers(self, predicate=ismethod)).keys()
+
+        if parameter not in valid_parameters:
+            raise ValueError(f"Unknown parameter {parameter}")
+
+        self.options[parameter] = {"ignore_case": value}
+
+        return self
+
+    def option_and(self, parameter: str, value: bool = True) -> Self:
+        """
+        Set this Query's and option for the specified parameter
+        :param parameter: search parameter to specify and option for
+        :param value: value for and option
+        :returns: self
+        :raises: Will raise if invalid parameter provided
+        """
+
+        if not parameter:
+            return self
+
+        valid_parameters = dict(getmembers(self, predicate=ismethod)).keys()
+
+        if parameter not in valid_parameters:
+            raise ValueError(f"Unknown parameter {parameter}")
+
+        self.options[parameter] = {"and": value}
+        
+        return self
+
+    def option_or(self, parameter: str, value: bool = True) -> Self:
+        """
+        Set this Query's or option for the specified parameter
+        :param parameter: search parameter to specify or option for
+        :param value: value for or option
+        :returns: self
+        :raises: Will raise if invalid parameter provided
+        """
+
+        if not parameter:
+            return self
+        
+        valid_parameters = dict(getmembers(self, predicate=ismethod)).keys()
+
+        if parameter not in valid_parameters:
+            raise ValueError(f"Unknown parameter {parameter}")
+        
+        self.options[parameter] = {"or": value}
+
+        return self
+
+    def option_pattern(self, parameter: str, value: bool = True) -> Self:
+        """
+        Set this Query's pattern option for the specified parameter
+        :param parameter: Query parameter to specify pattern option for
+        :param value: value for pattern option
+        :returns: self
+        :raises: Will raise if invalid parameter provided
+        """
+        
+        if not parameter:
+            return self
+
+        valid_parameters = dict(getmembers(self, predicate=ismethod)).keys()
+
+        if parameter not in valid_parameters:
+            raise ValueError(f"Unknown parameter {parameter}")
+        
+        self.options[parameter] = {"pattern": value}
+
+        return self
 
 class GranuleQuery(GranuleCollectionBaseQuery):
     """
