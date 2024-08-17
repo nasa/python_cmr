@@ -3,6 +3,7 @@ Contains all CMR query types.
 """
 
 from abc import abstractmethod
+from collections import defaultdict
 from datetime import date, datetime, timezone
 from inspect import getmembers, ismethod
 from re import search
@@ -51,7 +52,7 @@ class Query:
 
     def __init__(self, route: str, mode: str = CMR_OPS):
         self.params: MutableMapping[str, Any] = {}
-        self.options: MutableMapping[str, Any] = {}
+        self.options: MutableMapping[str, MutableMapping[str, Any]] = defaultdict(dict)
         self._route = route
         self.mode(mode)
         self.concept_id_chars: Set[str] = set()
@@ -201,13 +202,6 @@ class Query:
         formatted_options: List[str] = []
         for param_key in self.options:
             for option_key, val in self.options[param_key].items():
-
-                # all CMR options must be booleans
-                if not isinstance(val, bool):
-                    raise TypeError(
-                        f"parameter '{param_key}' with option '{option_key}' must be a boolean"
-                    )
-
                 formatted_options.append(f"options[{param_key}][{option_key}]={str(val).lower()}")
 
         options_as_string = "&".join(formatted_options)
@@ -311,119 +305,60 @@ class Query:
         self.headers.update({"Authorization": f"Bearer {bearer_token}"})
 
         return self
-    
-    def option_ignore_case(self, parameter: str, value: bool = True) -> Self:
+
+    def option(
+        self, parameter: str, key: str, value: Union[str, bool, int, float, None]
+    ) -> Self:
         """
-        Set this query's `ignore_case` parameter option for the specified parameter.
+        Set or remove a search parameter option.
 
-        See `CMR Search API Search Options`_.
+        If either an empty parameter name or option key is given, do nothing.
+        Otherwise, if a non-`None` option value is given, set the specified parameter
+        option to the value; else _remove_ the parameter option, if previously given.
 
-        .. _CMR Search API Search Options:
+        In all cases, return self to support method chaining.
+
+        See `CMR Search API Parameter Options`_ as well as other sections of the
+        documentation that describe other available parameter options.
+
+        .. _CMR Search API Parameter Options:
            https://cmr.earthdata.nasa.gov/search/site/docs/search/api.html#parameter-options
 
-        :param parameter: search parameter to specify `ignore_case` option for
-        :param value: specify `True` (default) to retrieve results matching _any_ of the
-            values set for the parameter; `False` to retrieve _only_ results matching
-            _all_ values set for the parameter
+        Example:
+
+        .. code:: python
+
+           >>> query = CollectionQuery()
+           >>> query.option("short_name", "ignore_case", True)  # doctest: +ELLIPSIS
+           <cmr.queries.CollectionQuery ...>
+           >>> query.options  # doctest: +ELLIPSIS
+           defaultdict(..., {'short_name': {'ignore_case': True}})
+           >>> query.option("short_name", "ignore_case", False)  # doctest: +ELLIPSIS
+           <cmr.queries.CollectionQuery ...>
+           >>> query.options  # doctest: +ELLIPSIS
+           defaultdict(..., {'short_name': {'ignore_case': False}})
+           >>> (query
+           ... .option("short_name", "ignore_case", None)  # remove an option
+           ... .option("short_name", "or", True)
+           ... .option("highlights", "begin_tag", "<b>")
+           ... .option("highlights", "end_tag", "</b>")
+           ... )
+           <cmr.queries.CollectionQuery ...>
+           >>> query.options  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
+           defaultdict(..., {'short_name': {'or': True},
+           'highlights': {'begin_tag': '<b>', 'end_tag': '</b>'}})
+
+        :param parameter: search parameter to set an option for
+        :param key: option key to set a value for
+        :param value: value to set for the option, or `None` to remove the option
         :returns: self
-        :raises: `ValueError` if invalid parameter provided
         """
 
-        if not parameter:
-            return self
-
-        valid_parameters = dict(getmembers(self, predicate=ismethod)).keys()
-
-        if parameter not in valid_parameters:
-            raise ValueError(f"Unknown parameter: {parameter}")
-
-        self.options[parameter] = {"ignore_case": value}
-
-        return self
-
-    def option_and(self, parameter: str, value: bool = True) -> Self:
-        """
-        Set this query's `and` parameter option for the specified parameter.
-
-        See `CMR Search API Search Options`_.
-
-        .. _CMR Search API Search Options:
-           https://cmr.earthdata.nasa.gov/search/site/docs/search/api.html#parameter-options
-
-        :param parameter: search parameter to specify `and` option for
-        :param value: specify `True` (default) to retrieve results matching _any_ of the
-            values set for the parameter; `False` to retrieve _only_ results matching
-            _all_ values set for the parameter
-        :returns: self
-        :raises: `ValueError` if invalid parameter provided
-        """
-
-        if not parameter:
-            return self
-
-        valid_parameters = dict(getmembers(self, predicate=ismethod)).keys()
-
-        if parameter not in valid_parameters:
-            raise ValueError(f"Unknown parameter: {parameter}")
-
-        self.options[parameter] = {"and": value}
-        
-        return self
-
-    def option_or(self, parameter: str, value: bool = True) -> Self:
-        """
-        Set this query's `or` parameter option for the specified parameter.
-
-        See `CMR Search API Search Options`_.
-
-        .. _CMR Search API Search Options:
-           https://cmr.earthdata.nasa.gov/search/site/docs/search/api.html#parameter-options
-
-        :param parameter: search parameter to specify `or` option for
-        :param value: specify `True` (default) to retrieve results matching _any_ of the
-            values set for the parameter; `False` to retrieve _only_ results matching
-            _all_ values set for the parameter
-        :returns: self
-        :raises: `ValueError` if invalid parameter provided
-        """
-        if not parameter:
-            return self
-        
-        valid_parameters = dict(getmembers(self, predicate=ismethod)).keys()
-
-        if parameter not in valid_parameters:
-            raise ValueError(f"Unknown parameter: {parameter}")
-        
-        self.options[parameter] = {"or": value}
-
-        return self
-
-    def option_pattern(self, parameter: str, value: bool = True) -> Self:
-        """
-        Set this query's `pattern` parameter option for the specified parameter.
-
-        See `CMR Search API Search Options`_.
-
-        .. _CMR Search API Search Options:
-           https://cmr.earthdata.nasa.gov/search/site/docs/search/api.html#parameter-options
-
-        :param parameter: search parameter to specify `pattern` option for
-        :param value: specify `True` (default) to retrieve results matching _any_ of the
-            values set for the parameter; `False` to retrieve _only_ results matching
-            _all_ values set for the parameter
-        :returns: self
-        :raises: `ValueError` if invalid parameter provided
-        """
-
-        if not parameter:
-            return self
-
-        valid_parameters = dict(getmembers(self, predicate=ismethod)).keys()
-
-        if parameter not in valid_parameters:
-            raise ValueError(f"Unknown parameter: {parameter}")
-        
-        self.options[parameter] = {"pattern": value}
+        if parameter and key:
+            if value is None:
+                del self.options[parameter][key]
+            else:
+                self.options[parameter][key] = value
 
         return self
 
