@@ -1,4 +1,4 @@
-from cmr import CollectionQuery, Query
+from cmr import Query
 
 
 class MockQuery(Query):
