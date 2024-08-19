@@ -190,8 +190,10 @@ class Query:
             if isinstance(val, list):
                 for list_val in val:
                     formatted_params.append(f"{key}[]={list_val}")
+
             elif isinstance(val, bool):
                 formatted_params.append(f"{key}={str(val).lower()}")
+
             else:
                 formatted_params.append(f"{key}={val}")
 
@@ -490,18 +492,26 @@ class GranuleCollectionBaseQuery(Query):
 
     def point(self, lon: FloatLike, lat: FloatLike) -> Self:
         """
-        Filter by granules that include a geographic point.
+        Filter by granules that include one or more geographic points. Call this method
+        once for each point of interest.
 
+        By default, query results will include items that include _all_ given points.
+        To return items that include _any_ given point, set the option on your `query`
+        instance like so: `query.options["point"] = {"or": True}`
+ 
         :param lon: longitude of geographic point
         :param lat: latitude of geographic point
         :returns: self
         """
-
+        
         # coordinates must be a float
         lon = float(lon)
         lat = float(lat)
+        
+        if "point" not in self.params:
+            self.params["point"] = []
 
-        self.params['point'] = f"{lon},{lat}"
+        self.params["point"].append(f"{lon},{lat}")
 
         return self
 
