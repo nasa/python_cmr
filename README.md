@@ -169,6 +169,9 @@ api.tool_concept_id('TL2092786348-POCLOUD')
 
 # filter by service concept id
 api.service_concept_id('S1962070864-POCLOUD')
+
+# filter by processing level id
+api.processing_level_id('3')
 ```
 
 Service searches support the following methods

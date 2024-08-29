@@ -93,6 +93,20 @@ class TestCollectionClass(VCRTestCase):  # type: ignore
         with self.assertRaises(ValueError):
             query.concept_id(["C1299783579-LPDAAC_ECS", "G1327299284-LPDAAC_ECS"])
 
+    def test_processing_level_id(self):
+        query = CollectionQuery()
+        query.processing_level_id("2")
+
+        self.assertIn("processing_level_id", query.params)
+        self.assertEqual(query.params["processing_level_id"], ["2"])
+
+    def test_processing_level_ids(self):
+        query = CollectionQuery()
+        query.processing_level_id(["2", "3"])
+
+        self.assertIn("processing_level_id", query.params)
+        self.assertEqual(query.params["processing_level_id"], ["2", "3"])
+
     def test_token(self):
         query = CollectionQuery()
 
