@@ -16,6 +16,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   other parameter options that are not covered in that particular section of the
   documentation.  ([#74](https://github.com/nasa/python_cmr/issues/74))
 - Support multi-point searches ([#72](https://github.com/nasa/python_cmr/issues/72))
+- Support `platform` in `CollectionQuery` ([#77](https://github.com/nasa/python_cmr/issues/77))
 
 ### Fixed
 - Setup vcrpy for new `revision_date` unit tests ([#70](https://github.com/nasa/python_cmr/issues/70))
