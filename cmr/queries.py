@@ -36,7 +36,6 @@ DayNightFlag: TypeAlias = Literal["day", "night", "unspecified"]
 FloatLike: TypeAlias = Union[str, SupportsFloat]
 PointLike: TypeAlias = Tuple[FloatLike, FloatLike]
 
-
 class Query:
     """
     Base class for all CMR queries.
@@ -47,8 +46,9 @@ class Query:
     _format = "json"
     _valid_formats_regex = [
         "json", "xml", "echo10", "iso", "iso19115",
-        "csv", "atom", "kml", "native"
+        "csv", "atom", "kml", "native", "stac",
     ]
+
 
     def __init__(self, route: str, mode: str = CMR_OPS):
         self.params: MutableMapping[str, Any] = {}
@@ -135,9 +135,9 @@ class Query:
 
         :returns: self
         """
-
+        
         methods = dict(getmembers(self, predicate=ismethod))
-
+        
         for key, val in kwargs.items():
             # verify the key matches one of our methods
             if key not in methods:
@@ -209,7 +209,7 @@ class Query:
         options_as_string = "&".join(formatted_options)
         res = f"{self._base_url}.{self._format}?{params_as_string}&{options_as_string}"
         return res.rstrip('&')
-
+    
     def concept_id(self, IDs: Union[str, Sequence[str]]) -> Self:
         """
         Filter by concept ID (ex: C1299783579-LPDAAC_ECS or G1327299284-LPDAAC_ECS, T12345678-LPDAAC_ECS, S12345678-LPDAAC_ECS)
@@ -237,6 +237,7 @@ class Query:
         self.params["concept_id"] = IDs
 
         return self
+
 
     def provider(self, provider: str) -> Self:
         """
@@ -914,12 +915,34 @@ class GranuleQuery(GranuleCollectionBaseQuery):
 
         return self
 
+    def collection_concept_id(self, IDs: Union[str, Sequence[str]]) -> Self:
+        """
+        STAC output requires collection_concept_id
+
+        :param IDs: concept ID(s) to search by. Can be provided as a string or list of strings.
+        :returns: self
+        """
+
+        if isinstance(IDs, str):
+            IDs = [IDs]
+
+        # verify we weren't provided any granule concept IDs
+        for ID in IDs:
+            if ID.strip()[0] not in self.concept_id_chars:
+                raise ValueError(
+                    f"Only concept IDs that begin with '{self.concept_id_chars}' can be provided: {ID}"
+                )
+
+        self.params["collection_concept_id"] = IDs
+
+        return self
+
     @override
     def _valid_state(self) -> bool:
 
         # spatial params must be paired with a collection limiting parameter
         spatial_keys = ["point", "polygon", "bounding_box", "line"]
-        collection_keys = ["short_name", "entry_title"]
+        collection_keys = ["short_name", "entry_title", "collection_concept_id"]
 
         if any(key in self.params for key in spatial_keys):
             if not any(key in self.params for key in collection_keys):
