@@ -457,6 +457,22 @@ class TestGranuleClass(VCRTestCase):  # type: ignore
 
         self.assertEqual(len(results), 10)
 
+    def test_stac_output(self):
+        """ Test real query with STAC output type """
+        # HLSL30: https://cmr.earthdata.nasa.gov/search/concepts/C2021957657-LPCLOUD 
+        query = GranuleQuery()
+        search = query.parameters(point=(-105.78, 35.79),
+                           temporal=('2021-02-01','2021-03-01'),
+                           collection_concept_id='C2021957657-LPCLOUD'
+        )
+        results = search.format("stac").get()
+        feature_collection = json.loads(results[0])
+
+        self.assertEqual(len(results), 1)
+        self.assertEqual(feature_collection['type'], 'FeatureCollection')
+        self.assertEqual(feature_collection['numberMatched'], 2)
+        self.assertEqual(len(feature_collection['features']), 2)
+
     def _test_hits(self):
         """ integration test for hits() """
 
