@@ -17,6 +17,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   documentation.  ([#74](https://github.com/nasa/python_cmr/issues/74))
 - Support multi-point searches ([#72](https://github.com/nasa/python_cmr/issues/72))
 - Support `processing_level_id` in `CollectionQuery` ([#76](https://github.com/nasa/python_cmr/issues/76))
+- Support `platform` in `CollectionQuery` ([#77](https://github.com/nasa/python_cmr/issues/77))
 
 ### Fixed
 - Setup vcrpy for new `revision_date` unit tests ([#70](https://github.com/nasa/python_cmr/issues/70))

@@ -717,6 +717,20 @@ class GranuleCollectionBaseQuery(Query):
 
         return self
 
+    def platform(self, platform: str) -> Self:
+        """
+        Filter by the satellite platform the granule came from.
+
+        :param platform: name of the satellite
+        :returns: self
+        """
+
+        if not platform:
+            raise ValueError("Please provide a value for platform")
+
+        self.params['platform'] = platform
+        return self
+
 
 class GranuleQuery(GranuleCollectionBaseQuery):
     """
@@ -811,20 +825,6 @@ class GranuleQuery(GranuleCollectionBaseQuery):
             raise ValueError("Please provide a value for instrument")
 
         self.params['instrument'] = instrument
-        return self
-
-    def platform(self, platform: str) -> Self:
-        """
-        Filter by the satellite platform the granule came from.
-
-        :param platform: name of the satellite
-        :returns: self
-        """
-
-        if not platform:
-            raise ValueError("Please provide a value for platform")
-
-        self.params['platform'] = platform
         return self
 
     def sort_key(self, sort_key: str) -> Self:
