@@ -10,6 +10,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- Support STAC format output ([#81](https://github.com/nasa/python_cmr/issues/81))
 - Add `Query` method `option` for setting parameter options as described both in
   [CMR Search API Parameter Options](https://cmr.earthdata.nasa.gov/search/site/docs/search/api.html#parameter-options)
   and in other sections of the CMR Search API documentation, thus supporting
