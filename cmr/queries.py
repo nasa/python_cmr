@@ -36,7 +36,6 @@ DayNightFlag: TypeAlias = Literal["day", "night", "unspecified"]
 FloatLike: TypeAlias = Union[str, SupportsFloat]
 PointLike: TypeAlias = Tuple[FloatLike, FloatLike]
 
-
 class Query:
     """
     Base class for all CMR queries.
@@ -47,8 +46,9 @@ class Query:
     _format = "json"
     _valid_formats_regex = [
         "json", "xml", "echo10", "iso", "iso19115",
-        "csv", "atom", "kml", "native"
+        "csv", "atom", "kml", "native", "stac",
     ]
+
 
     def __init__(self, route: str, mode: str = CMR_OPS):
         self.params: MutableMapping[str, Any] = {}
@@ -238,6 +238,7 @@ class Query:
 
         return self
 
+
     def provider(self, provider: str) -> Self:
         """
         Filter by provider.
@@ -397,12 +398,12 @@ class GranuleCollectionBaseQuery(Query):
     ) -> Tuple[str, str]:
         """
         Format dates into expected format for date queries.
-        
+
         :param date_from: earliest date of temporal range
         :param date_to: latest date of temporal range
         :returns: Tuple instance
         """
-        
+
         iso_8601 = "%Y-%m-%dT%H:%M:%SZ"
 
         # process each date into a datetime object
@@ -442,7 +443,7 @@ class GranuleCollectionBaseQuery(Query):
         # if we have both dates, make sure from isn't later than to
         if date_from and date_to and date_from > date_to:
             raise ValueError("date_from must be earlier than date_to.")
-        
+
         return date_from, date_to
 
     def revision_date(
@@ -462,7 +463,7 @@ class GranuleCollectionBaseQuery(Query):
         :param exclude_boundary: whether or not to exclude the date_from/to in the matched range
         :returns: GranueQuery instance
         """
-        
+
         date_from, date_to = self._format_date(date_from, date_to)
 
         # good to go, make sure we have a param list
@@ -495,7 +496,7 @@ class GranuleCollectionBaseQuery(Query):
         :param exclude_boundary: whether or not to exclude the date_from/to in the matched range
         :returns: GranueQuery instance
         """
-        
+
         date_from, date_to = self._format_date(date_from, date_to)
 
         # good to go, make sure we have a param list
@@ -548,16 +549,16 @@ class GranuleCollectionBaseQuery(Query):
         By default, query results will include items that include _all_ given points.
         To return items that include _any_ given point, set the option on your `query`
         instance like so: `query.options["point"] = {"or": True}`
- 
+
         :param lon: longitude of geographic point
         :param lat: latitude of geographic point
         :returns: self
         """
-        
+
         # coordinates must be a float
         lon = float(lon)
         lat = float(lat)
-        
+
         if "point" not in self.params:
             self.params["point"] = []
 
@@ -914,12 +915,34 @@ class GranuleQuery(GranuleCollectionBaseQuery):
 
         return self
 
+    def collection_concept_id(self, IDs: Union[str, Sequence[str]]) -> Self:
+        """
+        STAC output requires collection_concept_id
+
+        :param IDs: concept ID(s) to search by. Can be provided as a string or list of strings.
+        :returns: self
+        """
+
+        if isinstance(IDs, str):
+            IDs = [IDs]
+
+        # verify we weren't provided any granule concept IDs
+        for ID in IDs:
+            if ID.strip()[0] not in self.concept_id_chars:
+                raise ValueError(
+                    f"Only concept IDs that begin with '{self.concept_id_chars}' can be provided: {ID}"
+                )
+
+        self.params["collection_concept_id"] = IDs
+
+        return self
+
     @override
     def _valid_state(self) -> bool:
 
         # spatial params must be paired with a collection limiting parameter
         spatial_keys = ["point", "polygon", "bounding_box", "line"]
-        collection_keys = ["short_name", "entry_title"]
+        collection_keys = ["short_name", "entry_title", "collection_concept_id"]
 
         if any(key in self.params for key in spatial_keys):
             if not any(key in self.params for key in collection_keys):
