@@ -1054,6 +1054,23 @@ class CollectionQuery(GranuleCollectionBaseQuery):
 
         return self
 
+    def processing_level_id(self, IDs: Union[str, Sequence[str]]) -> Self:
+        """
+        Filter collections matching processing level ID (ex: 2)
+
+        Collections are associated with this processing level ID.
+
+        :param IDs: processing level ID(s) to search by. Can be provided as a string or list of strings.
+        :returns: self
+        """
+
+        if isinstance(IDs, str):
+            IDs = [IDs]
+
+        self.params["processing_level_id"] = IDs
+
+        return self
+
     @override
     def _valid_state(self) -> bool:
         return True
