@@ -1210,6 +1210,19 @@ class VariableQuery(ToolServiceVariableBaseQuery):
             "dif", "dif10", "opendata", "umm_json", "umm_json_v[0-9]_[0-9]"
         ])
 
+    def instance_format(self, instance_format: str) -> Self:
+        """
+        Filter by instance format.
+
+        :param instance_format: format for variable instance
+        :returns: self
+        """
+
+        if instance_format: 
+            self.params['instance_format'] = instance_format 
+        
+        return self
+    
     @override
     def _valid_state(self) -> bool:
         return True
