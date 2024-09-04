@@ -19,7 +19,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Support multi-point searches ([#72](https://github.com/nasa/python_cmr/issues/72))
 - Support `processing_level_id` in `CollectionQuery` ([#76](https://github.com/nasa/python_cmr/issues/76))
 - Support `platform` in `CollectionQuery` ([#77](https://github.com/nasa/python_cmr/issues/77))
-- Support `instance-format` to `VariableQuery` to allow for searching of variable zarr stores ([#59]https://github.com/nasa/python_cmr/issues/59)
+- Support searching by instance format for `VariableQuery` ([#59]https://github.com/nasa/python_cmr/issues/59)
 
 ### Fixed
 - Setup vcrpy for new `revision_date` unit tests ([#70](https://github.com/nasa/python_cmr/issues/70))
