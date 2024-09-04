@@ -91,4 +91,11 @@ class TestVariableClass(unittest.TestCase):
         query.instance_format("zarr")
 
         self.assertIn("instance_format", query.params)
-        self.assertEqual(query.params["instance_format"], "zarr")
+        self.assertEqual(query.params["instance_format"], ["zarr"])
+
+    def test_instance_formats(self):
+        query = VariableQuery()
+        query.instance_format(["zarr", "kerchunk"])
+
+        self.assertIn("instance_format", query.params)
+        self.assertEqual(query.params["instance_format"], ["zarr", "kerchunk"])
