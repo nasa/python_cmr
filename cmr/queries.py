@@ -1210,6 +1210,21 @@ class VariableQuery(ToolServiceVariableBaseQuery):
             "dif", "dif10", "opendata", "umm_json", "umm_json_v[0-9]_[0-9]"
         ])
 
+    def instance_format(self, format: Union[str, Sequence[str]]) -> Self:
+        """
+        Filter by instance format(s), matching any one of the specified formats.
+        Does nothing if `format` is an empty string or an empty sequence.
+
+        :param format: format(s) for variable instance (a single string, or sequence of
+            strings)
+        :returns: self
+        """
+
+        if format:
+            # Assume we have non-empty string or sequence of strings (list, tuple, etc.)
+            self.params['instance_format'] = [format] if isinstance(format, str) else format
+        
+        return self
     @override
     def _valid_state(self) -> bool:
         return True
