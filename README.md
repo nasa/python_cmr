@@ -227,7 +227,7 @@ api.name('/AMR_Side_1/acc_lat')
 api.concept_id('V2112019824-POCLOUD')
 
 # Search via instance format
-query.instance_format(["zarr", "kerchunk"])
+api.instance_format(["zarr", "kerchunk"])
 ```
 
 As an alternative to chaining methods together to set the parameters of your query, a method exists to allow you to pass
