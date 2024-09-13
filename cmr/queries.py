@@ -309,7 +309,7 @@ class Query:
         return self
 
     def option(
-            self, parameter: str, key: str, value: Union[str, bool, int, float, None]
+        self, parameter: str, key: str, value: Union[str, bool, int, float, None]
     ) -> Self:
         """
         Set or remove a search parameter option.
