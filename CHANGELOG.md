@@ -6,7 +6,24 @@ The format is based on
 [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.13.0]
+
+### Added
+
+- Support STAC format output ([#81](https://github.com/nasa/python_cmr/issues/81))
+- Add `Query` method `option` for setting parameter options as described both in
+  [CMR Search API Parameter Options](https://cmr.earthdata.nasa.gov/search/site/docs/search/api.html#parameter-options)
+  and in other sections of the CMR Search API documentation, thus supporting
+  other parameter options that are not covered in that particular section of the
+  documentation.  ([#74](https://github.com/nasa/python_cmr/issues/74))
+- Support multi-point searches ([#72](https://github.com/nasa/python_cmr/issues/72))
+- Support `processing_level_id` in `CollectionQuery` ([#76](https://github.com/nasa/python_cmr/issues/76))
+- Support `platform` in `CollectionQuery` ([#77](https://github.com/nasa/python_cmr/issues/77))
+- Support searching by instance format for `VariableQuery` ([#59](https://github.com/nasa/python_cmr/issues/59))
+
+### Fixed
+- Setup vcrpy for new `revision_date` unit tests ([#70](https://github.com/nasa/python_cmr/issues/70))
+
 
 ## [0.12.0]
 
@@ -132,7 +149,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Prior releases of this software originated from
   <https://github.com/jddeal/python-cmr/releases>
 
-[Unreleased]: https://github.com/nasa/python_cmr/compare/v0.12.0...HEAD
+[Unreleased]: https://github.com/nasa/python_cmr/compare/v0.13.0...HEAD
+[0.13.0]: https://github.com/nasa/python_cmr/compare/v0.12.0...v0.13.0
 [0.12.0]: https://github.com/nasa/python_cmr/compare/v0.11.0...v0.12.0
 [0.11.0]: https://github.com/nasa/python_cmr/compare/v0.10.0...v0.11.0
 [0.10.0]: https://github.com/nasa/python_cmr/compare/v0.9.0...v0.10.0

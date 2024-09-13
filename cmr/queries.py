@@ -3,6 +3,7 @@ Contains all CMR query types.
 """
 
 from abc import abstractmethod
+from collections import defaultdict
 from datetime import date, datetime, timezone
 from inspect import getmembers, ismethod
 from re import search
@@ -46,12 +47,12 @@ class Query:
     _format = "json"
     _valid_formats_regex = [
         "json", "xml", "echo10", "iso", "iso19115",
-        "csv", "atom", "kml", "native"
+        "csv", "atom", "kml", "native", "stac",
     ]
 
     def __init__(self, route: str, mode: str = CMR_OPS):
         self.params: MutableMapping[str, Any] = {}
-        self.options: MutableMapping[str, Any] = {}
+        self.options: MutableMapping[str, MutableMapping[str, Any]] = defaultdict(dict)
         self._route = route
         self.mode(mode)
         self.concept_id_chars: Set[str] = set()
@@ -190,8 +191,10 @@ class Query:
             if isinstance(val, list):
                 for list_val in val:
                     formatted_params.append(f"{key}[]={list_val}")
+
             elif isinstance(val, bool):
                 formatted_params.append(f"{key}={str(val).lower()}")
+
             else:
                 formatted_params.append(f"{key}={val}")
 
@@ -201,13 +204,6 @@ class Query:
         formatted_options: List[str] = []
         for param_key in self.options:
             for option_key, val in self.options[param_key].items():
-
-                # all CMR options must be booleans
-                if not isinstance(val, bool):
-                    raise TypeError(
-                        f"parameter '{param_key}' with option '{option_key}' must be a boolean"
-                    )
-
                 formatted_options.append(f"options[{param_key}][{option_key}]={str(val).lower()}")
 
         options_as_string = "&".join(formatted_options)
@@ -312,6 +308,62 @@ class Query:
 
         return self
 
+    def option(
+        self, parameter: str, key: str, value: Union[str, bool, int, float, None]
+    ) -> Self:
+        """
+        Set or remove a search parameter option.
+
+        If either an empty parameter name or option key is given, do nothing.
+        Otherwise, if a non-`None` option value is given, set the specified parameter
+        option to the value; else _remove_ the parameter option, if previously given.
+
+        In all cases, return self to support method chaining.
+
+        See `CMR Search API Parameter Options`_ as well as other sections of the
+        documentation that describe other available parameter options.
+
+        .. _CMR Search API Parameter Options:
+           https://cmr.earthdata.nasa.gov/search/site/docs/search/api.html#parameter-options
+
+        Example:
+
+        .. code:: python
+
+           >>> query = CollectionQuery()
+           >>> query.option("short_name", "ignore_case", True)  # doctest: +ELLIPSIS
+           <cmr.queries.CollectionQuery ...>
+           >>> query.options  # doctest: +ELLIPSIS
+           defaultdict(..., {'short_name': {'ignore_case': True}})
+           >>> query.option("short_name", "ignore_case", False)  # doctest: +ELLIPSIS
+           <cmr.queries.CollectionQuery ...>
+           >>> query.options  # doctest: +ELLIPSIS
+           defaultdict(..., {'short_name': {'ignore_case': False}})
+           >>> (query
+           ... .option("short_name", "ignore_case", None)  # remove an option
+           ... .option("short_name", "or", True)
+           ... .option("highlights", "begin_tag", "<b>")
+           ... .option("highlights", "end_tag", "</b>")
+           ... )
+           <cmr.queries.CollectionQuery ...>
+           >>> query.options  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
+           defaultdict(..., {'short_name': {'or': True},
+           'highlights': {'begin_tag': '<b>', 'end_tag': '</b>'}})
+
+        :param parameter: search parameter to set an option for
+        :param key: option key to set a value for
+        :param value: value to set for the option, or `None` to remove the option
+        :returns: self
+        """
+
+        if parameter and key:
+            if value is None:
+                del self.options[parameter][key]
+            else:
+                self.options[parameter][key] = value
+
+        return self
+
 
 class GranuleCollectionBaseQuery(Query):
     """
@@ -345,12 +397,12 @@ class GranuleCollectionBaseQuery(Query):
     ) -> Tuple[str, str]:
         """
         Format dates into expected format for date queries.
-        
+
         :param date_from: earliest date of temporal range
         :param date_to: latest date of temporal range
         :returns: Tuple instance
         """
-        
+
         iso_8601 = "%Y-%m-%dT%H:%M:%SZ"
 
         # process each date into a datetime object
@@ -390,7 +442,7 @@ class GranuleCollectionBaseQuery(Query):
         # if we have both dates, make sure from isn't later than to
         if date_from and date_to and date_from > date_to:
             raise ValueError("date_from must be earlier than date_to.")
-        
+
         return date_from, date_to
 
     def revision_date(
@@ -410,7 +462,7 @@ class GranuleCollectionBaseQuery(Query):
         :param exclude_boundary: whether or not to exclude the date_from/to in the matched range
         :returns: GranueQuery instance
         """
-        
+
         date_from, date_to = self._format_date(date_from, date_to)
 
         # good to go, make sure we have a param list
@@ -443,7 +495,7 @@ class GranuleCollectionBaseQuery(Query):
         :param exclude_boundary: whether or not to exclude the date_from/to in the matched range
         :returns: GranueQuery instance
         """
-        
+
         date_from, date_to = self._format_date(date_from, date_to)
 
         # good to go, make sure we have a param list
@@ -490,7 +542,12 @@ class GranuleCollectionBaseQuery(Query):
 
     def point(self, lon: FloatLike, lat: FloatLike) -> Self:
         """
-        Filter by granules that include a geographic point.
+        Filter by granules that include one or more geographic points. Call this method
+        once for each point of interest.
+
+        By default, query results will include items that include _all_ given points.
+        To return items that include _any_ given point, set the option on your `query`
+        instance like so: `query.options["point"] = {"or": True}`
 
         :param lon: longitude of geographic point
         :param lat: latitude of geographic point
@@ -501,7 +558,10 @@ class GranuleCollectionBaseQuery(Query):
         lon = float(lon)
         lat = float(lat)
 
-        self.params['point'] = f"{lon},{lat}"
+        if "point" not in self.params:
+            self.params["point"] = []
+
+        self.params["point"].append(f"{lon},{lat}")
 
         return self
 
@@ -657,6 +717,20 @@ class GranuleCollectionBaseQuery(Query):
 
         return self
 
+    def platform(self, platform: str) -> Self:
+        """
+        Filter by the satellite platform the granule came from.
+
+        :param platform: name of the satellite
+        :returns: self
+        """
+
+        if not platform:
+            raise ValueError("Please provide a value for platform")
+
+        self.params['platform'] = platform
+        return self
+
 
 class GranuleQuery(GranuleCollectionBaseQuery):
     """
@@ -753,20 +827,6 @@ class GranuleQuery(GranuleCollectionBaseQuery):
         self.params['instrument'] = instrument
         return self
 
-    def platform(self, platform: str) -> Self:
-        """
-        Filter by the satellite platform the granule came from.
-
-        :param platform: name of the satellite
-        :returns: self
-        """
-
-        if not platform:
-            raise ValueError("Please provide a value for platform")
-
-        self.params['platform'] = platform
-        return self
-
     def sort_key(self, sort_key: str) -> Self:
         """
         See
@@ -854,12 +914,34 @@ class GranuleQuery(GranuleCollectionBaseQuery):
 
         return self
 
+    def collection_concept_id(self, IDs: Union[str, Sequence[str]]) -> Self:
+        """
+        STAC output requires collection_concept_id
+
+        :param IDs: concept ID(s) to search by. Can be provided as a string or list of strings.
+        :returns: self
+        """
+
+        if isinstance(IDs, str):
+            IDs = [IDs]
+
+        # verify we weren't provided any granule concept IDs
+        for ID in IDs:
+            if ID.strip()[0] not in self.concept_id_chars:
+                raise ValueError(
+                    f"Only concept IDs that begin with '{self.concept_id_chars}' can be provided: {ID}"
+                )
+
+        self.params["collection_concept_id"] = IDs
+
+        return self
+
     @override
     def _valid_state(self) -> bool:
 
         # spatial params must be paired with a collection limiting parameter
         spatial_keys = ["point", "polygon", "bounding_box", "line"]
-        collection_keys = ["short_name", "entry_title"]
+        collection_keys = ["short_name", "entry_title", "collection_concept_id"]
 
         if any(key in self.params for key in spatial_keys):
             if not any(key in self.params for key in collection_keys):
@@ -994,6 +1076,23 @@ class CollectionQuery(GranuleCollectionBaseQuery):
 
         return self
 
+    def processing_level_id(self, IDs: Union[str, Sequence[str]]) -> Self:
+        """
+        Filter collections matching processing level ID (ex: 2)
+
+        Collections are associated with this processing level ID.
+
+        :param IDs: processing level ID(s) to search by. Can be provided as a string or list of strings.
+        :returns: self
+        """
+
+        if isinstance(IDs, str):
+            IDs = [IDs]
+
+        self.params["processing_level_id"] = IDs
+
+        return self
+
     @override
     def _valid_state(self) -> bool:
         return True
@@ -1109,6 +1208,22 @@ class VariableQuery(ToolServiceVariableBaseQuery):
         self._valid_formats_regex.extend([
             "dif", "dif10", "opendata", "umm_json", "umm_json_v[0-9]_[0-9]"
         ])
+
+    def instance_format(self, format: Union[str, Sequence[str]]) -> Self:
+        """
+        Filter by instance format(s), matching any one of the specified formats.
+        Does nothing if `format` is an empty string or an empty sequence.
+
+        :param format: format(s) for variable instance (a single string, or sequence of
+            strings)
+        :returns: self
+        """
+
+        if format:
+            # Assume we have non-empty string or sequence of strings (list, tuple, etc.)
+            self.params['instance_format'] = [format] if isinstance(format, str) else format
+
+        return self
 
     @override
     def _valid_state(self) -> bool:

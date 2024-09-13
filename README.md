@@ -111,6 +111,9 @@ api.downloadable()
 # only include granules that are unavailable for download
 api.online_only()
 
+# filter by specific satellite platform
+api.platform("Terra")
+
 # search for collections/granules associated with or identified by concept IDs
 # note: often the ECHO collection ID can be used here as well
 # note: when using CollectionQuery, only collection concept IDs can be passed
@@ -143,9 +146,8 @@ api.day_night_flag("day")
 # filter by cloud cover percentage range
 api.cloud_cover(25, 75)
 
-# filter by specific instrument or platform
+# filter by specific instrument
 api.instrument("MODIS")
-api.platform("Terra")
 
 # filter by a sort_key note: sort_keys are require some other fields to find
 # some existing granules before they can be sorted
@@ -169,6 +171,9 @@ api.tool_concept_id('TL2092786348-POCLOUD')
 
 # filter by service concept id
 api.service_concept_id('S1962070864-POCLOUD')
+
+# filter by processing level id
+api.processing_level_id('3')
 ```
 
 Service searches support the following methods
@@ -220,6 +225,9 @@ api.name('/AMR_Side_1/acc_lat')
 
 # Search via concept_id
 api.concept_id('V2112019824-POCLOUD')
+
+# Search via instance format
+api.instance_format(["zarr", "kerchunk"])
 ```
 
 As an alternative to chaining methods together to set the parameters of your query, a method exists to allow you to pass

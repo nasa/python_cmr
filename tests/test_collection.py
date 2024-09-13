@@ -1,9 +1,19 @@
-import unittest
+import inspect
+import os
+from vcr.unittest import VCRTestCase
 
 from cmr.queries import CollectionQuery
 
 
-class TestCollectionClass(unittest.TestCase):
+class TestCollectionClass(VCRTestCase):  # type: ignore
+
+    def _get_vcr_kwargs(self, **kwargs):
+        kwargs['decode_compressed_response'] = True
+        return kwargs
+
+    def _get_cassette_library_dir(self):
+        testdir = os.path.dirname(inspect.getfile(self.__class__))
+        return os.path.join(testdir, "fixtures", "vcr_cassettes")
 
     def test_archive_center(self):
         query = CollectionQuery()
@@ -83,6 +93,20 @@ class TestCollectionClass(unittest.TestCase):
         with self.assertRaises(ValueError):
             query.concept_id(["C1299783579-LPDAAC_ECS", "G1327299284-LPDAAC_ECS"])
 
+    def test_processing_level_id(self):
+        query = CollectionQuery()
+        query.processing_level_id("2")
+
+        self.assertIn("processing_level_id", query.params)
+        self.assertEqual(query.params["processing_level_id"], ["2"])
+
+    def test_processing_level_ids(self):
+        query = CollectionQuery()
+        query.processing_level_id(["2", "3"])
+
+        self.assertIn("processing_level_id", query.params)
+        self.assertEqual(query.params["processing_level_id"], ["2", "3"])
+
     def test_token(self):
         query = CollectionQuery()
 
@@ -111,6 +135,20 @@ class TestCollectionClass(unittest.TestCase):
 
         with self.assertRaises(TypeError):
             query.cloud_hosted("Test_string_for_cloud_hosted_param")  # type: ignore[arg-type]
+
+    def test_platform(self):
+        query = CollectionQuery()
+
+        query.platform("1B")
+
+        self.assertIn("platform", query.params)
+        self.assertEqual(query.params["platform"], "1B")
+
+    def test_empty_platform(self):
+        query = CollectionQuery()
+
+        with self.assertRaises(ValueError):
+            query.platform(None)  # type: ignore[arg-type]
 
     def test_revision_date(self):
         query = CollectionQuery()
