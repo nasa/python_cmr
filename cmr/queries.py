@@ -36,6 +36,7 @@ DayNightFlag: TypeAlias = Literal["day", "night", "unspecified"]
 FloatLike: TypeAlias = Union[str, SupportsFloat]
 PointLike: TypeAlias = Tuple[FloatLike, FloatLike]
 
+
 class Query:
     """
     Base class for all CMR queries.
@@ -48,7 +49,6 @@ class Query:
         "json", "xml", "echo10", "iso", "iso19115",
         "csv", "atom", "kml", "native", "stac",
     ]
-
 
     def __init__(self, route: str, mode: str = CMR_OPS):
         self.params: MutableMapping[str, Any] = {}
@@ -238,7 +238,6 @@ class Query:
 
         return self
 
-
     def provider(self, provider: str) -> Self:
         """
         Filter by provider.
@@ -310,7 +309,7 @@ class Query:
         return self
 
     def option(
-        self, parameter: str, key: str, value: Union[str, bool, int, float, None]
+            self, parameter: str, key: str, value: Union[str, bool, int, float, None]
     ) -> Self:
         """
         Set or remove a search parameter option.
@@ -392,9 +391,9 @@ class GranuleCollectionBaseQuery(Query):
         return self
 
     def _format_date(
-        self,
-        date_from: Optional[DateLike],
-        date_to: Optional[DateLike]
+            self,
+            date_from: Optional[DateLike],
+            date_to: Optional[DateLike]
     ) -> Tuple[str, str]:
         """
         Format dates into expected format for date queries.
@@ -447,10 +446,10 @@ class GranuleCollectionBaseQuery(Query):
         return date_from, date_to
 
     def revision_date(
-        self,
-        date_from: Optional[DateLike],
-        date_to: Optional[DateLike],
-        exclude_boundary: bool = False,
+            self,
+            date_from: Optional[DateLike],
+            date_to: Optional[DateLike],
+            exclude_boundary: bool = False,
     ) -> Self:
         """
         Filter by an open or closed date range for a query that captures updated items.
@@ -480,10 +479,10 @@ class GranuleCollectionBaseQuery(Query):
         return self
 
     def temporal(
-        self,
-        date_from: Optional[DateLike],
-        date_to: Optional[DateLike],
-        exclude_boundary: bool = False,
+            self,
+            date_from: Optional[DateLike],
+            date_to: Optional[DateLike],
+            exclude_boundary: bool = False,
     ) -> Self:
         """
         Filter by an open or closed date range for a temporal query.
@@ -623,11 +622,11 @@ class GranuleCollectionBaseQuery(Query):
         return self
 
     def bounding_box(
-        self,
-        lower_left_lon: FloatLike,
-        lower_left_lat: FloatLike,
-        upper_right_lon: FloatLike,
-        upper_right_lat: FloatLike,
+            self,
+            lower_left_lon: FloatLike,
+            lower_left_lat: FloatLike,
+            upper_right_lon: FloatLike,
+            upper_right_lat: FloatLike,
     ) -> Self:
         """
         Filter by granules that overlap a bounding box. Must be used in combination with
@@ -743,7 +742,7 @@ class GranuleQuery(GranuleCollectionBaseQuery):
         self.concept_id_chars = {"G", "C"}
 
     def orbit_number(
-        self, orbit1: FloatLike, orbit2: Optional[FloatLike] = None
+            self, orbit1: FloatLike, orbit2: Optional[FloatLike] = None
     ) -> Self:
         """ "
         Filter by the orbit number the granule was acquired during. Either a single
@@ -893,7 +892,7 @@ class GranuleQuery(GranuleCollectionBaseQuery):
         return self
 
     def readable_granule_name(
-        self, readable_granule_name: Union[str, Sequence[str]]
+            self, readable_granule_name: Union[str, Sequence[str]]
     ) -> Self:
         """
         Filter by the readable granule name (producer_granule_id if present, otherwise producer_granule_id).
@@ -1223,8 +1222,9 @@ class VariableQuery(ToolServiceVariableBaseQuery):
         if format:
             # Assume we have non-empty string or sequence of strings (list, tuple, etc.)
             self.params['instance_format'] = [format] if isinstance(format, str) else format
-        
+
         return self
+
     @override
     def _valid_state(self) -> bool:
         return True

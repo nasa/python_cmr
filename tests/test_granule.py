@@ -4,7 +4,6 @@ from datetime import datetime, timezone, timedelta
 import json
 from vcr.unittest import VCRTestCase
 
-
 from cmr.queries import GranuleQuery
 
 
@@ -33,6 +32,7 @@ class TestGranuleClass(VCRTestCase):  # type: ignore
     def _get_vcr_kwargs(self, **kwargs):
         kwargs['decode_compressed_response'] = True
         return kwargs
+
     def _get_cassette_library_dir(self):
         testdir = os.path.dirname(inspect.getfile(self.__class__))
         return os.path.join(testdir, "fixtures", "vcr_cassettes")
@@ -65,7 +65,7 @@ class TestGranuleClass(VCRTestCase):  # type: ignore
         query.point(10, 15.1).point(20.4, 10.2)
 
         self.assertIn(self.point, query.params)
-        self.assertEqual(query.params[self.point], ["10.0,15.1", "20.4,10.2"])    
+        self.assertEqual(query.params[self.point], ["10.0,15.1", "20.4,10.2"])
 
     def test_point_invalid_set(self):
         query = GranuleQuery()
@@ -83,20 +83,24 @@ class TestGranuleClass(VCRTestCase):  # type: ignore
 
         self.assertIn(self.circle, query.params)
         self.assertEqual(query.params[self.circle], "10.0,15.1,1000")
-        
+
     def test_revision_date(self):
         query = GranuleQuery()
-        granules = query.short_name("SWOT_L2_HR_RiverSP_reach_2.0").revision_date("2024-07-05", "2024-07-05").format("umm_json").get_all()
+        granules = query.short_name("SWOT_L2_HR_RiverSP_reach_2.0").revision_date("2024-07-05", "2024-07-05").format(
+            "umm_json").get_all()
         granule_dict = {}
         for granule in granules:
             granule_json = json.loads(granule)
             for item in granule_json["items"]:
                 native_id = item["meta"]["native-id"]
                 granule_dict[native_id] = item
-        
-        self.assertIn("SWOT_L2_HR_RiverSP_Reach_017_312_AS_20240630T042656_20240630T042706_PIC0_01_swot", granule_dict.keys())
-        self.assertIn("SWOT_L2_HR_RiverSP_Reach_017_310_SI_20240630T023426_20240630T023433_PIC0_01_swot", granule_dict.keys())
-        self.assertIn( "SWOT_L2_HR_RiverSP_Reach_017_333_EU_20240630T225156_20240630T225203_PIC0_01_swot", granule_dict.keys())
+
+        self.assertIn("SWOT_L2_HR_RiverSP_Reach_017_312_AS_20240630T042656_20240630T042706_PIC0_01_swot",
+                      granule_dict.keys())
+        self.assertIn("SWOT_L2_HR_RiverSP_Reach_017_310_SI_20240630T023426_20240630T023433_PIC0_01_swot",
+                      granule_dict.keys())
+        self.assertIn("SWOT_L2_HR_RiverSP_Reach_017_333_EU_20240630T225156_20240630T225203_PIC0_01_swot",
+                      granule_dict.keys())
 
     def test_temporal_invalid_strings(self):
         query = GranuleQuery()
@@ -459,12 +463,12 @@ class TestGranuleClass(VCRTestCase):  # type: ignore
 
     def test_stac_output(self):
         """ Test real query with STAC output type """
-        # HLSL30: https://cmr.earthdata.nasa.gov/search/concepts/C2021957657-LPCLOUD 
+        # HLSL30: https://cmr.earthdata.nasa.gov/search/concepts/C2021957657-LPCLOUD
         query = GranuleQuery()
         search = query.parameters(point=(-105.78, 35.79),
-                           temporal=('2021-02-01','2021-03-01'),
-                           collection_concept_id='C2021957657-LPCLOUD'
-        )
+                                  temporal=('2021-02-01', '2021-03-01'),
+                                  collection_concept_id='C2021957657-LPCLOUD'
+                                  )
         results = search.format("stac").get()
         feature_collection = json.loads(results[0])
 
