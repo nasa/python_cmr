@@ -8,6 +8,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.13.0]
+
 ### Added
 
 - Support STAC format output ([#81](https://github.com/nasa/python_cmr/issues/81))

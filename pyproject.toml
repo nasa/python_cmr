@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "python-cmr"
-version = "0.13.0-a0"
+version = "0.14.0-a0"
 description = "Python wrapper to the NASA Common Metadata Repository (CMR) API."
 authors = ["python_cmr <nasa/python_cmr@github.com>"]
 license = "MIT"
