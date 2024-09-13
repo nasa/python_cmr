@@ -36,6 +36,7 @@ DayNightFlag: TypeAlias = Literal["day", "night", "unspecified"]
 FloatLike: TypeAlias = Union[str, SupportsFloat]
 PointLike: TypeAlias = Tuple[FloatLike, FloatLike]
 
+
 class Query:
     """
     Base class for all CMR queries.
@@ -48,7 +49,6 @@ class Query:
         "json", "xml", "echo10", "iso", "iso19115",
         "csv", "atom", "kml", "native", "stac",
     ]
-
 
     def __init__(self, route: str, mode: str = CMR_OPS):
         self.params: MutableMapping[str, Any] = {}
@@ -237,7 +237,6 @@ class Query:
         self.params["concept_id"] = IDs
 
         return self
-
 
     def provider(self, provider: str) -> Self:
         """
@@ -1223,8 +1222,9 @@ class VariableQuery(ToolServiceVariableBaseQuery):
         if format:
             # Assume we have non-empty string or sequence of strings (list, tuple, etc.)
             self.params['instance_format'] = [format] if isinstance(format, str) else format
-        
+
         return self
+
     @override
     def _valid_state(self) -> bool:
         return True
