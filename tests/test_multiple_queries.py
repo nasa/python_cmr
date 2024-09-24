@@ -18,7 +18,7 @@ def assert_unique_granules_from_results(granules: Sequence[Any]) -> bool:
     return len(granules) == len({str(granule) for granule in granules})
 
 
-class TestMultipleQueries(VCRTestCase):
+class TestMultipleQueries(VCRTestCase):  # type: ignore
 
     def _get_vcr_kwargs(self, **kwargs):
         kwargs['decode_compressed_response'] = True
