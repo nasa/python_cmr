@@ -7,8 +7,6 @@ from collections import defaultdict
 from datetime import date, datetime, timezone
 from inspect import getmembers, ismethod
 from re import search
-from typing import Iterator
-
 from typing_extensions import (
     Any,
     List,
@@ -22,7 +20,7 @@ from typing_extensions import (
     Tuple,
     TypeAlias,
     Union,
-    override, deprecated,
+    override,
 )
 from urllib.parse import quote
 
@@ -65,7 +63,7 @@ class Query:
         """
         Get all results up to some limit, even if spanning multiple pages.
 
-        :param limit: The number of results to return
+        :limit: The number of results to return
         :returns: query results as a list
         """
 
@@ -121,12 +119,13 @@ class Query:
     @deprecated("Use the 'results' method instead, but note that it produces an iterator.")
     def get_all(self) -> Sequence[Any]:
         """
-        Returns all of the results for the query. This method could take quite
+        Returns all of the results for the query. This will call hits() first to determine how many
+        results their are, and then calls get() with that number. This method could take quite
         awhile if many requests have to be made.
 
         :returns: query results as a list
         """
-
+        
         return list(self.get(self.hits()))
 
     def results(self, page_size: int = 2000) -> Iterator[Any]:
