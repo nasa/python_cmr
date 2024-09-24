@@ -1,0 +1,134 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: https://cmr.earthdata.nasa.gov/search/granules.json?short_name=MOD09GA&version=061&temporal%5B%5D=1990-01-01T00:00:00Z,1990-01-02T00:00:00Z&page_size=0
+  response:
+    body:
+      string: '{"feed":{"updated":"2024-09-24T00:45:14.867Z","id":"https://cmr.earthdata.nasa.gov:443/search/granules.json?short_name=MOD09GA&version=061&temporal%5B%5D=1990-01-01T00:00:00Z,1990-01-02T00:00:00Z&page_size=0","title":"ECHO
+        granule metadata","entry":[]}}'
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - CMR-Hits, CMR-Request-Id, X-Request-Id, CMR-Scroll-Id, CMR-Search-After, CMR-Timed-Out,
+        CMR-Shapefile-Original-Point-Count, CMR-Shapefile-Simplified-Point-Count
+      CMR-Hits:
+      - '0'
+      CMR-Request-Id:
+      - 95aaae10-c2c1-415e-ab1b-e39d72c1744c
+      CMR-Took:
+      - '18'
+      Connection:
+      - keep-alive
+      Content-MD5:
+      - fe2fe34ab54e973b4946baac7edb81d9
+      Content-SHA1:
+      - d12857ef6b125313591fedee260dd290ed69bf68
+      Content-Type:
+      - application/json;charset=utf-8
+      Date:
+      - Tue, 24 Sep 2024 00:45:14 GMT
+      Server:
+      - ServerTokens ProductOnly
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding, User-Agent
+      Via:
+      - 1.1 8d9b5e8482bf535887ab85bd4a6a4830.cloudfront.net (CloudFront)
+      X-Amz-Cf-Id:
+      - Uba85DStcGBqd6WHBcvY7FDIKsgCiBJ5HiA3xb43_UD3w4wi6yfizg==
+      X-Amz-Cf-Pop:
+      - LAX50-C1
+      X-Cache:
+      - Miss from cloudfront
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Request-Id:
+      - Uba85DStcGBqd6WHBcvY7FDIKsgCiBJ5HiA3xb43_UD3w4wi6yfizg==
+      X-XSS-Protection:
+      - 1; mode=block
+      content-length:
+      - '253'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: https://cmr.earthdata.nasa.gov/search/granules.json?short_name=MOD09GA&version=061&temporal%5B%5D=1990-01-01T00:00:00Z,1990-01-02T00:00:00Z&page_size=0
+  response:
+    body:
+      string: '{"feed":{"updated":"2024-09-24T00:45:15.103Z","id":"https://cmr.earthdata.nasa.gov:443/search/granules.json?short_name=MOD09GA&version=061&temporal%5B%5D=1990-01-01T00:00:00Z,1990-01-02T00:00:00Z&page_size=0","title":"ECHO
+        granule metadata","entry":[]}}'
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - CMR-Hits, CMR-Request-Id, X-Request-Id, CMR-Scroll-Id, CMR-Search-After, CMR-Timed-Out,
+        CMR-Shapefile-Original-Point-Count, CMR-Shapefile-Simplified-Point-Count
+      CMR-Hits:
+      - '0'
+      CMR-Request-Id:
+      - f4ed879a-9980-41b5-b39a-cec2c70a86e5
+      CMR-Took:
+      - '29'
+      Connection:
+      - keep-alive
+      Content-MD5:
+      - 5e86a5ff09b117c1304748d5b7e2caa2
+      Content-SHA1:
+      - 7e54a239489dcf4284a25837b3a8590f764e8041
+      Content-Type:
+      - application/json;charset=utf-8
+      Date:
+      - Tue, 24 Sep 2024 00:45:15 GMT
+      Server:
+      - ServerTokens ProductOnly
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding, User-Agent
+      Via:
+      - 1.1 c4e50e26fcbefa29d8d1be685a1f4242.cloudfront.net (CloudFront)
+      X-Amz-Cf-Id:
+      - qqL2C-AgR1nBzENshwktG-w1zGaE4y5zX-oTvT2kvV65VoVrUD6N7A==
+      X-Amz-Cf-Pop:
+      - LAX50-C1
+      X-Cache:
+      - Miss from cloudfront
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Request-Id:
+      - qqL2C-AgR1nBzENshwktG-w1zGaE4y5zX-oTvT2kvV65VoVrUD6N7A==
+      X-XSS-Protection:
+      - 1; mode=block
+      content-length:
+      - '253'
+    status:
+      code: 200
+      message: OK
+version: 1
