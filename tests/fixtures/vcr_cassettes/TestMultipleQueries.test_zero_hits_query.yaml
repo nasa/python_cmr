@@ -1,0 +1,68 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: https://cmr.earthdata.nasa.gov/search/granules.json?short_name=MOD09GA&version=061&temporal%5B%5D=1990-01-01T00:00:00Z,1990-01-02T00:00:00Z&page_size=2000
+  response:
+    body:
+      string: '{"feed":{"updated":"2024-09-24T21:02:33.111Z","id":"https://cmr.earthdata.nasa.gov:443/search/granules.json?short_name=MOD09GA&version=061&temporal%5B%5D=1990-01-01T00:00:00Z,1990-01-02T00:00:00Z&page_size=2000","title":"ECHO
+        granule metadata","entry":[]}}'
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - CMR-Hits, CMR-Request-Id, X-Request-Id, CMR-Scroll-Id, CMR-Search-After, CMR-Timed-Out,
+        CMR-Shapefile-Original-Point-Count, CMR-Shapefile-Simplified-Point-Count
+      CMR-Hits:
+      - '0'
+      CMR-Request-Id:
+      - 8a1d8d8c-cb9f-4e0f-80f2-9f57008bb394
+      CMR-Took:
+      - '1071'
+      Connection:
+      - keep-alive
+      Content-MD5:
+      - 412227a734762c2af6c6e9d0b2650f25
+      Content-SHA1:
+      - 030c0e5a83446a910890627fb233b000ee0d6eb1
+      Content-Type:
+      - application/json;charset=utf-8
+      Date:
+      - Tue, 24 Sep 2024 21:02:33 GMT
+      Server:
+      - ServerTokens ProductOnly
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding, User-Agent
+      Via:
+      - 1.1 cd236f377f553d8e8fa1282f0470b626.cloudfront.net (CloudFront)
+      X-Amz-Cf-Id:
+      - j16lGW_eo_mpyfi49AUwTMQf_AgOTM2VILc-vam8hBFaXrv8exyNDQ==
+      X-Amz-Cf-Pop:
+      - LAX50-C1
+      X-Cache:
+      - Miss from cloudfront
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Request-Id:
+      - j16lGW_eo_mpyfi49AUwTMQf_AgOTM2VILc-vam8hBFaXrv8exyNDQ==
+      X-XSS-Protection:
+      - 1; mode=block
+      content-length:
+      - '256'
+    status:
+      code: 200
+      message: OK
+version: 1

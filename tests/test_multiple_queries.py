@@ -144,7 +144,7 @@ class TestMultipleQueries(VCRTestCase):  # type: ignore
         """
         api = GranuleQuery()
         granules = api.short_name("CYGNSS_NOAA_L2_SWSP_25KM_V1.2").get_all()
-        self.assertEqual(2688, len(granules))
+        self.assertEqual(2689, len(granules))
         assert_unique_granules_from_results(granules)
         # Assert that we performed a hits query and two search results queries
         self.assertEqual(3, len(self.cassette))

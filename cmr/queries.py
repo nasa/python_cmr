@@ -7,6 +7,8 @@ from collections import defaultdict
 from datetime import date, datetime, timezone
 from inspect import getmembers, ismethod
 from re import search
+from typing import Iterator
+
 from typing_extensions import (
     Any,
     List,
@@ -20,7 +22,7 @@ from typing_extensions import (
     Tuple,
     TypeAlias,
     Union,
-    override,
+    override, deprecated,
 )
 from urllib.parse import quote
 

@@ -1,0 +1,85 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+    method: GET
+    uri: https://cmr.earthdata.nasa.gov/search/granules.umm_json?short_name=MOD02QKM&page_size=2
+  response:
+    body:
+      string: '{"hits":1404444,"took":212,"items":[{"meta":{"concept-type":"granule","concept-id":"G1462754234-LAADS","revision-id":5,"native-id":"LAADS:2715071895","collection-concept-id":"C1378579425-LAADS","provider-id":"LAADS","format":"application/echo10+xml","revision-date":"2024-08-10T11:32:12.503Z"},"umm":{"TemporalExtent":{"RangeDateTime":{"BeginningDateTime":"2000-02-24T00:05:00.000Z","EndingDateTime":"2000-02-24T00:10:00.000Z"}},"GranuleUR":"LAADS:2715071895","SpatialExtent":{"HorizontalSpatialDomain":{"Geometry":{"GPolygons":[{"Boundary":{"Points":[{"Longitude":146.932438,"Latitude":76.50228},{"Longitude":-145.553577,"Latitude":66.835767},{"Longitude":-94.815506,"Latitude":70.509885},{"Longitude":9.997243,"Latitude":84.145132},{"Longitude":146.932438,"Latitude":76.50228}]}}]}}},"ProviderDates":[{"Date":"2017-06-21T18:43:28.500Z","Type":"Insert"},{"Date":"2024-08-10T11:32:04.130Z","Type":"Update"}],"CollectionReference":{"ShortName":"MOD02QKM","Version":"6.1"},"PGEVersionClass":{"PGEVersion":"6.2.2_1"},"RelatedUrls":[{"URL":"https://data.laadsdaac.earthdatacloud.nasa.gov/prod-lads/MOD02QKM/MOD02QKM.A2000055.0005.061.2017171194850.hdf","Type":"GET
+        DATA","MimeType":"application/x-hdfeos"},{"URL":"s3://prod-lads/MOD02QKM/MOD02QKM.A2000055.0005.061.2017171194850.hdf","Type":"GET
+        DATA VIA DIRECT ACCESS","MimeType":"application/x-hdfeos"},{"URL":"https://ladsweb.modaps.eosdis.nasa.gov/opendap/RemoteResources/laads/allData/61/MOD02QKM/2000/055/MOD02QKM.A2000055.0005.061.2017171194850.hdf.html","Type":"USE
+        SERVICE API","Subtype":"OPENDAP DATA","Description":"This file may be accessed
+        using OPeNDAP directly from this link","MimeType":"text/html"},{"URL":"http://doi.org/10.5067/MODIS/MOD02QKM.061","Type":"VIEW
+        RELATED INFORMATION","Description":"A link to Data set landing page","MimeType":"text/html"},{"URL":"https://ladsweb.modaps.eosdis.nasa.gov/archive/allData/61/MOBRGB/2000/055/MOBRGB.A2000055.0005.061.2017272125720.jpg","Type":"GET
+        RELATED VISUALIZATION","Description":"This Browse file may be downloaded directly
+        from this link","MimeType":"image/jpeg"}],"Projects":[{"ShortName":"Not provided","Campaigns":["Terra"]}],"DataGranule":{"DayNightFlag":"Both","Identifiers":[{"Identifier":"MOD02QKM.A2000055.0005.061.2017171194850.hdf","IdentifierType":"ProducerGranuleId"}],"ProductionDateTime":"2017-06-20T19:48:50.000Z","ArchiveAndDistributionInformation":[{"Name":"Not
+        provided","Size":26.6880235671997,"SizeInBytes":27984421,"Checksum":{"Value":"f354ac721cb0f66e1da78b420e734c6a","Algorithm":"MD5"},"SizeUnit":"MB"}]},"Platforms":[{"ShortName":"Terra","Instruments":[{"ShortName":"MODIS"}]}],"MetadataSpecification":{"URL":"https://cdn.earthdata.nasa.gov/umm/granule/v1.6.6","Name":"UMM-G","Version":"1.6.6"}}},{"meta":{"concept-type":"granule","concept-id":"G1462754407-LAADS","revision-id":5,"native-id":"LAADS:2715072177","collection-concept-id":"C1378579425-LAADS","provider-id":"LAADS","format":"application/echo10+xml","revision-date":"2024-08-10T11:32:15.952Z"},"umm":{"TemporalExtent":{"RangeDateTime":{"BeginningDateTime":"2000-02-24T00:10:00.000Z","EndingDateTime":"2000-02-24T00:15:00.000Z"}},"GranuleUR":"LAADS:2715072177","SpatialExtent":{"HorizontalSpatialDomain":{"Geometry":{"GPolygons":[{"Boundary":{"Points":[{"Longitude":150.408066,"Latitude":58.831248},{"Longitude":-171.273133,"Latitude":53.551985},{"Longitude":-145.975778,"Latitude":67.194745},{"Longitude":145.201467,"Latitude":76.970977},{"Longitude":150.408066,"Latitude":58.831248}]}}]}}},"ProviderDates":[{"Date":"2017-06-21T18:43:29.010Z","Type":"Insert"},{"Date":"2024-08-10T11:32:14.860Z","Type":"Update"}],"CollectionReference":{"ShortName":"MOD02QKM","Version":"6.1"},"PGEVersionClass":{"PGEVersion":"6.2.2_1"},"RelatedUrls":[{"URL":"https://data.laadsdaac.earthdatacloud.nasa.gov/prod-lads/MOD02QKM/MOD02QKM.A2000055.0010.061.2017171195126.hdf","Type":"GET
+        DATA","MimeType":"application/x-hdfeos"},{"URL":"s3://prod-lads/MOD02QKM/MOD02QKM.A2000055.0010.061.2017171195126.hdf","Type":"GET
+        DATA VIA DIRECT ACCESS","MimeType":"application/x-hdfeos"},{"URL":"https://ladsweb.modaps.eosdis.nasa.gov/opendap/RemoteResources/laads/allData/61/MOD02QKM/2000/055/MOD02QKM.A2000055.0010.061.2017171195126.hdf.html","Type":"USE
+        SERVICE API","Subtype":"OPENDAP DATA","Description":"This file may be accessed
+        using OPeNDAP directly from this link","MimeType":"text/html"},{"URL":"http://doi.org/10.5067/MODIS/MOD02QKM.061","Type":"VIEW
+        RELATED INFORMATION","Description":"A link to Data set landing page","MimeType":"text/html"},{"URL":"https://ladsweb.modaps.eosdis.nasa.gov/archive/allData/61/MOBRGB/2000/055/MOBRGB.A2000055.0010.061.2017272130054.jpg","Type":"GET
+        RELATED VISUALIZATION","Description":"This Browse file may be downloaded directly
+        from this link","MimeType":"image/jpeg"}],"Projects":[{"ShortName":"Not provided","Campaigns":["Terra"]}],"DataGranule":{"DayNightFlag":"Day","Identifiers":[{"Identifier":"MOD02QKM.A2000055.0010.061.2017171195126.hdf","IdentifierType":"ProducerGranuleId"}],"ProductionDateTime":"2017-06-20T19:51:26.000Z","ArchiveAndDistributionInformation":[{"Name":"Not
+        provided","Size":45.6425333023071,"SizeInBytes":47859665,"Checksum":{"Value":"00d5aff45c4f45d0ae15476c347deb6f","Algorithm":"MD5"},"SizeUnit":"MB"}]},"Platforms":[{"ShortName":"Terra","Instruments":[{"ShortName":"MODIS"}]}],"MetadataSpecification":{"URL":"https://cdn.earthdata.nasa.gov/umm/granule/v1.6.6","Name":"UMM-G","Version":"1.6.6"}}}]}'
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - CMR-Hits, CMR-Request-Id, X-Request-Id, CMR-Scroll-Id, CMR-Search-After, CMR-Timed-Out,
+        CMR-Shapefile-Original-Point-Count, CMR-Shapefile-Simplified-Point-Count
+      CMR-Hits:
+      - '1404444'
+      CMR-Request-Id:
+      - b96c2542-637d-4fed-8b80-1fcc26b7b271
+      CMR-Search-After:
+      - '["laads",951351000000,1462754407]'
+      CMR-Took:
+      - '213'
+      Connection:
+      - keep-alive
+      Content-MD5:
+      - e8f8c6ed8c22b0e8fe0094beb86e3960
+      Content-SHA1:
+      - 57ceff02479eabb30867826091a26f7419d647fc
+      Content-Type:
+      - application/vnd.nasa.cmr.umm_results+json;version=1.6.6; charset=utf-8
+      Date:
+      - Tue, 24 Sep 2024 21:02:31 GMT
+      Server:
+      - ServerTokens ProductOnly
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding, User-Agent
+      Via:
+      - 1.1 c20831c51415172b5e09631b0a5bbb1e.cloudfront.net (CloudFront)
+      X-Amz-Cf-Id:
+      - gvMeI0m3XE8muu9Ok8Cgqc_3T5Mn5yMPPhHbsCxgy4HKOVHQNSmBNQ==
+      X-Amz-Cf-Pop:
+      - LAX50-C1
+      X-Cache:
+      - Miss from cloudfront
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Request-Id:
+      - gvMeI0m3XE8muu9Ok8Cgqc_3T5Mn5yMPPhHbsCxgy4HKOVHQNSmBNQ==
+      X-XSS-Protection:
+      - 1; mode=block
+      content-length:
+      - '5445'
+    status:
+      code: 200
+      message: OK
+version: 1
