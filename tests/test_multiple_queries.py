@@ -1,12 +1,20 @@
-import inspect
 import json
-import os
+import unittest
 from datetime import datetime
-
 from typing_extensions import Any, Sequence
-from vcr.unittest import VCRTestCase
+
+import vcr
 
 from cmr.queries import GranuleQuery
+
+my_vcr = vcr.VCR(
+    record_mode=vcr.record_mode.RecordMode.ONCE,
+    decode_compressed_response=True,
+    # Header matching is not set by default, we need that to test the
+    # search-after functionality is performing correctly.
+    match_on=["method", "scheme", "host", "port", "path", "query", "headers"],
+    filter_headers=["user-agent"],
+)
 
 
 def assert_unique_granules_from_results(granules: Sequence[Any]) -> bool:
@@ -18,17 +26,7 @@ def assert_unique_granules_from_results(granules: Sequence[Any]) -> bool:
     return len(granules) == len({str(granule) for granule in granules})
 
 
-class TestMultipleQueries(VCRTestCase):  # type: ignore
-
-    def _get_vcr_kwargs(self, **kwargs):
-        kwargs['decode_compressed_response'] = True
-        kwargs['match_on'] = ["method", "scheme", "host", "port", "path", "query", "headers"]
-        kwargs['filter_headers'] = ["user-agent"]
-        return kwargs
-
-    def _get_cassette_library_dir(self):
-        testdir = os.path.dirname(inspect.getfile(self.__class__))
-        return os.path.join(testdir, "fixtures", "vcr_cassettes")
+class TestMultipleQueries(unittest.TestCase):
 
     def test_get_unparsed_format(self):
         """
@@ -36,33 +34,20 @@ class TestMultipleQueries(VCRTestCase):  # type: ignore
         then we expect multiple invocations of a cmr granule search and
         to not fetch back more results than we ask for
         """
-        api = GranuleQuery().format("umm_json")
+        with my_vcr.use_cassette(
+            "tests/fixtures/vcr_cassettes/test_get_unparsed_format.yaml"
+        ) as cass:
+            api = GranuleQuery().format("umm_json")
 
-        pages = api.short_name("MOD02QKM").get(2)
-        granules = [
-            granule for page in pages for granule in json.loads(page)["items"]
-        ]
-        self.assertEqual(2, len(granules))
-        assert_unique_granules_from_results(granules)
-        # Assert that we performed only 1 search request
-        self.assertEqual(1, len(self.cassette))
-        self.assertIsNone((api.headers or {}).get("cmr-search-after"))
-
-    def test_get_iter_unparsed_format(self):
-        """
-        If we execute a get for an unparsed format we expect limit to still be respected
-        """
-        api = GranuleQuery().format("umm_json")
-
-        pages = api.short_name("MOD02QKM").get_iter(limit=10, page_size=2)
-        granules = [
-            granule for page in pages for granule in json.loads(page)["items"]
-        ]
-        self.assertEqual(10, len(granules))
-        assert_unique_granules_from_results(granules)
-        # Assert that we performed 5 search requests
-        self.assertEqual(5, len(self.cassette))
-        self.assertIsNone((api.headers or {}).get("cmr-search-after"))
+            pages = api.short_name("MOD02QKM").get(2)
+            granules = [
+                granule for page in pages for granule in json.loads(page)["items"]
+            ]
+            self.assertEqual(2, len(granules))
+            assert_unique_granules_from_results(granules)
+            # Assert that we performed only 1 search request
+            self.assertEqual(1, len(cass))
+            self.assertIsNone((api.headers or {}).get("cmr-search-after"))
 
     def test_get_more_than_2000(self):
         """
@@ -70,29 +55,16 @@ class TestMultipleQueries(VCRTestCase):  # type: ignore
         then we expect multiple invocations of a cmr granule search and
         to not fetch back more results than we ask for
         """
-        api = GranuleQuery()
+        with my_vcr.use_cassette('tests/fixtures/vcr_cassettes/MOD02QKM.yaml') as cass:
+            api = GranuleQuery()
 
-        granules = api.short_name("MOD02QKM").get(3000)
-        self.assertEqual(3000, len(granules))
-        assert_unique_granules_from_results(granules)
-        # Assert that we performed two search results queries
-        self.assertEqual(2, len(self.cassette))
-        self.assertIsNone((api.headers or {}).get("cmr-search-after"))
-
-    def test_get_iter_more_than_2000(self):
-        """
-        If we execute a get with a limit of more than 2000
-        then we expect multiple invocations of a cmr granule search and
-        to not fetch back more results than we ask for
-        """
-        api = GranuleQuery()
-
-        granules = list(api.short_name("MOD02QKM").get_iter(limit=3000, page_size=1000))
-        self.assertEqual(3000, len(granules))
-        assert_unique_granules_from_results(granules)
-        # Assert that we performed 3 search results queries
-        self.assertEqual(3, len(self.cassette))
-        self.assertIsNone((api.headers or {}).get("cmr-search-after"))
+            granules = api.short_name("MOD02QKM").get(3000)
+            self.assertEqual(3000, len(granules))
+            # Assert all 3000 qranule results have unique granule ids
+            assert_unique_granules_from_results(granules)
+            # Assert that we performed two search results queries
+            self.assertEqual(2, len(cass))
+            self.assertIsNone((api.headers or {}).get("cmr-search-after"))
 
     def test_get(self):
         """
@@ -100,26 +72,15 @@ class TestMultipleQueries(VCRTestCase):  # type: ignore
         to get the maximum no. of granules from a single CMR call (2000)
         in a single request
         """
-        api = GranuleQuery()
-        granules = api.short_name("MOD02QKM").get()
-        self.assertEqual(2000, len(granules))
-        assert_unique_granules_from_results(granules)
-        # Assert that we performed 1 search results query
-        self.assertEqual(1, len(self.cassette))
-        self.assertIsNone((api.headers or {}).get("cmr-search-after"))
-
-    def test_get_iter(self):
-        """
-        If we execute a get with no arguments then we expect
-        to get all results
-        """
-        api = GranuleQuery()
-        granules = list(api.short_name("TELLUS_GRAC_L3_JPL_RL06_LND_v04").get_iter())
-        self.assertEqual(163, len(granules))
-        assert_unique_granules_from_results(granules)
-        # Assert that we performed 2 search results query
-        self.assertEqual(2, len(self.cassette))
-        self.assertIsNone((api.headers or {}).get("cmr-search-after"))
+        with my_vcr.use_cassette('tests/fixtures/vcr_cassettes/MOD02QKM_2000.yaml') as cass:
+            api = GranuleQuery()
+            granules = api.short_name("MOD02QKM").get()
+            self.assertEqual(2000, len(granules))
+            # Assert all 2000 qranule results have unique granule ids
+            assert_unique_granules_from_results(granules)
+            # Assert that we performed one search results query
+            self.assertEqual(1, len(cass))
+            self.assertIsNone((api.headers or {}).get("cmr-search-after"))
 
     def test_get_all_less_than_2k(self):
         """
@@ -127,13 +88,15 @@ class TestMultipleQueries(VCRTestCase):  # type: ignore
         invocations of a cmr granule search and
         to not fetch back more results than we ask for
         """
-        api = GranuleQuery()
-        granules = api.short_name("TELLUS_GRAC_L3_JPL_RL06_LND_v04").get_all()
-        self.assertEqual(163, len(granules))
-        assert_unique_granules_from_results(granules)
-        # Assert that we performed a hits query and one search results query
-        self.assertEqual(2, len(self.cassette))
-        self.assertIsNone((api.headers or {}).get("cmr-search-after"))
+        with my_vcr.use_cassette('tests/fixtures/vcr_cassettes/TELLUS_GRAC.yaml') as cass:
+            api = GranuleQuery()
+            granules = api.short_name("TELLUS_GRAC_L3_JPL_RL06_LND_v04").get_all()
+            self.assertEqual(163, len(granules))
+            # Assert all 163 qranule results have unique granule ids
+            assert_unique_granules_from_results(granules)
+            # Assert that we performed a hits query and one search results query
+            self.assertEqual(2, len(cass))
+            self.assertIsNone((api.headers or {}).get("cmr-search-after"))
 
     def test_get_all_more_than_2k(self):
         """
@@ -141,13 +104,15 @@ class TestMultipleQueries(VCRTestCase):  # type: ignore
         invocations of a cmr granule search and
         to not fetch back more results than we ask for
         """
-        api = GranuleQuery()
-        granules = api.short_name("CYGNSS_NOAA_L2_SWSP_25KM_V1.2").get_all()
-        self.assertEqual(2688, len(granules))
-        assert_unique_granules_from_results(granules)
-        # Assert that we performed a hits query and two search results queries
-        self.assertEqual(3, len(self.cassette))
-        self.assertIsNone((api.headers or {}).get("cmr-search-after"))
+        with my_vcr.use_cassette('tests/fixtures/vcr_cassettes/CYGNSS.yaml') as cass:
+            api = GranuleQuery()
+            granules = api.short_name("CYGNSS_NOAA_L2_SWSP_25KM_V1.2").get_all()
+            self.assertEqual(2535, len(granules))
+            # Assert all 2285 qranule results have unique granule ids
+            assert_unique_granules_from_results(granules)
+            # Assert that we performed a hits query and two search results queries
+            self.assertEqual(3, len(cass))
+            self.assertIsNone((api.headers or {}).get("cmr-search-after"))
 
     def test_zero_hits_query(self):
         """
@@ -155,28 +120,13 @@ class TestMultipleQueries(VCRTestCase):  # type: ignore
         hits, cmr-search-after is not sent in
         the response headers
         """
-        api = GranuleQuery()
-        granules = (
-            api.short_name("MOD09GA")
-            .version("061")
-            .temporal(datetime(1990, 1, 1), datetime(1990, 1, 2))
-            .get()
-        )
-        self.assertEqual(0, len(granules))
-        self.assertIsNone((api.headers or {}).get("cmr-search-after"))
-
-    def test_zero_hits_query_iter(self):
-        """
-        If we execute a get that has zero
-        hits, cmr-search-after is not sent in
-        the response headers
-        """
-        api = GranuleQuery()
-        granules = list(
-            api.short_name("MOD09GA")
-            .version("061")
-            .temporal(datetime(1990, 1, 1), datetime(1990, 1, 2))
-            .get_iter()
-        )
-        self.assertEqual(0, len(granules))
-        self.assertIsNone((api.headers or {}).get("cmr-search-after"))
+        with my_vcr.use_cassette('tests/fixtures/vcr_cassettes/MOD09GA061_nohits.yaml'):
+            api = GranuleQuery()
+            granules = (
+                api.short_name("MOD09GA")
+                .version("061")
+                .temporal(datetime(1990, 1, 1), datetime(1990, 1, 2))
+                .get()
+            )
+            self.assertEqual(0, len(granules))
+            self.assertIsNone((api.headers or {}).get("cmr-search-after"))

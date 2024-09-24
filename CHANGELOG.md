@@ -8,12 +8,6 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
-### Added
-- New function `get_iter` for returning results as an iterator instead of sequence ([#37](https://github.com/nasa/python_cmr/issues/37))
-
-### Deprecated
-- Function `get` has been marked as deprecated in favor of the new `get_iter` function. `get` will likely be removed for the 1.0.0 release. ([#37](https://github.com/nasa/python_cmr/issues/37))
-
 ## [0.13.0]
 
 ### Added
