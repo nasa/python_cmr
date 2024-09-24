@@ -7,8 +7,6 @@ from collections import defaultdict
 from datetime import date, datetime, timezone
 from inspect import getmembers, ismethod
 from re import search
-from typing import Iterator
-
 from typing_extensions import (
     Any,
     List,
@@ -22,7 +20,7 @@ from typing_extensions import (
     Tuple,
     TypeAlias,
     Union,
-    override, deprecated,
+    override,
 )
 from urllib.parse import quote
 
@@ -60,12 +58,11 @@ class Query:
         self.concept_id_chars: Set[str] = set()
         self.headers: MutableMapping[str, str] = {}
 
-    @deprecated("Use get_iter() instead")
     def get(self, limit: int = 2000) -> Sequence[Any]:
         """
         Get all results up to some limit, even if spanning multiple pages.
 
-        :param limit: The number of results to return
+        :limit: The number of results to return
         :returns: query results as a list
         """
 
@@ -120,56 +117,14 @@ class Query:
 
     def get_all(self) -> Sequence[Any]:
         """
-        Returns all of the results for the query. This method could take quite
+        Returns all of the results for the query. This will call hits() first to determine how many
+        results their are, and then calls get() with that number. This method could take quite
         awhile if many requests have to be made.
 
         :returns: query results as a list
         """
 
-        return list(self.get_iter())
-
-    def get_iter(self, limit: int = -1, page_size: int = 2000) -> Iterator[Any]:
-        """
-        Returns all results for the query as an iterator (generator)
-
-        :param limit: The maximum number of results to return. Negative value means no limit.
-        :param page_size: The page size (min 0, max 2000) of results retrieved from CMR. Smaller page size means
-        fewer items in memory and more cmr queries. Larger page size means more items in memory and fewer cmr queries.
-        :returns: query results as an iterator (generator)
-        """
-
-        url = self._build_url()
-
-        headers = dict(self.headers or {})
-        more_results = True
-        page_size = min(max(0, page_size), 2000)
-        n_results = 0
-        if limit < 0:
-            limit = self.hits()
-
-        while more_results:
-            # Only get what we need on the last page.
-            page_size = min(limit - n_results, page_size)
-            response = requests.get(
-                url, headers=headers, params={"page_size": page_size}
-            )
-            response.raise_for_status()
-
-            # Explicitly track the number of results we have because the length
-            # of the results list will only match the number of entries fetched
-            # when the format is JSON.  Otherwise, the length of the results
-            # list is the number of *pages* fetched, not the number of *items*.
-            n_results += page_size
-
-            if self._format == "json":
-                yield from response.json()["feed"]["entry"]
-            else:
-                yield response.text
-
-            if cmr_search_after := response.headers.get("cmr-search-after"):
-                headers["cmr-search-after"] = cmr_search_after
-
-            more_results = n_results < limit and cmr_search_after is not None
+        return self.get(self.hits())
 
     def parameters(self, **kwargs: Any) -> Self:
         """
