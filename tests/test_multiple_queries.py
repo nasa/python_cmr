@@ -2,6 +2,7 @@ import inspect
 import json
 import os
 from datetime import datetime
+from itertools import islice
 
 from typing_extensions import Any, Sequence
 from vcr.unittest import VCRTestCase
@@ -48,20 +49,20 @@ class TestMultipleQueries(VCRTestCase):  # type: ignore
         self.assertEqual(1, len(self.cassette))
         self.assertIsNone((api.headers or {}).get("cmr-search-after"))
 
-    def test_get_iter_unparsed_format(self):
+    def test_results_unparsed_format(self):
         """
-        If we execute a get for an unparsed format we expect limit to still be respected
+        If we execute a get for an unparsed format we expect pages to be returned instead of items
         """
         api = GranuleQuery().format("umm_json")
 
-        pages = api.short_name("MOD02QKM").get_iter(limit=10, page_size=2)
+        pages = list(islice(api.short_name("MOD02QKM").results(page_size=2), 10))
         granules = [
             granule for page in pages for granule in json.loads(page)["items"]
         ]
-        self.assertEqual(10, len(granules))
+        self.assertEqual(20, len(granules))
         assert_unique_granules_from_results(granules)
         # Assert that we performed 5 search requests
-        self.assertEqual(5, len(self.cassette))
+        self.assertEqual(10, len(self.cassette))
         self.assertIsNone((api.headers or {}).get("cmr-search-after"))
 
     def test_get_more_than_2000(self):
@@ -79,7 +80,7 @@ class TestMultipleQueries(VCRTestCase):  # type: ignore
         self.assertEqual(2, len(self.cassette))
         self.assertIsNone((api.headers or {}).get("cmr-search-after"))
 
-    def test_get_iter_more_than_2000(self):
+    def test_results_more_than_2000(self):
         """
         If we execute a get with a limit of more than 2000
         then we expect multiple invocations of a cmr granule search and
@@ -87,7 +88,7 @@ class TestMultipleQueries(VCRTestCase):  # type: ignore
         """
         api = GranuleQuery()
 
-        granules = list(api.short_name("MOD02QKM").get_iter(limit=3000, page_size=1000))
+        granules = list(islice(api.short_name("MOD02QKM").results(page_size=1000), 3000))
         self.assertEqual(3000, len(granules))
         assert_unique_granules_from_results(granules)
         # Assert that we performed 3 search results queries
@@ -108,13 +109,13 @@ class TestMultipleQueries(VCRTestCase):  # type: ignore
         self.assertEqual(1, len(self.cassette))
         self.assertIsNone((api.headers or {}).get("cmr-search-after"))
 
-    def test_get_iter(self):
+    def test_results(self):
         """
         If we execute a get with no arguments then we expect
         to get all results
         """
         api = GranuleQuery()
-        granules = list(api.short_name("TELLUS_GRAC_L3_JPL_RL06_LND_v04").get_iter())
+        granules = list(api.short_name("TELLUS_GRAC_L3_JPL_RL06_LND_v04").results())
         self.assertEqual(163, len(granules))
         assert_unique_granules_from_results(granules)
         # Assert that we performed 2 search results query
@@ -165,7 +166,7 @@ class TestMultipleQueries(VCRTestCase):  # type: ignore
         self.assertEqual(0, len(granules))
         self.assertIsNone((api.headers or {}).get("cmr-search-after"))
 
-    def test_zero_hits_query_iter(self):
+    def test_zero_hits_query_results(self):
         """
         If we execute a get that has zero
         hits, cmr-search-after is not sent in
@@ -176,7 +177,7 @@ class TestMultipleQueries(VCRTestCase):  # type: ignore
             api.short_name("MOD09GA")
             .version("061")
             .temporal(datetime(1990, 1, 1), datetime(1990, 1, 2))
-            .get_iter()
+            .results()
         )
         self.assertEqual(0, len(granules))
         self.assertIsNone((api.headers or {}).get("cmr-search-after"))
