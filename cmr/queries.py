@@ -7,6 +7,8 @@ from collections import defaultdict
 from datetime import date, datetime, timezone
 from inspect import getmembers, ismethod
 from re import search
+from typing import Iterator
+
 from typing_extensions import (
     Any,
     List,
@@ -20,7 +22,7 @@ from typing_extensions import (
     Tuple,
     TypeAlias,
     Union,
-    override,
+    override, deprecated,
 )
 from urllib.parse import quote
 
@@ -58,6 +60,7 @@ class Query:
         self.concept_id_chars: Set[str] = set()
         self.headers: MutableMapping[str, str] = {}
 
+    @deprecated("Use the 'results' method instead, but note that it produces an iterator.")
     def get(self, limit: int = 2000) -> Sequence[Any]:
         """
         Get all results up to some limit, even if spanning multiple pages.
@@ -115,6 +118,7 @@ class Query:
 
         return int(response.headers["CMR-Hits"])
 
+    @deprecated("Use the 'results' method instead, but note that it produces an iterator.")
     def get_all(self) -> Sequence[Any]:
         """
         Returns all of the results for the query. This will call hits() first to determine how many
@@ -123,8 +127,61 @@ class Query:
 
         :returns: query results as a list
         """
+        
+        return list(self.get(self.hits()))
 
-        return self.get(self.hits())
+    def results(self, page_size: int = 2000) -> Iterator[Any]:
+        """
+        Return an iterator (generator) of all results matching the query
+        criteria.
+
+        Because a query may produce a large number of results (perhaps
+        10s or 100s of thousands), such results are fetched using
+        multiple CMR requests, each returning a "page" of results, as
+        returning all results in a single request would be impractical.
+        The size of each page (in terms of the number of results
+        in a page) is controlled by the `page_size` parameter. A smaller
+        page size means fewer items in memory (per page), requiring
+        more CMR queries to fetch all results (if desired). Conversely,
+        a larger page size means more items in memory (per page)
+        and fewer CMR queries.
+
+        When the query is configured to use the `"json"` format, each
+        element produced by the returned iterator is a element of the
+        "feed.entry" array (see
+        <https://cmr.earthdata.nasa.gov/search/site/docs/search/api.html#json>).
+        In this case, the iterator may produce as many elements as there
+        are results matching the query criteria.
+
+        For all other formats, each element produced by the returned
+        iterator is an unparsed (text) page of results (i.e., the caller
+        is responsible for parsing the page of results into individual
+        elements). In this case, the iterator will produce only as many
+        pages as required (based on `page_size`) to produce all results
+        matching the query criteria.
+
+        :param page_size: maximum number of results per page (min 1,
+            max 2000 [default]) requested from the CMR
+        :returns: query results as an iterator (generator)
+        """
+
+        url = self._build_url()
+        headers = dict(self.headers or {})
+        params = {"page_size": min(max(1, page_size), 2000)}
+
+        while True:
+            response = requests.get(url, headers=headers, params=params)
+            response.raise_for_status()
+
+            if self._format == "json":
+                yield from response.json()["feed"]["entry"]
+            else:
+                yield response.text
+
+            if not (cmr_search_after := response.headers.get("cmr-search-after")):
+                break
+
+            headers["cmr-search-after"] = cmr_search_after
 
     def parameters(self, **kwargs: Any) -> Self:
         """
