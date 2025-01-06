@@ -27,7 +27,7 @@ jobs:
         with:
           python-version: '3.x'
       - name: Install Poetry
-        uses: abatilo/actions-poetry@v3
+        uses: abatilo/actions-poetry@v4
         with:
           poetry-version: 1.5.1
       - name: Build package
