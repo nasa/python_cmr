@@ -365,6 +365,26 @@ class Query:
 
         return self
 
+    def client_id(self, client_id: str) -> Self:
+        """
+        Set the value of this query's 'Client ID' header according to User's input.
+
+        If an empty parameter is given, default is set to be
+        python_cmr-vX.Y.Z, where X.Y.Z is the version of python_cmr.
+        Otherwise, set the specified paramter option to the value along with 
+        the suffix (python_cmr-vX.Y.Z) and a space character between the specified paramter and the suffix.
+
+        :param client_id
+        :returns self
+        """
+    
+        if not client_id: 
+            self.headers.update({"Client-Id: python_cmr-v0.13.0"}) 
+            
+        self.headers.update({"Client-Id": f"{client_id} python_cmr-v0.13.0"})
+
+        return self
+
     def option(
         self, parameter: str, key: str, value: Union[str, bool, int, float, None]
     ) -> Self:
