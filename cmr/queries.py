@@ -369,11 +369,15 @@ class Query:
 
     def client_id(self, id_: str) -> Self:
         """
-        Set the header value to the specified value along with
-        the suffix `(python_cmr-vX.Y.Z)`, separated by a space character.
+        Set the `Client-Id` header value to the specified value along with
+        the suffix `(python_cmr-vX.Y.Z)`, separated by a space character,
+        where `X.Y.Z` is the current version of the `python_cmr` library.
+        Set the header value to `python_cmr-vX.Y.Z` (without parentheses)
+        when the specified value is an empty string (or `None`), which is the
+        default header value even when this method is not invoked.
 
-        :param client_id
-        :returns self
+        :param client_id: prefix value to set on the `Client-Id` header
+        :returns self:
         """
 
         if not id_: 
