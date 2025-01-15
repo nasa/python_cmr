@@ -369,9 +369,7 @@ class Query:
 
     def client_id(self, id_: str) -> Self:
         """
-        Set the value of this query's `Client-Id` header.
-
-        Otherwise, set the header value to the specified value along with
+        Set the header value to the specified value along with
         the suffix `(python_cmr-vX.Y.Z)`, separated by a space character.
 
         :param client_id
