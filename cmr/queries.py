@@ -8,6 +8,7 @@ from datetime import date, datetime, timezone
 from inspect import getmembers, ismethod
 from re import search
 from typing import Iterator
+from importlib.metadata import version
 
 from typing_extensions import (
     Any,
@@ -59,6 +60,7 @@ class Query:
         self.mode(mode)
         self.concept_id_chars: Set[str] = set()
         self.headers: MutableMapping[str, str] = {}
+        self.headers.update({"Client-Id": f"python_cmr-v{version('python_cmr')}"})
 
     @deprecated("Use the 'results' method instead, but note that it produces an iterator.")
     def get(self, limit: int = 2000) -> Sequence[Any]:
@@ -365,23 +367,23 @@ class Query:
 
         return self
 
-    def client_id(self, client_id: str) -> Self:
+    def client_id(self, id_: str) -> Self:
         """
-        Set the value of this query's 'Client ID' header according to User's input.
+        Set the value of this query's `Client-Id` header.
 
-        If an empty parameter is given, default is set to be
-        python_cmr-vX.Y.Z, where X.Y.Z is the version of python_cmr.
-        Otherwise, set the specified paramter option to the value along with 
-        the suffix (python_cmr-vX.Y.Z) and a space character between the specified paramter and the suffix.
+        Otherwise, set the header value to the specified value along with
+        the suffix `(python_cmr-vX.Y.Z)`, separated by a space character.
 
         :param client_id
         :returns self
         """
-    
-        if not client_id: 
-            self.headers.update({"Client-Id: python_cmr-v0.13.0"}) 
-            
-        self.headers.update({"Client-Id": f"{client_id} python_cmr-v0.13.0"})
+
+        if not id_: 
+            return self
+
+        self.headers.update(
+            {"Client-Id": f"{id_} python_cmr-v{version('python_cmr')}"}
+        )
 
         return self
 
