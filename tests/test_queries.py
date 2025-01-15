@@ -1,5 +1,5 @@
 from cmr import Query
-
+from importlib.metadata import version
 
 class MockQuery(Query):
     def _valid_state(self) -> bool:
@@ -8,7 +8,8 @@ class MockQuery(Query):
 
 def test_query_headers_initially_empty():
     query = MockQuery("/foo")
-    assert query.headers == {}
+    expected_version = version("python_cmr")
+    assert query.headers == {"Client-Id": f"python_cmr-v{expected_version}"}
 
 
 def test_bearer_token_adds_header():
@@ -55,3 +56,11 @@ def test_token_replaces_existing_auth_header():
     query.token("token")
 
     assert query.headers["Authorization"] == "token"
+
+def test_client_id_sets_header():
+    query = MockQuery("/foo")
+    query.client_id("test_client")
+    query.token("token")
+
+    expected_version = version("python_cmr")
+    assert query.headers["Client-Id"] == f"test_client python_cmr-v{expected_version}"
