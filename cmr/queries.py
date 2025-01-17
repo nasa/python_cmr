@@ -385,7 +385,7 @@ class Query:
 
         return self
 
-    def client_id(self, id_: str) -> Self:
+    def client_id(self, id_: Optional[str] = None) -> Self:
         """
         Set the `Client-Id` header value to the specified value along with
         the suffix `(python_cmr-vX.Y.Z)`, separated by a space character,
