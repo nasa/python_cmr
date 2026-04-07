@@ -8,7 +8,6 @@ from datetime import date, datetime, timezone
 from inspect import getmembers, ismethod
 from re import search
 from typing import Iterator
-import warnings
 
 from typing_extensions import (
     Any,
@@ -23,12 +22,12 @@ from typing_extensions import (
     Tuple,
     TypeAlias,
     Union,
-    override,
-    deprecated,
+    override, deprecated,
 )
 from urllib.parse import quote
 
 import requests
+import warnings
 from dateutil.parser import parse as dateutil_parse
 
 CMR_OPS = "https://cmr.earthdata.nasa.gov/search/"
@@ -50,16 +49,8 @@ class Query:
     _route = ""
     _format = "json"
     _valid_formats_regex = [
-        "json",
-        "xml",
-        "echo10",
-        "iso",
-        "iso19115",
-        "csv",
-        "atom",
-        "kml",
-        "native",
-        "stac",
+        "json", "xml", "echo10", "iso", "iso19115",
+        "csv", "atom", "kml", "native", "stac",
     ]
 
     def __init__(self, route: str, mode: str = CMR_OPS):
@@ -70,9 +61,7 @@ class Query:
         self.concept_id_chars: Set[str] = set()
         self.headers: MutableMapping[str, str] = {}
 
-    @deprecated(
-        "Use the 'results' method instead, but note that it produces an iterator."
-    )
+    @deprecated("Use the 'results' method instead, but note that it produces an iterator.")
     def get(self, limit: int = 2000) -> Sequence[Any]:
         """
         Get all results up to some limit, even if spanning multiple pages.
@@ -130,9 +119,7 @@ class Query:
 
         return int(response.headers["CMR-Hits"])
 
-    @deprecated(
-        "Use the 'results' method instead, but note that it produces an iterator."
-    )
+    @deprecated("Use the 'results' method instead, but note that it produces an iterator.")
     def get_all(self) -> Sequence[Any]:
         """
         Returns all of the results for the query. This will call hits() first to determine how many
@@ -141,7 +128,7 @@ class Query:
 
         :returns: query results as a list
         """
-
+        
         return list(self.get(self.hits()))
 
     def results(self, page_size: int = 2000) -> Iterator[Any]:
@@ -251,16 +238,13 @@ class Query:
 
         # last chance validation for parameters
         if not self._valid_state():
-            raise RuntimeError(
-                (
-                    "Spatial parameters must be accompanied by a collection "
-                    "filter (ex: short_name or entry_title)."
-                )
-            )
+            raise RuntimeError(("Spatial parameters must be accompanied by a collection "
+                                "filter (ex: short_name or entry_title)."))
 
         # encode params
         formatted_params = []
         for key, val in self.params.items():
+
             # list params require slightly different formatting
             if isinstance(val, list):
                 for list_val in val:
@@ -278,13 +262,11 @@ class Query:
         formatted_options: List[str] = []
         for param_key in self.options:
             for option_key, val in self.options[param_key].items():
-                formatted_options.append(
-                    f"options[{param_key}][{option_key}]={str(val).lower()}"
-                )
+                formatted_options.append(f"options[{param_key}][{option_key}]={str(val).lower()}")
 
         options_as_string = "&".join(formatted_options)
         res = f"{self._base_url}.{self._format}?{params_as_string}&{options_as_string}"
-        return res.rstrip("&")
+        return res.rstrip('&')
 
     def concept_id(self, IDs: Union[str, Sequence[str]]) -> Self:
         """
@@ -325,7 +307,7 @@ class Query:
         if not provider:
             return self
 
-        self.params["provider"] = provider
+        self.params['provider'] = provider
         return self
 
     @abstractmethod
@@ -462,12 +444,14 @@ class GranuleCollectionBaseQuery(Query):
         if "downloadable" in self.params:
             del self.params["downloadable"]
 
-        self.params["online_only"] = online_only
+        self.params['online_only'] = online_only
 
         return self
 
     def _format_date(
-        self, date_from: Optional[DateLike], date_to: Optional[DateLike]
+        self,
+        date_from: Optional[DateLike],
+        date_to: Optional[DateLike]
     ) -> Tuple[str, str]:
         """
         Format dates into expected format for date queries.
@@ -510,12 +494,8 @@ class GranuleCollectionBaseQuery(Query):
 
             return date.strftime(iso_8601)
 
-        date_from = convert_to_string(
-            date_from, datetime(1, 1, 1, 0, 0, 0, tzinfo=timezone.utc)
-        )
-        date_to = convert_to_string(
-            date_to, datetime(1, 12, 31, 23, 59, 59, tzinfo=timezone.utc)
-        )
+        date_from = convert_to_string(date_from, datetime(1, 1, 1, 0, 0, 0, tzinfo=timezone.utc))
+        date_to = convert_to_string(date_to, datetime(1, 12, 31, 23, 59, 59, tzinfo=timezone.utc))
 
         # if we have both dates, make sure from isn't later than to
         if date_from and date_to and date_from > date_to:
@@ -550,7 +530,9 @@ class GranuleCollectionBaseQuery(Query):
         self.params["revision_date"].append(f"{date_from},{date_to}")
 
         if exclude_boundary:
-            self.options["revision_date"] = {"exclude_boundary": True}
+            self.options["revision_date"] = {
+                "exclude_boundary": True
+            }
 
         return self
 
@@ -581,7 +563,9 @@ class GranuleCollectionBaseQuery(Query):
         self.params["temporal"].append(f"{date_from},{date_to}")
 
         if exclude_boundary:
-            self.options["temporal"] = {"exclude_boundary": True}
+            self.options["temporal"] = {
+                "exclude_boundary": True
+            }
 
         return self
 
@@ -596,7 +580,7 @@ class GranuleCollectionBaseQuery(Query):
         if not short_name:
             return self
 
-        self.params["short_name"] = short_name
+        self.params['short_name'] = short_name
         return self
 
     def version(self, version: str) -> Self:
@@ -611,7 +595,7 @@ class GranuleCollectionBaseQuery(Query):
         if not version:
             return self
 
-        self.params["version"] = version
+        self.params['version'] = version
         return self
 
     def point(self, lon: FloatLike, lat: FloatLike) -> Self:
@@ -647,17 +631,23 @@ class GranuleCollectionBaseQuery(Query):
         :param dist: distance in meters around waypoint (lat,lon)
         :returns: self
         """
-        self.params["circle"] = f"{lon},{lat},{dist}"
+        self.params['circle'] = f"{lon},{lat},{dist}"
 
         return self
 
     def polygon(self, coordinates: Sequence[PointLike]) -> Self:
         """
-        Filter by granules that overlap a polygonal area.
+        Filter by granules that overlap a polygonal area. Must be used in combination with a
+        collection filtering parameter such as short_name or entry_title.
+
+        :param coordinates: list of (lon, lat) tuples
+        :returns: self
         """
+
         if not coordinates:
             return self
 
+        # make sure we were passed something iterable
         try:
             iter(coordinates)
         except TypeError:
@@ -665,32 +655,39 @@ class GranuleCollectionBaseQuery(Query):
                 f"A line must be an iterable of coordinate tuples. Ex: [(90,90), (91, 90), ...]; got {type(coordinates)}."
             ) from None
 
+        # polygon requires at least 4 pairs of coordinates
         if len(coordinates) < 4:
             raise ValueError(
                 f"A polygon requires at least 4 pairs of coordinates; got {len(coordinates)}."
             )
 
+        # convert to floats
         as_floats = []
         lons = []
         for lon, lat in coordinates:
             f_lon, f_lat = float(lon), float(lat)
             as_floats.extend([f_lon, f_lat])
             lons.append(f_lon)
-
+            
+        # last point must match first point to complete polygon
         if as_floats[0] != as_floats[-2] or as_floats[1] != as_floats[-1]:
             raise ValueError(
                 f"Coordinates of the last pair must match the first pair: {coordinates[0]} != {coordinates[-1]}"
             )
-
+        
+        # Check for longitude span and trigger warning if it exceeds 180 degrees
         if (max(lons) - min(lons)) > 180:
             warnings.warn(
                 "The polygon's longitude span is greater than 180 degrees. "
                 "Please verify if the coordinates are flipped or intended to cross the antimeridian.",
                 UserWarning,
             )
-
+                        
+        # convert to strings
         as_strs = [str(val) for val in as_floats]
+
         self.params["polygon"] = ",".join(as_strs)
+
         return self
 
     def bounding_box(
@@ -701,8 +698,16 @@ class GranuleCollectionBaseQuery(Query):
         upper_right_lat: FloatLike,
     ) -> Self:
         """
-        Filter by granules that overlap a bounding box.
+        Filter by granules that overlap a bounding box. Must be used in combination with
+        a collection filtering parameter such as short_name or entry_title.
+
+        :param lower_left_lon: lower left longitude of the box
+        :param lower_left_lat: lower left latitude of the box
+        :param upper_right_lon: upper right longitude of the box
+        :param upper_right_lat: upper right latitude of the box
+        :returns: self
         """
+        
         ll_lon = float(lower_left_lon)
         ll_lat = float(lower_left_lat)
         ur_lon = float(upper_right_lon)
@@ -725,14 +730,20 @@ class GranuleCollectionBaseQuery(Query):
 
         self.params["bounding_box"] = f"{ll_lon},{ll_lat},{ur_lon},{ur_lat}"
         return self
-
+        
     def line(self, coordinates: Sequence[PointLike]) -> Self:
         """
-        Filter by granules that overlap a series of connected points.
+        Filter by granules that overlap a series of connected points. Must be used in combination
+        with a collection filtering parameter such as short_name or entry_title.
+
+        :param coordinates: a list of (lon, lat) tuples
+        :returns: self
         """
+
         if not coordinates:
             return self
 
+        # make sure we were passed something iterable
         try:
             iter(coordinates)
         except TypeError:
@@ -740,37 +751,56 @@ class GranuleCollectionBaseQuery(Query):
                 f"A line must be an iterable of coordinate tuples. Ex: [(90,90), (91, 90), ...]; got {type(coordinates)}."
             ) from None
 
+        # need at least 2 pairs of coordinates
         if len(coordinates) < 2:
             raise ValueError(
                 f"A line requires at least 2 pairs of coordinates; got {len(coordinates)}."
             )
 
+        # make sure they're all floats
         as_floats = []
         for lon, lat in coordinates:
             as_floats.extend([float(lon), float(lat)])
 
+        # cast back to string for join
         as_strs = [str(val) for val in as_floats]
+
         self.params["line"] = ",".join(as_strs)
+
         return self
 
     def downloadable(self, downloadable: bool = True) -> Self:
         """
-        Only match granules that are available for download.
+        Only match granules that are available for download. The opposite of this
+        method is online_only().
+
+        :param downloadable: True to require granules be downloadable
+        :returns: self
         """
+
         if not isinstance(downloadable, bool):
             raise TypeError("Downloadable must be of type bool")
 
+        # remove the inverse flag so CMR doesn't crash
         if "online_only" in self.params:
             del self.params["online_only"]
 
-        self.params["downloadable"] = downloadable
+        self.params['downloadable'] = downloadable
+
         return self
 
     def entry_title(self, entry_title: str) -> Self:
         """
         Filter by the collection entry title.
+
+        :param entry_title: Entry title of the collection
+        :returns: self
         """
-        self.params["entry_title"] = quote(entry_title)
+
+        entry_title = quote(entry_title)
+
+        self.params['entry_title'] = entry_title
+
         return self
 
     def platform(self, platform: str) -> Self:
@@ -784,7 +814,7 @@ class GranuleCollectionBaseQuery(Query):
         if not platform:
             raise ValueError("Please provide a value for platform")
 
-        self.params["platform"] = platform
+        self.params['platform'] = platform
         return self
 
 
@@ -810,9 +840,9 @@ class GranuleQuery(GranuleCollectionBaseQuery):
         """
 
         if orbit2:
-            self.params["orbit_number"] = quote(f"{str(orbit1)},{str(orbit2)}")
+            self.params['orbit_number'] = quote(f'{str(orbit1)},{str(orbit2)}')
         else:
-            self.params["orbit_number"] = orbit1
+            self.params['orbit_number'] = orbit1
 
         return self
 
@@ -866,7 +896,7 @@ class GranuleQuery(GranuleCollectionBaseQuery):
                     "Please ensure min_cover and max_cover are both convertible to floats"
                 ) from None
 
-        self.params["cloud_cover"] = f"{min_cover},{max_cover}"
+        self.params['cloud_cover'] = f"{min_cover},{max_cover}"
         return self
 
     def instrument(self, instrument: str) -> Self:
@@ -880,7 +910,7 @@ class GranuleQuery(GranuleCollectionBaseQuery):
         if not instrument:
             raise ValueError("Please provide a value for instrument")
 
-        self.params["instrument"] = instrument
+        self.params['instrument'] = instrument
         return self
 
     def sort_key(self, sort_key: str) -> Self:
@@ -897,39 +927,39 @@ class GranuleQuery(GranuleCollectionBaseQuery):
         """
 
         valid_sort_keys = {
-            "campaign",
-            "entry_title",
-            "dataset_id",
-            "data_size",
-            "end_date",
-            "granule_ur",
-            "producer_granule_id",
-            "project",
-            "provider",
-            "readable_granule_name",
-            "short_name",
-            "start_date",
-            "version",
-            "platform",
-            "instrument",
-            "sensor",
-            "day_night_flag",
-            "online_only",
-            "browsable",
-            "browse_only",
-            "cloud_cover",
-            "revision_date",
+            'campaign',
+            'entry_title',
+            'dataset_id',
+            'data_size',
+            'end_date',
+            'granule_ur',
+            'producer_granule_id',
+            'project',
+            'provider',
+            'readable_granule_name',
+            'short_name',
+            'start_date',
+            'version',
+            'platform',
+            'instrument',
+            'sensor',
+            'day_night_flag',
+            'online_only',
+            'browsable',
+            'browse_only',
+            'cloud_cover',
+            'revision_date',
         }
 
         # also covers if empty string and allows for '-' prefix (for descending order)
-        if not isinstance(sort_key, str) or sort_key.lstrip("-") not in valid_sort_keys:
+        if not isinstance(sort_key, str) or sort_key.lstrip('-') not in valid_sort_keys:
             raise ValueError(
                 "Please provide a valid sort key for granules query.  See"
                 " https://cmr.earthdata.nasa.gov/search/site/docs/search/api.html#sorting-granule-results"
                 " for valid sort keys."
             )
 
-        self.params["sort_key"] = sort_key
+        self.params['sort_key'] = sort_key
         return self
 
     def granule_ur(self, granule_ur: str) -> Self:
@@ -944,7 +974,7 @@ class GranuleQuery(GranuleCollectionBaseQuery):
         if not granule_ur:
             raise ValueError("Please provide a value for platform")
 
-        self.params["granule_ur"] = granule_ur
+        self.params['granule_ur'] = granule_ur
         return self
 
     def readable_granule_name(
@@ -1015,9 +1045,9 @@ class CollectionQuery(GranuleCollectionBaseQuery):
     def __init__(self, mode: str = CMR_OPS):
         Query.__init__(self, "collections", mode)
         self.concept_id_chars = {"C"}
-        self._valid_formats_regex.extend(
-            ["dif", "dif10", "opendata", "umm_json", "umm_json_v[0-9]_[0-9]"]
-        )
+        self._valid_formats_regex.extend([
+            "dif", "dif10", "opendata", "umm_json", "umm_json_v[0-9]_[0-9]"
+        ])
 
     def archive_center(self, center: str) -> Self:
         """
@@ -1028,7 +1058,7 @@ class CollectionQuery(GranuleCollectionBaseQuery):
         """
 
         if center:
-            self.params["archive_center"] = center
+            self.params['archive_center'] = center
 
         return self
 
@@ -1043,7 +1073,7 @@ class CollectionQuery(GranuleCollectionBaseQuery):
         """
 
         if text:
-            self.params["keyword"] = text
+            self.params['keyword'] = text
 
         return self
 
@@ -1078,9 +1108,7 @@ class CollectionQuery(GranuleCollectionBaseQuery):
         # verify we provided with tool concept IDs
         for ID in IDs:
             if ID.strip()[0] != "T":
-                raise ValueError(
-                    f"Only tool concept ID's can be provided (begin with 'T'): {ID}"
-                )
+                raise ValueError(f"Only tool concept ID's can be provided (begin with 'T'): {ID}")
 
         self.params["tool_concept_id"] = IDs
 
@@ -1175,13 +1203,14 @@ class ToolServiceVariableBaseQuery(Query):
         results: List[Any] = []
         page = 1
         while len(results) < limit:
+
             response = requests.get(
                 url, params={"page_size": page_size, "page_num": page}
             )
             response.raise_for_status()
 
             if self._format == "json":
-                latest = response.json()["items"]
+                latest = response.json()['items']
             else:
                 latest = [response.text]
 
@@ -1219,7 +1248,7 @@ class ToolServiceVariableBaseQuery(Query):
         if not name:
             return self
 
-        self.params["name"] = name
+        self.params['name'] = name
         return self
 
 
@@ -1231,9 +1260,9 @@ class ToolQuery(ToolServiceVariableBaseQuery):
     def __init__(self, mode: str = CMR_OPS):
         Query.__init__(self, "tools", mode)
         self.concept_id_chars = {"T"}
-        self._valid_formats_regex.extend(
-            ["dif", "dif10", "opendata", "umm_json", "umm_json_v[0-9]_[0-9]"]
-        )
+        self._valid_formats_regex.extend([
+            "dif", "dif10", "opendata", "umm_json", "umm_json_v[0-9]_[0-9]"
+        ])
 
     @override
     def _valid_state(self) -> bool:
@@ -1248,9 +1277,9 @@ class ServiceQuery(ToolServiceVariableBaseQuery):
     def __init__(self, mode: str = CMR_OPS):
         Query.__init__(self, "services", mode)
         self.concept_id_chars = {"S"}
-        self._valid_formats_regex.extend(
-            ["dif", "dif10", "opendata", "umm_json", "umm_json_v[0-9]_[0-9]"]
-        )
+        self._valid_formats_regex.extend([
+            "dif", "dif10", "opendata", "umm_json", "umm_json_v[0-9]_[0-9]"
+        ])
 
     @override
     def _valid_state(self) -> bool:
@@ -1258,12 +1287,13 @@ class ServiceQuery(ToolServiceVariableBaseQuery):
 
 
 class VariableQuery(ToolServiceVariableBaseQuery):
+
     def __init__(self, mode: str = CMR_OPS):
         Query.__init__(self, "variables", mode)
         self.concept_id_chars = {"V"}
-        self._valid_formats_regex.extend(
-            ["dif", "dif10", "opendata", "umm_json", "umm_json_v[0-9]_[0-9]"]
-        )
+        self._valid_formats_regex.extend([
+            "dif", "dif10", "opendata", "umm_json", "umm_json_v[0-9]_[0-9]"
+        ])
 
     def instance_format(self, format: Union[str, Sequence[str]]) -> Self:
         """
@@ -1277,9 +1307,7 @@ class VariableQuery(ToolServiceVariableBaseQuery):
 
         if format:
             # Assume we have non-empty string or sequence of strings (list, tuple, etc.)
-            self.params["instance_format"] = (
-                [format] if isinstance(format, str) else format
-            )
+            self.params['instance_format'] = [format] if isinstance(format, str) else format
 
         return self
 
