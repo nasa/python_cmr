@@ -14,7 +14,22 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
-- Deprecate methods `Query.get` and `Query.get_all` in favor of the new `Query.results` method. These deprecated methods will likely be removed for the 1.0.0 release. ([#37](https://github.com/nasa/python_cmr/issues/37))
+- Deprecate methods `Query.get` and `Query.get_all` in favor of the new
+  `Query.results` method. These deprecated methods will likely be removed for
+  the 1.0.0 release. ([#37](https://github.com/nasa/python_cmr/issues/37))
+- `Query.parameters` accepts "unchecked" keywords, meaning that it accepts
+  keywords that do not have a corresponding method by the same name in the
+  `Query` class (or specific subclass being used).
+
+  This allows the caller to supply a parameter that does not have a
+  corresponding method without raising a `ValueError`. Instead, such a parameter
+  is passed directly through to the CMR, where it will be checked. If the
+  parameter is not supported or its value is invalid, the CMR response will
+  indicate as such.
+
+  This avoids the need to wait for the corresponding method to be added, or
+  having to write cumbersome code to get around the limitation.
+  ([#106](https://github.com/nasa/python_cmr/issues/106))
 
 ## [0.13.0]
 
