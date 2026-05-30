@@ -774,16 +774,28 @@ class GranuleCollectionBaseQuery(Query):
 
         return self
 
-    def platform(self, platform: str) -> Self:
+    def platform(
+        self,
+        platform: Union[str, Sequence[str]],
+        *platforms: str,
+    ) -> Self:
         """
         Filter by the satellite platform the granule came from.
 
-        :param platform: name of the satellite
+        :param platform: name(s) of the satellite platform
         :returns: self
         """
 
         if not platform:
             raise ValueError("Please provide a value for platform")
+
+        if platforms:
+            if not isinstance(platform, str):
+                raise TypeError(
+                    "Platform must be of type str when providing multiple "
+                    "arguments"
+                )
+            platform = [platform, *platforms]
 
         self.params['platform'] = platform
         return self
