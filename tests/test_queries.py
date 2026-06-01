@@ -55,3 +55,28 @@ def test_token_replaces_existing_auth_header():
     query.token("token")
 
     assert query.headers["Authorization"] == "token"
+
+
+def test_client_id_default_uses_library_version():
+    query = MockQuery("/foo")
+    query.client_id()
+
+    assert "Client-Id" in query.headers
+    assert query.headers["Client-Id"].startswith("python_cmr-")
+
+
+def test_client_id_custom_includes_app_name_and_version():
+    query = MockQuery("/foo")
+    query.client_id("my-app")
+
+    assert "Client-Id" in query.headers
+    assert query.headers["Client-Id"].startswith("my-app/python_cmr-")
+
+
+def test_client_id_does_not_clobber_other_headers():
+    query = MockQuery("/foo")
+    query.headers["Authorization"] = "Bearer token"
+    query.client_id("my-app")
+
+    assert query.headers["Authorization"] == "Bearer token"
+    assert "Client-Id" in query.headers

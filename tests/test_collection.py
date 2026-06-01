@@ -142,7 +142,15 @@ class TestCollectionClass(VCRTestCase):  # type: ignore
         query.platform("1B")
 
         self.assertIn("platform", query.params)
-        self.assertEqual(query.params["platform"], "1B")
+        self.assertEqual(query.params["platform"], ["1B"])
+
+    def test_platform_multiple(self):
+        query = CollectionQuery()
+
+        query.platform(["Terra", "Aqua"])
+
+        self.assertIn("platform", query.params)
+        self.assertEqual(query.params["platform"], ["Terra", "Aqua"])
 
     def test_empty_platform(self):
         query = CollectionQuery()

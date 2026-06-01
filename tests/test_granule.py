@@ -342,7 +342,15 @@ class TestGranuleClass(VCRTestCase):  # type: ignore
         query.platform("1B")
 
         self.assertIn(self.platform, query.params)
-        self.assertEqual(query.params[self.platform], "1B")
+        self.assertEqual(query.params[self.platform], ["1B"])
+
+    def test_platform_multiple(self):
+        query = GranuleQuery()
+
+        query.platform(["Terra", "Aqua"])
+
+        self.assertIn(self.platform, query.params)
+        self.assertEqual(query.params[self.platform], ["Terra", "Aqua"])
 
     def test_sort_key(self):
         query = GranuleQuery()

@@ -5,6 +5,7 @@ Contains all CMR query types.
 from abc import abstractmethod
 from collections import defaultdict
 from datetime import date, datetime, timezone
+from importlib.metadata import version as _pkg_version
 from inspect import getmembers, ismethod
 from re import search
 from typing import Iterator
@@ -362,6 +363,34 @@ class Query:
             return self
 
         self.headers.update({"Authorization": f"Bearer {bearer_token}"})
+
+        return self
+
+    def client_id(self, client_id: Optional[str] = None) -> Self:
+        """
+        Set the ``Client-Id`` header to identify this client to the CMR API.
+
+        If no *client_id* is provided (or ``None`` is passed), a default value
+        of ``python_cmr-<version>`` is used so that NASA Operations can track
+        queries by library version.
+
+        :param client_id: an optional human-readable identifier for your
+            application.  When supplied, the string is suffixed with the
+            library version: ``<client_id>/python_cmr-<version>``.
+        :returns: self
+        """
+
+        try:
+            lib_version = _pkg_version("python-cmr")
+        except Exception:
+            lib_version = "unknown"
+
+        if client_id:
+            header_value = f"{client_id}/python_cmr-{lib_version}"
+        else:
+            header_value = f"python_cmr-{lib_version}"
+
+        self.headers.update({"Client-Id": header_value})
 
         return self
 
@@ -774,18 +803,25 @@ class GranuleCollectionBaseQuery(Query):
 
         return self
 
-    def platform(self, platform: str) -> Self:
+    def platform(self, platform: Union[str, Sequence[str]]) -> Self:
         """
         Filter by the satellite platform the granule came from.
 
-        :param platform: name of the satellite
+        Accepts either a single platform name or a list of platform names.
+        When multiple platforms are provided, CMR returns results matching
+        any of them.
+
+        :param platform: name of the satellite, or a list of satellite names
         :returns: self
         """
 
         if not platform:
             raise ValueError("Please provide a value for platform")
 
-        self.params['platform'] = platform
+        if isinstance(platform, str):
+            platform = [platform]
+
+        self.params['platform'] = list(platform)
         return self
 
 
