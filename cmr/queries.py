@@ -40,6 +40,19 @@ FloatLike: TypeAlias = Union[str, SupportsFloat]
 PointLike: TypeAlias = Tuple[FloatLike, FloatLike]
 
 
+def _format_float(value: float) -> str:
+    """Format a float as a plain decimal string, never using scientific notation.
+
+    Python's default str() and f-strings switch to scientific notation for numbers
+    outside roughly [1e-4, 1e16), e.g. ``1e-05`` for ``0.00001``.  CMR rejects
+    scientific notation in URL parameters with "is not a valid URL encoded point".
+    """
+    formatted = f"{value:.15g}"
+    if "e" in formatted or "E" in formatted:
+        formatted = f"{value:.15f}".rstrip("0").rstrip(".")
+    return formatted
+
+
 class Query:
     """
     Base class for all CMR queries.
@@ -647,7 +660,7 @@ class GranuleCollectionBaseQuery(Query):
         if "point" not in self.params:
             self.params["point"] = []
 
-        self.params["point"].append(f"{lon},{lat}")
+        self.params["point"].append(f"{_format_float(lon)},{_format_float(lat)}")
 
         return self
 
@@ -659,7 +672,7 @@ class GranuleCollectionBaseQuery(Query):
         :param dist: distance in meters around waypoint (lat,lon)
         :returns: self
         """
-        self.params['circle'] = f"{lon},{lat},{dist}"
+        self.params['circle'] = f"{_format_float(lon)},{_format_float(lat)},{_format_float(float(dist))}"
 
         return self
 
@@ -701,7 +714,7 @@ class GranuleCollectionBaseQuery(Query):
             )
 
         # convert to strings
-        as_strs = [str(val) for val in as_floats]
+        as_strs = [_format_float(val) for val in as_floats]
 
         self.params["polygon"] = ",".join(as_strs)
 
@@ -726,7 +739,8 @@ class GranuleCollectionBaseQuery(Query):
         """
 
         self.params["bounding_box"] = (
-            f"{float(lower_left_lon)},{float(lower_left_lat)},{float(upper_right_lon)},{float(upper_right_lat)}"
+            f"{_format_float(float(lower_left_lon))},{_format_float(float(lower_left_lat))},"
+            f"{_format_float(float(upper_right_lon))},{_format_float(float(upper_right_lat))}"
         )
 
         return self
@@ -763,7 +777,7 @@ class GranuleCollectionBaseQuery(Query):
             as_floats.extend([float(lon), float(lat)])
 
         # cast back to string for join
-        as_strs = [str(val) for val in as_floats]
+        as_strs = [_format_float(val) for val in as_floats]
 
         self.params["line"] = ",".join(as_strs)
 
