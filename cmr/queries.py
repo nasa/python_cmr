@@ -8,6 +8,7 @@ from datetime import date, datetime, timezone
 from inspect import getmembers, ismethod
 from re import search
 from typing import Iterator
+from importlib.metadata import version
 
 from typing_extensions import (
     Any,
@@ -22,7 +23,8 @@ from typing_extensions import (
     Tuple,
     TypeAlias,
     Union,
-    override, deprecated,
+    override,
+    deprecated,
 )
 from urllib.parse import quote
 
@@ -48,8 +50,16 @@ class Query:
     _route = ""
     _format = "json"
     _valid_formats_regex = [
-        "json", "xml", "echo10", "iso", "iso19115",
-        "csv", "atom", "kml", "native", "stac",
+        "json",
+        "xml",
+        "echo10",
+        "iso",
+        "iso19115",
+        "csv",
+        "atom",
+        "kml",
+        "native",
+        "stac",
     ]
 
     def __init__(self, route: str, mode: str = CMR_OPS):
@@ -59,8 +69,11 @@ class Query:
         self.mode(mode)
         self.concept_id_chars: Set[str] = set()
         self.headers: MutableMapping[str, str] = {}
+        self.client_id()
 
-    @deprecated("Use the 'results' method instead, but note that it produces an iterator.")
+    @deprecated(
+        "Use the 'results' method instead, but note that it produces an iterator."
+    )
     def get(self, limit: int = 2000) -> Sequence[Any]:
         """
         Get all results up to some limit, even if spanning multiple pages.
@@ -118,7 +131,9 @@ class Query:
 
         return int(response.headers["CMR-Hits"])
 
-    @deprecated("Use the 'results' method instead, but note that it produces an iterator.")
+    @deprecated(
+        "Use the 'results' method instead, but note that it produces an iterator."
+    )
     def get_all(self) -> Sequence[Any]:
         """
         Returns all of the results for the query. This will call hits() first to determine how many
@@ -127,7 +142,7 @@ class Query:
 
         :returns: query results as a list
         """
-        
+
         return list(self.get(self.hits()))
 
     def results(self, page_size: int = 2000) -> Iterator[Any]:
@@ -237,13 +252,16 @@ class Query:
 
         # last chance validation for parameters
         if not self._valid_state():
-            raise RuntimeError(("Spatial parameters must be accompanied by a collection "
-                                "filter (ex: short_name or entry_title)."))
+            raise RuntimeError(
+                (
+                    "Spatial parameters must be accompanied by a collection "
+                    "filter (ex: short_name or entry_title)."
+                )
+            )
 
         # encode params
         formatted_params = []
         for key, val in self.params.items():
-
             # list params require slightly different formatting
             if isinstance(val, list):
                 for list_val in val:
@@ -261,11 +279,13 @@ class Query:
         formatted_options: List[str] = []
         for param_key in self.options:
             for option_key, val in self.options[param_key].items():
-                formatted_options.append(f"options[{param_key}][{option_key}]={str(val).lower()}")
+                formatted_options.append(
+                    f"options[{param_key}][{option_key}]={str(val).lower()}"
+                )
 
         options_as_string = "&".join(formatted_options)
         res = f"{self._base_url}.{self._format}?{params_as_string}&{options_as_string}"
-        return res.rstrip('&')
+        return res.rstrip("&")
 
     def concept_id(self, IDs: Union[str, Sequence[str]]) -> Self:
         """
@@ -306,7 +326,7 @@ class Query:
         if not provider:
             return self
 
-        self.params['provider'] = provider
+        self.params["provider"] = provider
         return self
 
     @abstractmethod
@@ -364,6 +384,22 @@ class Query:
         self.headers.update({"Authorization": f"Bearer {bearer_token}"})
 
         return self
+
+    def client_id(self, id_: Optional[str] = None) -> Self:
+        """
+        Set the `Client-Id` header value to the specified value along with
+        the suffix `(python_cmr-vX.Y.Z)`, separated by a space character,
+        where `X.Y.Z` is the current version of the `python_cmr` library.
+        Set the header value to `python_cmr-vX.Y.Z` (without parentheses)
+        when the specified value is an empty string (or `None`), which is the
+        default header value even when this method is not invoked.
+
+        :param client_id: prefix value to set on the `Client-Id` header
+        :returns self:
+        """
+
+        python_cmr_id = f"python_cmr-v{version('python_cmr')}"
+        self.headers["Client-Id"] = f"{id_} ({python_cmr_id})" if id_ else python_cmr_id
 
     def option(
         self, parameter: str, key: str, value: Union[str, bool, int, float, None]
@@ -443,14 +479,12 @@ class GranuleCollectionBaseQuery(Query):
         if "downloadable" in self.params:
             del self.params["downloadable"]
 
-        self.params['online_only'] = online_only
+        self.params["online_only"] = online_only
 
         return self
 
     def _format_date(
-        self,
-        date_from: Optional[DateLike],
-        date_to: Optional[DateLike]
+        self, date_from: Optional[DateLike], date_to: Optional[DateLike]
     ) -> Tuple[str, str]:
         """
         Format dates into expected format for date queries.
@@ -493,8 +527,12 @@ class GranuleCollectionBaseQuery(Query):
 
             return date.strftime(iso_8601)
 
-        date_from = convert_to_string(date_from, datetime(1, 1, 1, 0, 0, 0, tzinfo=timezone.utc))
-        date_to = convert_to_string(date_to, datetime(1, 12, 31, 23, 59, 59, tzinfo=timezone.utc))
+        date_from = convert_to_string(
+            date_from, datetime(1, 1, 1, 0, 0, 0, tzinfo=timezone.utc)
+        )
+        date_to = convert_to_string(
+            date_to, datetime(1, 12, 31, 23, 59, 59, tzinfo=timezone.utc)
+        )
 
         # if we have both dates, make sure from isn't later than to
         if date_from and date_to and date_from > date_to:
@@ -529,9 +567,7 @@ class GranuleCollectionBaseQuery(Query):
         self.params["revision_date"].append(f"{date_from},{date_to}")
 
         if exclude_boundary:
-            self.options["revision_date"] = {
-                "exclude_boundary": True
-            }
+            self.options["revision_date"] = {"exclude_boundary": True}
 
         return self
 
@@ -562,9 +598,7 @@ class GranuleCollectionBaseQuery(Query):
         self.params["temporal"].append(f"{date_from},{date_to}")
 
         if exclude_boundary:
-            self.options["temporal"] = {
-                "exclude_boundary": True
-            }
+            self.options["temporal"] = {"exclude_boundary": True}
 
         return self
 
@@ -579,7 +613,7 @@ class GranuleCollectionBaseQuery(Query):
         if not short_name:
             return self
 
-        self.params['short_name'] = short_name
+        self.params["short_name"] = short_name
         return self
 
     def version(self, version: str) -> Self:
@@ -594,7 +628,7 @@ class GranuleCollectionBaseQuery(Query):
         if not version:
             return self
 
-        self.params['version'] = version
+        self.params["version"] = version
         return self
 
     def point(self, lon: FloatLike, lat: FloatLike) -> Self:
@@ -630,7 +664,7 @@ class GranuleCollectionBaseQuery(Query):
         :param dist: distance in meters around waypoint (lat,lon)
         :returns: self
         """
-        self.params['circle'] = f"{lon},{lat},{dist}"
+        self.params["circle"] = f"{lon},{lat},{dist}"
 
         return self
 
@@ -756,7 +790,7 @@ class GranuleCollectionBaseQuery(Query):
         if "online_only" in self.params:
             del self.params["online_only"]
 
-        self.params['downloadable'] = downloadable
+        self.params["downloadable"] = downloadable
 
         return self
 
@@ -770,7 +804,7 @@ class GranuleCollectionBaseQuery(Query):
 
         entry_title = quote(entry_title)
 
-        self.params['entry_title'] = entry_title
+        self.params["entry_title"] = entry_title
 
         return self
 
@@ -785,7 +819,7 @@ class GranuleCollectionBaseQuery(Query):
         if not platform:
             raise ValueError("Please provide a value for platform")
 
-        self.params['platform'] = platform
+        self.params["platform"] = platform
         return self
 
 
@@ -811,9 +845,9 @@ class GranuleQuery(GranuleCollectionBaseQuery):
         """
 
         if orbit2:
-            self.params['orbit_number'] = quote(f'{str(orbit1)},{str(orbit2)}')
+            self.params["orbit_number"] = quote(f"{str(orbit1)},{str(orbit2)}")
         else:
-            self.params['orbit_number'] = orbit1
+            self.params["orbit_number"] = orbit1
 
         return self
 
@@ -867,7 +901,7 @@ class GranuleQuery(GranuleCollectionBaseQuery):
                     "Please ensure min_cover and max_cover are both convertible to floats"
                 ) from None
 
-        self.params['cloud_cover'] = f"{min_cover},{max_cover}"
+        self.params["cloud_cover"] = f"{min_cover},{max_cover}"
         return self
 
     def instrument(self, instrument: str) -> Self:
@@ -881,7 +915,7 @@ class GranuleQuery(GranuleCollectionBaseQuery):
         if not instrument:
             raise ValueError("Please provide a value for instrument")
 
-        self.params['instrument'] = instrument
+        self.params["instrument"] = instrument
         return self
 
     def sort_key(self, sort_key: str) -> Self:
@@ -898,39 +932,39 @@ class GranuleQuery(GranuleCollectionBaseQuery):
         """
 
         valid_sort_keys = {
-            'campaign',
-            'entry_title',
-            'dataset_id',
-            'data_size',
-            'end_date',
-            'granule_ur',
-            'producer_granule_id',
-            'project',
-            'provider',
-            'readable_granule_name',
-            'short_name',
-            'start_date',
-            'version',
-            'platform',
-            'instrument',
-            'sensor',
-            'day_night_flag',
-            'online_only',
-            'browsable',
-            'browse_only',
-            'cloud_cover',
-            'revision_date',
+            "campaign",
+            "entry_title",
+            "dataset_id",
+            "data_size",
+            "end_date",
+            "granule_ur",
+            "producer_granule_id",
+            "project",
+            "provider",
+            "readable_granule_name",
+            "short_name",
+            "start_date",
+            "version",
+            "platform",
+            "instrument",
+            "sensor",
+            "day_night_flag",
+            "online_only",
+            "browsable",
+            "browse_only",
+            "cloud_cover",
+            "revision_date",
         }
 
         # also covers if empty string and allows for '-' prefix (for descending order)
-        if not isinstance(sort_key, str) or sort_key.lstrip('-') not in valid_sort_keys:
+        if not isinstance(sort_key, str) or sort_key.lstrip("-") not in valid_sort_keys:
             raise ValueError(
                 "Please provide a valid sort key for granules query.  See"
                 " https://cmr.earthdata.nasa.gov/search/site/docs/search/api.html#sorting-granule-results"
                 " for valid sort keys."
             )
 
-        self.params['sort_key'] = sort_key
+        self.params["sort_key"] = sort_key
         return self
 
     def granule_ur(self, granule_ur: str) -> Self:
@@ -945,7 +979,7 @@ class GranuleQuery(GranuleCollectionBaseQuery):
         if not granule_ur:
             raise ValueError("Please provide a value for platform")
 
-        self.params['granule_ur'] = granule_ur
+        self.params["granule_ur"] = granule_ur
         return self
 
     def readable_granule_name(
@@ -995,7 +1029,6 @@ class GranuleQuery(GranuleCollectionBaseQuery):
 
     @override
     def _valid_state(self) -> bool:
-
         # spatial params must be paired with a collection limiting parameter
         spatial_keys = ["point", "polygon", "bounding_box", "line"]
         collection_keys = ["short_name", "entry_title", "collection_concept_id"]
@@ -1016,9 +1049,9 @@ class CollectionQuery(GranuleCollectionBaseQuery):
     def __init__(self, mode: str = CMR_OPS):
         Query.__init__(self, "collections", mode)
         self.concept_id_chars = {"C"}
-        self._valid_formats_regex.extend([
-            "dif", "dif10", "opendata", "umm_json", "umm_json_v[0-9]_[0-9]"
-        ])
+        self._valid_formats_regex.extend(
+            ["dif", "dif10", "opendata", "umm_json", "umm_json_v[0-9]_[0-9]"]
+        )
 
     def archive_center(self, center: str) -> Self:
         """
@@ -1029,7 +1062,7 @@ class CollectionQuery(GranuleCollectionBaseQuery):
         """
 
         if center:
-            self.params['archive_center'] = center
+            self.params["archive_center"] = center
 
         return self
 
@@ -1044,7 +1077,7 @@ class CollectionQuery(GranuleCollectionBaseQuery):
         """
 
         if text:
-            self.params['keyword'] = text
+            self.params["keyword"] = text
 
         return self
 
@@ -1079,7 +1112,9 @@ class CollectionQuery(GranuleCollectionBaseQuery):
         # verify we provided with tool concept IDs
         for ID in IDs:
             if ID.strip()[0] != "T":
-                raise ValueError(f"Only tool concept ID's can be provided (begin with 'T'): {ID}")
+                raise ValueError(
+                    f"Only tool concept ID's can be provided (begin with 'T'): {ID}"
+                )
 
         self.params["tool_concept_id"] = IDs
 
@@ -1174,14 +1209,13 @@ class ToolServiceVariableBaseQuery(Query):
         results: List[Any] = []
         page = 1
         while len(results) < limit:
-
             response = requests.get(
                 url, params={"page_size": page_size, "page_num": page}
             )
             response.raise_for_status()
 
             if self._format == "json":
-                latest = response.json()['items']
+                latest = response.json()["items"]
             else:
                 latest = [response.text]
 
@@ -1219,7 +1253,7 @@ class ToolServiceVariableBaseQuery(Query):
         if not name:
             return self
 
-        self.params['name'] = name
+        self.params["name"] = name
         return self
 
 
@@ -1231,9 +1265,9 @@ class ToolQuery(ToolServiceVariableBaseQuery):
     def __init__(self, mode: str = CMR_OPS):
         Query.__init__(self, "tools", mode)
         self.concept_id_chars = {"T"}
-        self._valid_formats_regex.extend([
-            "dif", "dif10", "opendata", "umm_json", "umm_json_v[0-9]_[0-9]"
-        ])
+        self._valid_formats_regex.extend(
+            ["dif", "dif10", "opendata", "umm_json", "umm_json_v[0-9]_[0-9]"]
+        )
 
     @override
     def _valid_state(self) -> bool:
@@ -1248,9 +1282,9 @@ class ServiceQuery(ToolServiceVariableBaseQuery):
     def __init__(self, mode: str = CMR_OPS):
         Query.__init__(self, "services", mode)
         self.concept_id_chars = {"S"}
-        self._valid_formats_regex.extend([
-            "dif", "dif10", "opendata", "umm_json", "umm_json_v[0-9]_[0-9]"
-        ])
+        self._valid_formats_regex.extend(
+            ["dif", "dif10", "opendata", "umm_json", "umm_json_v[0-9]_[0-9]"]
+        )
 
     @override
     def _valid_state(self) -> bool:
@@ -1258,13 +1292,12 @@ class ServiceQuery(ToolServiceVariableBaseQuery):
 
 
 class VariableQuery(ToolServiceVariableBaseQuery):
-
     def __init__(self, mode: str = CMR_OPS):
         Query.__init__(self, "variables", mode)
         self.concept_id_chars = {"V"}
-        self._valid_formats_regex.extend([
-            "dif", "dif10", "opendata", "umm_json", "umm_json_v[0-9]_[0-9]"
-        ])
+        self._valid_formats_regex.extend(
+            ["dif", "dif10", "opendata", "umm_json", "umm_json_v[0-9]_[0-9]"]
+        )
 
     def instance_format(self, format: Union[str, Sequence[str]]) -> Self:
         """
@@ -1278,7 +1311,9 @@ class VariableQuery(ToolServiceVariableBaseQuery):
 
         if format:
             # Assume we have non-empty string or sequence of strings (list, tuple, etc.)
-            self.params['instance_format'] = [format] if isinstance(format, str) else format
+            self.params["instance_format"] = (
+                [format] if isinstance(format, str) else format
+            )
 
         return self
 
