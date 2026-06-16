@@ -7,7 +7,7 @@ from collections import defaultdict
 from datetime import date, datetime, timezone
 from inspect import getmembers, ismethod
 from re import search
-from typing import Iterator
+from typing import Iterable, Iterator
 
 from typing_extensions import (
     Any,
@@ -127,7 +127,7 @@ class Query:
 
         :returns: query results as a list
         """
-        
+
         return list(self.get(self.hits()))
 
     def results(self, page_size: int = 2000) -> Iterator[Any]:
@@ -196,12 +196,19 @@ class Query:
         methods = dict(getmembers(self, predicate=ismethod))
 
         for key, val in kwargs.items():
-            # verify the key matches one of our methods
+            # If the key does not match one of the methods defined in the Query
+            # class or subclass, simply set the parameter "unchecked" (i.e.,
+            # set the parameter, but without a method that can do some value
+            # checking.  If the value is invalid, the CMR response will indicate
+            # the problem).
             if key not in methods:
-                raise ValueError(f"Unknown key {key}")
-
-            # call the method
-            if isinstance(val, tuple):
+                if isinstance(val, str) or not isinstance(val, Iterable):
+                    # Set single-valued parameter
+                    self.params[key] = val
+                else:
+                    # Set multi-valued parameter adding `[]` suffix to key
+                    self.params[f"{key}[]"] = tuple(val)
+            elif isinstance(val, tuple):
                 methods[key](*val)
             else:
                 methods[key](val)
