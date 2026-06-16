@@ -27,6 +27,7 @@ from typing_extensions import (
 from urllib.parse import quote
 
 import requests
+import warnings
 from dateutil.parser import parse as dateutil_parse
 
 CMR_OPS = "https://cmr.earthdata.nasa.gov/search/"
@@ -669,15 +670,26 @@ class GranuleCollectionBaseQuery(Query):
 
         # convert to floats
         as_floats = []
+        lons = []
         for lon, lat in coordinates:
-            as_floats.extend([float(lon), float(lat)])
-
+            f_lon, f_lat = float(lon), float(lat)
+            as_floats.extend([f_lon, f_lat])
+            lons.append(f_lon)
+            
         # last point must match first point to complete polygon
         if as_floats[0] != as_floats[-2] or as_floats[1] != as_floats[-1]:
             raise ValueError(
                 f"Coordinates of the last pair must match the first pair: {coordinates[0]} != {coordinates[-1]}"
             )
-
+        
+        # Check for longitude span and trigger warning if it exceeds 180 degrees
+        if (max(lons) - min(lons)) > 180:
+            warnings.warn(
+                "The polygon's longitude span is greater than 180 degrees. "
+                "Please verify if the coordinates are flipped or intended to cross the antimeridian.",
+                UserWarning,
+            )
+                        
         # convert to strings
         as_strs = [str(val) for val in as_floats]
 
@@ -702,13 +714,30 @@ class GranuleCollectionBaseQuery(Query):
         :param upper_right_lat: upper right latitude of the box
         :returns: self
         """
+        
+        ll_lon = float(lower_left_lon)
+        ll_lat = float(lower_left_lat)
+        ur_lon = float(upper_right_lon)
+        ur_lat = float(upper_right_lat)
 
-        self.params["bounding_box"] = (
-            f"{float(lower_left_lon)},{float(lower_left_lat)},{float(upper_right_lon)},{float(upper_right_lat)}"
-        )
+        if ll_lon > ur_lon:
+            warnings.warn(
+                f"Coordinates appear to be flipped: lower_left_lon ({ll_lon}) is "
+                f"greater than upper_right_lon ({ur_lon}). This will result in "
+                "a bounding box that crosses the antimeridian.",
+                UserWarning,
+            )
 
+        if ll_lat > ur_lat:
+            warnings.warn(
+                f"Coordinates appear to be flipped: lower_left_lat ({ll_lat}) is "
+                f"greater than upper_right_lat ({ur_lat}). Please verify the bounding box order.",
+                UserWarning,
+            )
+
+        self.params["bounding_box"] = f"{ll_lon},{ll_lat},{ur_lon},{ur_lat}"
         return self
-
+        
     def line(self, coordinates: Sequence[PointLike]) -> Self:
         """
         Filter by granules that overlap a series of connected points. Must be used in combination
