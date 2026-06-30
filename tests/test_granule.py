@@ -427,6 +427,34 @@ class TestGranuleClass(VCRTestCase):  # type: ignore
         query.line([("1", 1.1), (2, 2)])
         self.assertEqual(query.params["line"], "1.0,1.1,2.0,2.0")
 
+    def test_point_no_scientific_notation(self):
+        query = GranuleQuery()
+        query.point(1e-5, 1e-8)
+        self.assertEqual(query.params["point"], ["0.00001,0.00000001"])
+
+    def test_circle_no_scientific_notation(self):
+        query = GranuleQuery()
+        query.circle(1e-5, 1e-8, 1000)
+        self.assertEqual(query.params["circle"], "0.00001,0.00000001,1000")
+
+    def test_bounding_box_no_scientific_notation(self):
+        query = GranuleQuery()
+        query.bounding_box(1e-5, 1e-8, 1e-4, 1e-7)
+        self.assertEqual(query.params["bounding_box"], "0.00001,0.00000001,0.0001,0.0000001")
+
+    def test_polygon_no_scientific_notation(self):
+        query = GranuleQuery()
+        query.polygon([(1e-5, 1e-8), (1e-4, 1e-8), (1e-4, 1e-7), (1e-5, 1e-8)])
+        self.assertEqual(
+            query.params["polygon"],
+            "0.00001,0.00000001,0.0001,0.00000001,0.0001,0.0000001,0.00001,0.00000001",
+        )
+
+    def test_line_no_scientific_notation(self):
+        query = GranuleQuery()
+        query.line([(1e-5, 1e-8), (1e-4, 1e-7)])
+        self.assertEqual(query.params["line"], "0.00001,0.00000001,0.0001,0.0000001")
+
     def test_invalid_spatial_state(self):
         query = GranuleQuery()
 
