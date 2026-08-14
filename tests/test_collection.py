@@ -15,6 +15,13 @@ class TestCollectionClass(VCRTestCase):  # type: ignore
         testdir = os.path.dirname(inspect.getfile(self.__class__))
         return os.path.join(testdir, "fixtures", "vcr_cassettes")
 
+    def test_attribute(self):
+        query = CollectionQuery()
+        query.attribute("float", "PERCENTAGE", 25.5)
+
+        self.assertEqual(query.params["attribute"], ["float,PERCENTAGE,25.5"])
+        self.assertIn("attribute[]=float,PERCENTAGE,25.5", query._build_url())
+
     def test_archive_center(self):
         query = CollectionQuery()
         query.archive_center("LP DAAC")
