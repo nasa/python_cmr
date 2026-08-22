@@ -792,15 +792,9 @@ class GranuleCollectionBaseQuery(Query):
         if not platform:
             raise ValueError("Please provide a value for platform")
 
-        # Handle string vs sequence of strings
-        if isinstance(platform, str):
-            self.params['platform'] = platform
-        else:
-            # Convert sequence to list for proper URL formatting
-            platform_list = list(platform)
-            if not platform_list:
-                raise ValueError("Please provide a value for platform")
-            self.params['platform'] = platform_list
+        self.params['platform'] = (
+            platform if isinstance(platform, str) else list(platform)
+        )
 
         return self
 
