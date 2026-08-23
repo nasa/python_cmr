@@ -344,6 +344,14 @@ class TestGranuleClass(VCRTestCase):  # type: ignore
         self.assertIn(self.platform, query.params)
         self.assertEqual(query.params[self.platform], "1B")
 
+    def test_multiple_platforms(self):
+        query = GranuleQuery()
+
+        query.platform(["Terra", "Aqua"])
+
+        self.assertIn(self.platform, query.params)
+        self.assertEqual(query.params[self.platform], ["Terra", "Aqua"])
+
     def test_sort_key(self):
         query = GranuleQuery()
         # Various sort keys using this as an example
@@ -362,6 +370,12 @@ class TestGranuleClass(VCRTestCase):  # type: ignore
 
         with self.assertRaises(ValueError):
             query.platform(None)  # type: ignore[arg-type]
+
+    def test_empty_platform_list(self):
+        query = GranuleQuery()
+
+        with self.assertRaises(ValueError):
+            query.platform([])
 
     def test_granule_ur(self):
         query = GranuleQuery()
