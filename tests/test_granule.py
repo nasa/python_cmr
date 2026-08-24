@@ -510,6 +510,82 @@ class TestGranuleClass(VCRTestCase):  # type: ignore
         with self.assertRaises(ValueError):
             GranuleQuery(None)  # type: ignore[arg-type]
 
+    def test_attribute_name_only(self):
+        query = GranuleQuery()
+        query.attribute("PERCENTAGE")
+
+        self.assertEqual(query.params["attribute"], ["PERCENTAGE"])
+
+    def test_attribute_typed_value(self):
+        query = GranuleQuery()
+        query.attribute("string", "ID", "cosmic1c1-G25-200703252358")
+
+        self.assertEqual(
+            query.params["attribute"],
+            ["string,ID,cosmic1c1-G25-200703252358"],
+        )
+
+    def test_attribute_range_and_bounds(self):
+        query = GranuleQuery()
+        query.attribute("float", "PERCENTAGE", 25.5, 30)
+        query.attribute("float", "PERCENTAGE", 25.5, "")
+        query.attribute("float", "PERCENTAGE", "", 30)
+
+        self.assertEqual(
+            query.params["attribute"],
+            [
+                "float,PERCENTAGE,25.5,30",
+                "float,PERCENTAGE,25.5,",
+                "float,PERCENTAGE,,30",
+            ],
+        )
+
+    def test_attribute_preformatted_and_list(self):
+        query = GranuleQuery()
+        query.attribute("float,PERCENTAGE,25.5")
+        query.attribute(["string,MISSION_NAME,Big Island\\, HI", "PERCENTAGE"])
+
+        self.assertEqual(
+            query.params["attribute"],
+            [
+                "float,PERCENTAGE,25.5",
+                "string,MISSION_NAME,Big Island\\, HI",
+                "PERCENTAGE",
+            ],
+        )
+
+    def test_attribute_escapes_commas_in_components(self):
+        query = GranuleQuery()
+        query.attribute("string", "MISSION_NAME", "Big Island, HI")
+
+        self.assertEqual(
+            query.params["attribute"],
+            ["string,MISSION_NAME,Big Island\\, HI"],
+        )
+
+    def test_attribute_in_url(self):
+        query = GranuleQuery()
+        query.short_name("gnssro_cosmic1_jpl_l1b")
+        query.attribute("string", "ID", "cosmic1c1-G25-200703252358")
+
+        url = query._build_url()
+        self.assertIn("attribute[]=string,ID,cosmic1c1-G25-200703252358", url)
+
+    def test_attribute_via_parameters(self):
+        query = GranuleQuery()
+        query.parameters(attribute=("string", "ID", "abc"))
+
+        self.assertEqual(query.params["attribute"], ["string,ID,abc"])
+
+    def test_attribute_empty_rejected(self):
+        query = GranuleQuery()
+
+        with self.assertRaises(ValueError):
+            query.attribute()
+
+        with self.assertRaises(ValueError):
+            query.attribute("")
+
     def test_valid_parameters(self):
         query = GranuleQuery()
 

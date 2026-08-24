@@ -10,6 +10,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- Add `attribute` method on granule and collection queries for CMR `attribute[]` search ([#104](https://github.com/nasa/python_cmr/issues/104))
 - Add method `Query.results` for returning results as an iterator instead of sequence ([#37](https://github.com/nasa/python_cmr/issues/37))
 - Support searching by multiple platforms for collections and granules ([#80](https://github.com/nasa/python_cmr/issues/80))
 

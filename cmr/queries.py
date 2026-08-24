@@ -798,6 +798,75 @@ class GranuleCollectionBaseQuery(Query):
 
         return self
 
+    def attribute(self, *components: Union[str, FloatLike, Sequence[str]]) -> Self:
+        """
+        Filter by additional attribute using CMR ``attribute[]``.
+
+        Pass a single preformatted CMR attribute string, separate components
+        (type, name, value and/or range bounds) that are joined with commas, or
+        a sequence of complete attribute strings. Call more than once to add
+        further ``attribute[]`` constraints. By default all must match; use
+        ``option("attribute", "or", True)`` for any match. For range searches,
+        ``option("attribute", "exclude_boundary", True)`` excludes range
+        endpoints. For granules, ``option("attribute", "exclude_collection", True)``
+        skips collection level attributes.
+
+        Examples:
+
+        .. code:: python
+
+           >>> query = GranuleQuery()
+           >>> query.attribute("PERCENTAGE")  # doctest: +ELLIPSIS
+           <cmr.queries.GranuleQuery ...>
+           >>> query.attribute("float", "PERCENTAGE", 25.5)  # doctest: +ELLIPSIS
+           <cmr.queries.GranuleQuery ...>
+           >>> query.attribute("string", "ID", "cosmic1c1-G25-200703252358")  # doctest: +ELLIPSIS
+           <cmr.queries.GranuleQuery ...>
+           >>> query.attribute("float", "PERCENTAGE", 25.5, 30)  # doctest: +ELLIPSIS
+           <cmr.queries.GranuleQuery ...>
+
+        When more than one component is given, commas inside each component are
+        escaped as ``\\,`` per the CMR Search API.
+
+        See `CMR collection additional attribute`_ and
+        `CMR granule additional attribute`_.
+
+        .. _CMR collection additional attribute:
+           https://cmr.earthdata.nasa.gov/search/site/docs/search/api.html#c-additional-attribute
+        .. _CMR granule additional attribute:
+           https://cmr.earthdata.nasa.gov/search/site/docs/search/api.html#g-additional-attribute
+
+        :param components: preformatted attribute string, type/name/value parts,
+            or a sequence of complete attribute strings
+        :returns: self
+        """
+
+        if not components:
+            raise ValueError("Please provide an attribute name or CMR attribute[] value")
+
+        first = components[0]
+        if (
+            len(components) == 1
+            and isinstance(first, (list, tuple))
+            and not isinstance(first, (str, bytes))
+        ):
+            values = [str(item) for item in first]
+        elif len(components) == 1:
+            values = [str(first)]
+        else:
+            escaped = [str(part).replace(",", r"\,") for part in components]
+            values = [",".join(escaped)]
+
+        if not values or any(not value for value in values):
+            raise ValueError("Please provide an attribute name or CMR attribute[] value")
+
+        if "attribute" not in self.params:
+            self.params["attribute"] = []
+
+        self.params["attribute"].extend(values)
+
+        return self
+
 
 class GranuleQuery(GranuleCollectionBaseQuery):
     """
