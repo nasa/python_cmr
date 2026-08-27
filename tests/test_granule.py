@@ -1,5 +1,6 @@
 import inspect
 import os
+import warnings
 from datetime import datetime, timezone, timedelta
 import json
 from vcr.unittest import VCRTestCase
@@ -422,6 +423,28 @@ class TestGranuleClass(VCRTestCase):  # type: ignore
         query = GranuleQuery()
 
         query.bounding_box(1, 2, 3, 4)
+        self.assertEqual(query.params["bounding_box"], "1.0,2.0,3.0,4.0")
+
+    def test_bounding_box_warns_on_likely_flipped_coordinates(self):
+        # Regression for nasa/python_cmr#66: a bounding box whose coordinates are
+        # outside the WGS84 valid domain (or inverted) should warn instead of
+        # silently building a box that wraps the wrong way around the Earth.
+        query = GranuleQuery()
+
+        # Longitude outside [-180, 180] -> warn.
+        with self.assertWarns(UserWarning):
+            query.bounding_box(200, 2, 3, 4)
+        # Latitude outside [-90, 90] -> warn.
+        with self.assertWarns(UserWarning):
+            query.bounding_box(1, 200, 3, 4)
+        # Inverted box (lower-left east/north of upper-right) -> warn.
+        with self.assertWarns(UserWarning):
+            query.bounding_box(5, 5, 1, 1)
+
+        # A valid box must NOT warn and must store the formatted string.
+        with warnings.catch_warnings():
+            warnings.simplefilter("error")
+            query.bounding_box(1, 2, 3, 4)
         self.assertEqual(query.params["bounding_box"], "1.0,2.0,3.0,4.0")
 
     def test_line_invalid_set(self):

@@ -2,6 +2,8 @@
 Contains all CMR query types.
 """
 
+import warnings
+
 from abc import abstractmethod
 from collections import defaultdict
 from datetime import date, datetime, timezone
@@ -703,9 +705,41 @@ class GranuleCollectionBaseQuery(Query):
         :returns: self
         """
 
-        self.params["bounding_box"] = (
-            f"{float(lower_left_lon)},{float(lower_left_lat)},{float(upper_right_lon)},{float(upper_right_lat)}"
-        )
+        ll_lon = float(lower_left_lon)
+        ll_lat = float(lower_left_lat)
+        ur_lon = float(upper_right_lon)
+        ur_lat = float(upper_right_lat)
+
+        # Valid-domain guard. NOESIS-derived invariant (WGS84): longitude must
+        # lie in [-180, 180] and latitude in [-90, 90]. A value outside its own
+        # axis' domain almost always means the coordinates were swapped — exactly
+        # the silent failure earthaccess users hit (nsidc/earthaccess#746), where
+        # a flipped box wrapped ~179 degrees the wrong way around the Earth
+        # instead of erroring. We warn (matching asf_search's behaviour) rather
+        # than raising, so existing callers keep working.
+        if not (-180.0 <= ll_lon <= 180.0 and -180.0 <= ur_lon <= 180.0):
+            warnings.warn(
+                f"Longitude outside valid range [-180, 180]; coordinates may be "
+                f"swapped or malformed: ll_lon={ll_lon}, ur_lon={ur_lon}.",
+                UserWarning,
+                stacklevel=2,
+            )
+        if not (-90.0 <= ll_lat <= 90.0 and -90.0 <= ur_lat <= 90.0):
+            warnings.warn(
+                f"Latitude outside valid range [-90, 90]; coordinates may be "
+                f"swapped or malformed: ll_lat={ll_lat}, ur_lat={ur_lat}.",
+                UserWarning,
+                stacklevel=2,
+            )
+        if ll_lon > ur_lon or ll_lat > ur_lat:
+            warnings.warn(
+                "Bounding box appears inverted (lower-left is east/north of "
+                "upper-right); coordinates may be flipped.",
+                UserWarning,
+                stacklevel=2,
+            )
+
+        self.params["bounding_box"] = f"{ll_lon},{ll_lat},{ur_lon},{ur_lat}"
 
         return self
 
