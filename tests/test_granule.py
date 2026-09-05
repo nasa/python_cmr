@@ -519,6 +519,12 @@ class TestGranuleClass(VCRTestCase):  # type: ignore
         self.assertEqual(query.params["version"], "003")
         self.assertEqual(query.params["point"], ["-100.0,42.0"])
 
+    def test_point_avoids_scientific_notation(self):
+        query = GranuleQuery().short_name("FOO").point(42, 0.00001)
+
+        self.assertEqual(query.params["point"], ["42.0,0.00001"])
+        self.assertIn("point[]=42.0,0.00001", query._build_url())
+
     def test_invalid_parameters(self):
         query = GranuleQuery()
 

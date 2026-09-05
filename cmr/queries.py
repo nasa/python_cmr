@@ -4,6 +4,7 @@ Contains all CMR query types.
 
 from abc import abstractmethod
 from collections import defaultdict
+from decimal import Decimal
 from datetime import date, datetime, timezone
 from inspect import getmembers, ismethod
 from re import search
@@ -625,7 +626,17 @@ class GranuleCollectionBaseQuery(Query):
         if "point" not in self.params:
             self.params["point"] = []
 
-        self.params["point"].append(f"{lon},{lat}")
+        # CMR rejects scientific notation in point query parameters.
+        lon_as_str = format(Decimal(str(lon)), "f")
+        lat_as_str = format(Decimal(str(lat)), "f")
+
+        if "." not in lon_as_str:
+            lon_as_str += ".0"
+
+        if "." not in lat_as_str:
+            lat_as_str += ".0"
+
+        self.params["point"].append(f"{lon_as_str},{lat_as_str}")
 
         return self
 
