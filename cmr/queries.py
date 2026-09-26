@@ -188,6 +188,9 @@ class Query:
         Provide query parameters as keyword arguments. The keyword needs to match the name
         of the method, and the value should either be the value or a tuple of values.
 
+        Iterable values for parameters without a dedicated method are sent as
+        repeated array query parameters, one value per key.
+
         Example: parameters(short_name="AST_L1T", point=(42.5, -101.25))
 
         :returns: self
@@ -252,9 +255,10 @@ class Query:
         for key, val in self.params.items():
 
             # list params require slightly different formatting
-            if isinstance(val, list):
+            if isinstance(val, (list, tuple)):
+                array_key = key if key.endswith("[]") else f"{key}[]"
                 for list_val in val:
-                    formatted_params.append(f"{key}[]={list_val}")
+                    formatted_params.append(f"{array_key}={list_val}")
 
             elif isinstance(val, bool):
                 formatted_params.append(f"{key}={str(val).lower()}")

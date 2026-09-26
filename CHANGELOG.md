@@ -8,6 +8,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+- Expand unchecked iterable query values and tuple sequence parameters into
+  repeated array keys instead of sending their Python tuple representation.
+  Existing array suffixes are retained without duplication. (#123)
+
 ### Added
 
 - Add method `Query.results` for returning results as an iterator instead of sequence ([#37](https://github.com/nasa/python_cmr/issues/37))
