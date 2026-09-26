@@ -1186,7 +1186,9 @@ class ToolServiceVariableBaseQuery(Query):
         while len(results) < limit:
 
             response = requests.get(
-                url, params={"page_size": page_size, "page_num": page}
+                url,
+                headers=self.headers,
+                params={"page_size": page_size, "page_num": page},
             )
             response.raise_for_status()
 
