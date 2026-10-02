@@ -6,7 +6,7 @@ from abc import abstractmethod
 from collections import defaultdict
 from datetime import date, datetime, timezone
 from inspect import getmembers, ismethod
-from re import search
+from re import fullmatch
 from typing import Iterable, Iterator
 
 from typing_extensions import (
@@ -228,7 +228,7 @@ class Query:
 
         # check requested format against the valid format regex's
         for _format in self._valid_formats_regex:
-            if search(_format, output_format):
+            if fullmatch(_format, output_format):
                 self._format = output_format
                 return self
 
@@ -1027,7 +1027,7 @@ class CollectionQuery(GranuleCollectionBaseQuery):
         Query.__init__(self, "collections", mode)
         self.concept_id_chars = {"C"}
         self._valid_formats_regex.extend([
-            "dif", "dif10", "opendata", "umm_json", "umm_json_v[0-9]_[0-9]"
+            "dif", "dif10", "opendata", "umm_json", "umm_json_v[0-9]+_[0-9]+"
         ])
 
     def archive_center(self, center: str) -> Self:
@@ -1242,7 +1242,7 @@ class ToolQuery(ToolServiceVariableBaseQuery):
         Query.__init__(self, "tools", mode)
         self.concept_id_chars = {"T"}
         self._valid_formats_regex.extend([
-            "dif", "dif10", "opendata", "umm_json", "umm_json_v[0-9]_[0-9]"
+            "dif", "dif10", "opendata", "umm_json", "umm_json_v[0-9]+_[0-9]+"
         ])
 
     @override
@@ -1259,7 +1259,7 @@ class ServiceQuery(ToolServiceVariableBaseQuery):
         Query.__init__(self, "services", mode)
         self.concept_id_chars = {"S"}
         self._valid_formats_regex.extend([
-            "dif", "dif10", "opendata", "umm_json", "umm_json_v[0-9]_[0-9]"
+            "dif", "dif10", "opendata", "umm_json", "umm_json_v[0-9]+_[0-9]+"
         ])
 
     @override
@@ -1273,7 +1273,7 @@ class VariableQuery(ToolServiceVariableBaseQuery):
         Query.__init__(self, "variables", mode)
         self.concept_id_chars = {"V"}
         self._valid_formats_regex.extend([
-            "dif", "dif10", "opendata", "umm_json", "umm_json_v[0-9]_[0-9]"
+            "dif", "dif10", "opendata", "umm_json", "umm_json_v[0-9]+_[0-9]+"
         ])
 
     def instance_format(self, format: Union[str, Sequence[str]]) -> Self:

@@ -34,7 +34,7 @@ class TestCollectionClass(VCRTestCase):  # type: ignore
         formats = [
             "json", "xml", "echo10", "iso", "iso19115",
             "csv", "atom", "kml", "native", "dif", "dif10",
-            "opendata", "umm_json", "umm_json_v1_1" "umm_json_v1_9"]
+            "opendata", "umm_json", "umm_json_v1_1", "umm_json_v1_9"]
 
         for _format in formats:
             query.format(_format)
