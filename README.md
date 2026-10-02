@@ -261,7 +261,11 @@ granules = api.get(25000)
 granules = api.get_all()  # this is a shortcut for api.get(api.hits())
 ```
 
-By default the responses will return as json and be accessible as a list of python dictionaries. Other formats can be
+By default the responses will return as json and be accessible as a list of python dictionaries.
+The `umm_json` and versioned `umm_json_vX_Y` formats also return individual dictionaries,
+each containing the record's `meta` and `umm` fields. This applies to both `results()`
+and `get()`; callers no longer need to parse UMM JSON pages with `json.loads`.
+Other formats can be
 specified before making the request:
 
 ```python
