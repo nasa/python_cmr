@@ -1,5 +1,4 @@
 import inspect
-import json
 import os
 from datetime import datetime
 from itertools import islice
@@ -39,10 +38,7 @@ class TestMultipleQueries(VCRTestCase):  # type: ignore
         """
         api = GranuleQuery().format("umm_json")
 
-        pages = api.short_name("MOD02QKM").get(2)
-        granules = [
-            granule for page in pages for granule in json.loads(page)["items"]
-        ]
+        granules = api.short_name("MOD02QKM").get(2)
         self.assertEqual(2, len(granules))
         assert_unique_granules_from_results(granules)
         # Assert that we performed only 1 search request
@@ -51,17 +47,14 @@ class TestMultipleQueries(VCRTestCase):  # type: ignore
 
     def test_results_unparsed_format(self):
         """
-        If we execute a get for an unparsed format we expect pages to be returned instead of items
+        UMM JSON results yield individual items across all recorded pages.
         """
         api = GranuleQuery().format("umm_json")
 
-        pages = list(islice(api.short_name("MOD02QKM").results(page_size=2), 10))
-        granules = [
-            granule for page in pages for granule in json.loads(page)["items"]
-        ]
+        granules = list(islice(api.short_name("MOD02QKM").results(page_size=2), 20))
         self.assertEqual(20, len(granules))
         assert_unique_granules_from_results(granules)
-        # Assert that we performed 5 search requests
+        # Assert that we performed 10 search requests
         self.assertEqual(10, len(self.cassette))
         self.assertIsNone((api.headers or {}).get("cmr-search-after"))
 

@@ -90,10 +90,8 @@ class TestGranuleClass(VCRTestCase):  # type: ignore
             "umm_json").get_all()
         granule_dict = {}
         for granule in granules:
-            granule_json = json.loads(granule)
-            for item in granule_json["items"]:
-                native_id = item["meta"]["native-id"]
-                granule_dict[native_id] = item
+            native_id = granule["meta"]["native-id"]
+            granule_dict[native_id] = granule
 
         self.assertIn("SWOT_L2_HR_RiverSP_Reach_017_312_AS_20240630T042656_20240630T042706_PIC0_01_swot",
                       granule_dict.keys())

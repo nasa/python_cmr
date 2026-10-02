@@ -90,11 +90,12 @@ class Query:
             # list is the number of *pages* fetched, not the number of *items*.
             n_results += page_size
 
-            results.extend(
-                response.json()["feed"]["entry"]
-                if self._format == "json"
-                else [response.text]
-            )
+            if self._format == "json":
+                results.extend(response.json()["feed"]["entry"])
+            elif self._format.startswith("umm_json"):
+                results.extend(response.json()["items"])
+            else:
+                results.append(response.text)
 
             if cmr_search_after := response.headers.get("cmr-search-after"):
                 headers["cmr-search-after"] = cmr_search_after
@@ -153,6 +154,10 @@ class Query:
         In this case, the iterator may produce as many elements as there
         are results matching the query criteria.
 
+        For `"umm_json"` and versioned `"umm_json_v*"` formats, each element
+        is an entry from the response's "items" array, including both
+        its "meta" and "umm" fields.
+
         For all other formats, each element produced by the returned
         iterator is an unparsed (text) page of results (i.e., the caller
         is responsible for parsing the page of results into individual
@@ -175,6 +180,8 @@ class Query:
 
             if self._format == "json":
                 yield from response.json()["feed"]["entry"]
+            elif self._format.startswith("umm_json"):
+                yield from response.json()["items"]
             else:
                 yield response.text
 
@@ -1190,7 +1197,7 @@ class ToolServiceVariableBaseQuery(Query):
             )
             response.raise_for_status()
 
-            if self._format == "json":
+            if self._format == "json" or self._format.startswith("umm_json"):
                 latest = response.json()['items']
             else:
                 latest = [response.text]
