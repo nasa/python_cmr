@@ -294,6 +294,22 @@ class TestGranuleClass(VCRTestCase):  # type: ignore
             query.day_night_flag(True)  # type: ignore[arg-type]
         self.assertNotIn(self.day_night_flag, query.params)
 
+    def test_cloud_cover_zero(self):
+        query = GranuleQuery().cloud_cover(0, 0)
+        self.assertEqual(query.params[self.cloud_cover], "0,0")
+
+    def test_cloud_cover_zero_open_bound(self):
+        for bounds, expected in [(("", 0), ",0"), ((0, ""), "0,")]:
+            with self.subTest(bounds=bounds):
+                query = GranuleQuery().cloud_cover(*bounds)
+                self.assertEqual(query.params[self.cloud_cover], expected)
+
+    def test_cloud_cover_invalid_with_zero(self):
+        for bounds in [(1, 0), (0, -1), (0, "invalid"), ("invalid", 0), ("", "")]:
+            with self.subTest(bounds=bounds):
+                with self.assertRaises(ValueError):
+                    GranuleQuery().cloud_cover(*bounds)
+
     def test_cloud_cover_min_only(self):
         query = GranuleQuery()
         query.cloud_cover(-70)

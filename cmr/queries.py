@@ -856,10 +856,12 @@ class GranuleQuery(GranuleCollectionBaseQuery):
         :returns: self
         """
 
-        if not min_cover and not max_cover:
+        has_min = min_cover is not None and min_cover != ""
+        has_max = max_cover is not None and max_cover != ""
+        if not has_min and not has_max:
             raise ValueError("Please provide at least min_cover, max_cover or both")
 
-        if min_cover and max_cover:
+        if has_min and has_max:
             try:
                 minimum = float(min_cover)
                 maxiumum = float(max_cover)
