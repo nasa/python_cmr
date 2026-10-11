@@ -422,7 +422,7 @@ class Query:
 
         if parameter and key:
             if value is None:
-                del self.options[parameter][key]
+                self.options.get(parameter, {}).pop(key, None)
             else:
                 self.options[parameter][key] = value
 
