@@ -1,3 +1,5 @@
+import pytest
+
 from cmr import Query
 
 
@@ -71,3 +73,35 @@ def test_plural_unknown_parameter():
     query = MockQuery().parameters(unknown_parameter=["foo", "bar"])
 
     assert query.params["unknown_parameter[]"] == ("foo", "bar")
+
+
+def test_remove_missing_option():
+    query = MockQuery()
+
+    assert query.option("short_name", "ignore_case", None) is query
+    assert query.options == {}
+
+
+def test_remove_missing_option_preserves_other_options():
+    query = MockQuery().option("short_name", "ignore_case", True)
+
+    query.option("short_name", "or", None)
+
+    assert query.options == {"short_name": {"ignore_case": True}}
+
+
+def test_remove_option_twice():
+    query = MockQuery().option("short_name", "ignore_case", True)
+
+    query.option("short_name", "ignore_case", None)
+    query.option("short_name", "ignore_case", None)
+
+    assert "ignore_case" not in query.options["short_name"]
+
+
+@pytest.mark.parametrize("parameter,key", [("", "ignore_case"), ("short_name", "")])
+def test_remove_option_with_empty_name_does_nothing(parameter, key):
+    query = MockQuery().option("short_name", "ignore_case", True)
+
+    assert query.option(parameter, key, None) is query
+    assert query.options == {"short_name": {"ignore_case": True}}
