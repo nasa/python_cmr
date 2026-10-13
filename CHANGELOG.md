@@ -32,6 +32,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   having to write cumbersome code to get around the limitation.
   ([#106](https://github.com/nasa/python_cmr/issues/106))
 
+### Fixed
+
+- Respect the requested result limit when tool, service, and variable queries
+  retrieve a partial final page of JSON results with `get`.
+
 ## [0.13.0]
 
 ### Added
