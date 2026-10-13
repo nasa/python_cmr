@@ -1198,7 +1198,7 @@ class ToolServiceVariableBaseQuery(Query):
             if len(latest) == 0:
                 break
 
-            results.extend(latest)
+            results.extend(latest[:limit - len(results)])
             page += 1
 
         return results
