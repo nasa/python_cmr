@@ -8,6 +8,7 @@ from datetime import date, datetime, timezone
 from inspect import getmembers, ismethod
 from re import search
 from typing import Iterable, Iterator
+import warnings
 
 from typing_extensions import (
     Any,
@@ -676,6 +677,21 @@ class GranuleCollectionBaseQuery(Query):
         if as_floats[0] != as_floats[-2] or as_floats[1] != as_floats[-1]:
             raise ValueError(
                 f"Coordinates of the last pair must match the first pair: {coordinates[0]} != {coordinates[-1]}"
+            )
+
+        # verify counter-clockwise winding order (signed shoelace formula)
+        # NASA CMR requires polygon coordinates to be in counter-clockwise order
+        shoelace_sum = sum(
+            as_floats[i] * as_floats[i + 3] - as_floats[i + 2] * as_floats[i + 1]
+            for i in range(0, len(as_floats) - 2, 2)
+        )
+        if shoelace_sum < 0:
+            warnings.warn(
+                "Polygon coordinates appear to be ordered clockwise. "
+                "NASA CMR requires polygon coordinates in counter-clockwise order. "
+                "Consider reversing the coordinate list to avoid spatial query errors.",
+                UserWarning,
+                stacklevel=2,
             )
 
         # convert to strings
