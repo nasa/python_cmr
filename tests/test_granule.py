@@ -412,6 +412,25 @@ class TestGranuleClass(VCRTestCase):  # type: ignore
         query.polygon([("1", 1.1), (2, 1), (2, 2), (1, 1.1)])
         self.assertEqual(query.params["polygon"], "1.0,1.1,2.0,1.0,2.0,2.0,1.0,1.1")
 
+    def test_polygon_clockwise_warning(self):
+        query = GranuleQuery()
+
+        # Clockwise polygon should trigger UserWarning per CMR specifications
+        with self.assertWarns(UserWarning) as cm:
+            query.polygon([(1, 1), (1, 2), (2, 2), (2, 1), (1, 1)])
+        self.assertIn("ordered clockwise", str(cm.warning))
+        self.assertEqual(query.params["polygon"], "1.0,1.0,1.0,2.0,2.0,2.0,2.0,1.0,1.0,1.0")
+
+    def test_polygon_counter_clockwise_no_warning(self):
+        query = GranuleQuery()
+
+        import warnings
+        with warnings.catch_warnings():
+            warnings.simplefilter("error", UserWarning)
+            # Counter-clockwise polygon should raise no warning
+            query.polygon([(1, 1), (2, 1), (2, 2), (1, 2), (1, 1)])
+            self.assertEqual(query.params["polygon"], "1.0,1.0,2.0,1.0,2.0,2.0,1.0,2.0,1.0,1.0")
+
     def test_bounding_box_invalid_set(self):
         query = GranuleQuery()
 
