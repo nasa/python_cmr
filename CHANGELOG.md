@@ -15,6 +15,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- Allow python-dateutil 3.x and 4.x (the dependency was capped at `<3`).
 - Deprecate methods `Query.get` and `Query.get_all` in favor of the new
   `Query.results` method. These deprecated methods will likely be removed for
   the 1.0.0 release. ([#37](https://github.com/nasa/python_cmr/issues/37))
