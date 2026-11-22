@@ -30,7 +30,7 @@ packages = [{ include = "cmr" }]
 [tool.poetry.dependencies]
 python = "^3.8.1"
 requests = "^2.26.0"
-python-dateutil = "^2.8.2"
+python-dateutil = ">=2.8.2,<5"
 typing-extensions = "^4.11.0"
 
 [tool.poetry.group.dev.dependencies]
